@@ -1,0 +1,11 @@
+{
+  "name": "nvs",
+  "version": "0.1.0",
+  "description": "Node version switcher",
+  "main": "nvs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
