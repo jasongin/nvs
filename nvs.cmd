@@ -1,4 +1,4 @@
-:: NVS (node version switcher) CMD script
+:: NVS (Node Version Switcher) CMD script
 :: Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
 @ECHO OFF
 
@@ -16,10 +16,10 @@ SET NVS_BOOTSTRAP_NODE_PATH=%NVS_HOME%\node\node.exe
 IF EXIST %NVS_BOOTSTRAP_NODE_PATH% GOTO :RUN
 
 :BOOTSTRAP
-:: Download a node.exe binary to use to bootstrap this script.
+:: Download a node.exe binary to use to bootstrap the NVS script.
 IF NOT EXIST %NVS_HOME%\node MKDIR %NVS_HOME%\node
 
-SET NVS_BOOTSTRAP_NODE_VERSION=v6.6.0
+SET NVS_BOOTSTRAP_NODE_VERSION=v6.7.0
 SET NVS_BOOTSTRAP_NODE_ARCH=x86
 IF %PROCESSOR_ARCHITECTURE%==AMD64 SET NVS_BOOTSTRAP_NODE_ARCH=x64
 
@@ -43,7 +43,7 @@ GOTO :CLEANUP
 ENDLOCAL
 
 :POSTSCRIPT
-:: Call a post-invocation script if it is present.
+:: Call the post-invocation script if it is present, then delete it.
 :: This allows the invocation to potentially modify the caller's environment (e.g. PATH).
 IF NOT EXIST %NVS_POSTSCRIPT% GOTO :CLEANUP
 CALL %NVS_POSTSCRIPT%
