@@ -102,15 +102,15 @@ function usage() {
     console.log('nvs default [version]        Configure a node version as the user default');
     console.log('nvs run <version> [args]...  Run a script using a node version');
     console.log('nvs ls                       List installed node versions');
-    console.log('nvs ls-available [dist]      List node versions available to install');
+    console.log('nvs ls-available [feed]      List node versions available to install');
     console.log('nvs which [version]          Show the path to a node version');
     console.log('');
     console.log('A version string consists of a semantic version, optionally preceeded by');
-    console.log('a distribution name, optionally followed by an arch, separated by slashes.');
+    console.log('a feed name, optionally followed by an architecture, separated by slashes.');
     console.log('Examples: "4.6.0", "6.3.1/x86", "node/6.7.0/x64"');
     console.log('');
-    console.log('Configured distribution names: ' +
-        require('./lib/available').distNames.join(', '));
+    console.log('Configured feed names: ' +
+        require('./lib/available').feedNames.join(', '));
     console.log('');
 }
 
