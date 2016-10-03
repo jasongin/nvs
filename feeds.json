@@ -1,5 +1,4 @@
 {
   "default": "node",
-  "node": "https://nodejs.org/dist/",
-  "node-nightly": "https://nodejs.org/download/nightly/"
+  "node": "https://nodejs.org/dist/"
 }

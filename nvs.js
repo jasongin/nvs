@@ -5,92 +5,100 @@ const path = require('path');
 
 const parseVersion = require('./lib/version').parse;
 
-var args = process.argv.slice(2);
-var version;
-switch (args[0]) {
-    case '-v':
-    case '--version':
-        nvsVersion();
-        break;
+main(process.argv.slice(2));
 
-    case '+':
-    case 'add':
-    case 'install':
-        if ((version = parseVersion(args[1])) != null) {
-            require('./lib/install').install(version);
-        } else {
-            usage();
+function main(args) {
+    var asyncResult = null;
+    var version;
+    try {
+        switch (args[0]) {
+            case '-v':
+            case '--version':
+                nvsVersion();
+                break;
+
+            case '+':
+            case 'add':
+            case 'install':
+                version = parseVersion(args[1]);
+                asyncResult = require('./lib/install').installAsync(version);
+                break;
+
+            case '-':
+            case 'rm':
+            case 'remove':
+            case 'uninstall':
+                version = parseVersion(args[1]);
+                asyncResult = require('./lib/install').uninstallAsync(version);
+                break;
+
+            case 'l':
+            case 'ls':
+            case 'lsi':
+            case 'ls-installed':
+                asyncResult = require('./lib/install').listAsync();
+                break;
+
+            case 'la':
+            case 'lsa':
+            case 'lr':
+            case 'lsr':
+            case 'ls-available':
+            case 'ls-remote':
+                asyncResult = require('./lib/available').listAsync(args[1]);
+                break;
+
+            case 'w':
+            case 'which':
+                if (args[1]) {
+                    version = parseVersion(args[1]);
+                    asyncResult = require('./lib/env').getPathAsync(version);
+                } else {
+                    asyncResult = require('./lib/env').getPathAsync();
+                }
+                break;
+
+            case 'default':
+                if (args[1]) {
+                    version = parseVersion(args[1]);
+                    asyncResult = require('./lib/env').setDefaultAsync(version);
+                } else {
+                    asyncResult = require('./lib/env').setDefaultAsync();
+                }
+                break;
+
+            case 'r':
+            case 'run':
+                version = parseVersion(args[1]);
+                asyncResult = require('./lib/env').runAsync(args.slice(1));
+                break;
+
+            case 'use':
+                version = parseVersion(args[1]);
+                asyncResult = require('./lib/env').useAsync(version);
+                break;
+
+            default:
+                version = parseVersion(args[1]);
+                asyncResult = require('./lib/env').useAsync(version);
+                break;
         }
-        break;
+    } catch (e) {
+        console.error(e.message);
+        console.log('');
+        usage();
+    }
 
-    case '-':
-    case 'rm':
-    case 'remove':
-    case 'uninstall':
-        if ((version = parseVersion(args[1])) != null) {
-            require('./lib/install').uninstall(version);
-        } else {
-            usage();
-        }
-        break;
-
-    case 'l':
-    case 'ls':
-    case 'lsi':
-    case 'ls-installed':
-        require('./lib/install').list();
-        break;
-
-    case 'la':
-    case 'lsa':
-    case 'lr':
-    case 'lsr':
-    case 'ls-available':
-    case 'ls-remote':
-        require('./lib/available').list(args[1]);
-        break;
-
-    case 'w':
-    case 'which':
-        if (args[1] && (version = parseVersion(args[1])) != null) {
-            console.log(require('./lib/env').getPath(version));
-        } else if (!args[1]) {
-            console.log(require('./lib/env').getPath());
-        } else {
-            usage();
-        }
-        break;
-
-    case 'default':
-        if (args[1] && (version = parseVersion(args[1])) != null) {
-            require('./lib/env').setDefault(version);
-        } else if (!args[1]) {
-            require('./lib/env').setDefault();
-        } else {
-            usage();
-        }
-        break;
-
-    case 'r':
-    case 'run':
-        run();
-        break;
-
-    case 'use':
-        if ((version = parseVersion(args[1])) != null) {
-            require('./lib/env').use(version);
-        } else {
-            usage();
-        }
-        break;
-
-    default:
-        if ((version = parseVersion(args[0])) != null) {
-            require('./lib/env').use(version);
-        } else {
-            usage();
-        }
-        break;
+    if (asyncResult) {
+        asyncResult.then(result => {
+            if (result) {
+                console.log(result);
+            }
+        }).catch(e => {
+            console.error(e.message);
+            process.exit(process.exitCode || 1);
+        });
+    }
 }
 
 function usage() {
@@ -117,4 +125,8 @@ function usage() {
 function nvsVersion() {
     var packageJson = require('./package.json');
     console.log(packageJson.version);
+}
+
+module.exports = {
+    main
 }
