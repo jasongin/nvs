@@ -10,12 +10,12 @@ if (-not $env:NVS_HOME) {
 $env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("" + (Get-Random) + ".PS1")
 
 # Check if the bootstrap node.exe is present.
-$bootstrapNodePath = Join-Path $env:NVS_HOME (Join-Path "node" "node.exe")
+$bootstrapNodePath = Join-Path $env:NVS_HOME (Join-Path "nvs_node" "node.exe")
 if (-not (Test-Path $bootstrapNodePath)) {
     # Download a node.exe binary to use to bootstrap the NVS script.
 
-    if (-not (Test-Path (Join-Path $env:NVS_HOME "node"))) {
-        New-Item -ItemType Directory -Force -Path (Join-Path $env:NVS_HOME "node")
+    if (-not (Test-Path (Split-Path $bootstrapNodePath))) {
+        New-Item -ItemType Directory -Force -Path (Split-Path $bootstrapNodePath) > $null
     }
 
     $bootstrapNodeVersion = "v6.7.0"

@@ -12,12 +12,12 @@ SET NVS_POSTSCRIPT=%NVS_HOME%\%NVS_POSTSCRIPT%.CMD
 SETLOCAL
 
 :: Check if the bootstrap node.exe is present.
-SET NVS_BOOTSTRAP_NODE_PATH=%NVS_HOME%\node\node.exe
+SET NVS_BOOTSTRAP_NODE_PATH=%NVS_HOME%\nvs_node\node.exe
 IF EXIST %NVS_BOOTSTRAP_NODE_PATH% GOTO :RUN
 
 :BOOTSTRAP
 :: Download a node.exe binary to use to bootstrap the NVS script.
-IF NOT EXIST %NVS_HOME%\node MKDIR %NVS_HOME%\node
+IF NOT EXIST %NVS_HOME%\nvs_node MKDIR %NVS_HOME%\nvs_node
 
 SET NVS_BOOTSTRAP_NODE_VERSION=v6.7.0
 SET NVS_BOOTSTRAP_NODE_ARCH=x86

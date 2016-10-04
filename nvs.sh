@@ -17,12 +17,12 @@ nvs() {
 
     # TODO: Define NVS_POSTSCRIPT
 
-    local BOOTSTRAP_NODE_PATH="${NVS_HOME}/node/node"
+    local BOOTSTRAP_NODE_PATH="${NVS_HOME}/nvs_node/node"
     if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
         # Download a node binary to use to bootstrap the NVS script.
 
-        if [ ! -d "${NVS_HOME}/node" ]; then
-            command mkdir -p "${NVS_HOME}/node"
+        if [ ! -d "${NVS_HOME}/nvs_node" ]; then
+            command mkdir -p "${NVS_HOME}/nvs_node"
         fi
 
         local BOOTSTRAP_NODE_VERSION="v6.7.0"

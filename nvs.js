@@ -84,7 +84,7 @@ function main(args) {
                 break;
         }
     } catch (e) {
-        console.error(e.message);
+        console.error(e.stack || e.message);
         console.log('');
         usage();
     }
@@ -95,7 +95,7 @@ function main(args) {
                 console.log(result);
             }
         }).catch(e => {
-            console.error(e.message);
+            console.error(e.stack || e.message);
             process.exit(process.exitCode || 1);
         });
     }
@@ -125,8 +125,4 @@ function usage() {
 function nvsVersion() {
     var packageJson = require('./package.json');
     console.log(packageJson.version);
-}
-
-module.exports = {
-    main
 }
