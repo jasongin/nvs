@@ -1,0 +1,9 @@
+# These ignore rules support using the repo simultaneously
+# as the $NVS_HOME directory where node versions are installed.
+
+# Ignore the user-configurable feeds file.
+feeds.json
+
+# Ignore all directories except for the lib directory.
+*/
+!lib/

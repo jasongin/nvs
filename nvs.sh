@@ -4,7 +4,7 @@
 # Inspired by NVM (https://github.com/creationix/nvm)
 # and other node version switching tools.
 
-# This script merely bootstraps node.exe if necessary, then forwards
+# This shell script merely bootstraps node.exe if necessary, then forwards
 # arguments to the main nvs.js script.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
@@ -57,6 +57,6 @@ nvs() {
     # TODO: Check exit code.
 
     # TODO: Call the post-invocation script if it is present, then delete it.
-    # This allows the invocation to potentially modify the caller's environment (e.g. PATH).
+    # This allows the invocation to potentially modify the caller's environment (e.g. PATH)
 
 }
