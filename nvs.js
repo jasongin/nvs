@@ -1,8 +1,5 @@
 // NVS (node version switcher) main script
 
-const fs = require('fs');
-const path = require('path');
-
 const parseVersion = require('./lib/version').parse;
 const debug = process.env['NVS_DEBUG'];
 

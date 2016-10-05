@@ -1,0 +1,16 @@
+{
+    "env": {
+        "node": true
+    },
+    "extends": "standard",
+    "plugins": [
+        "standard",
+        "promise"
+    ],
+    "rules": {
+        "indent": [2, 4, { "SwitchCase": 1 }],
+        "semi": [2, "always"],
+        "space-before-function-paren": [2, { "anonymous": "always", "named": "never" }],
+        "comma-dangle": [2, "always-multiline"]
+    }
+}
