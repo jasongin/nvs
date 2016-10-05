@@ -15,7 +15,8 @@ nvs() {
         export NVS_HOME="${HOME}/.nvs"
     fi
 
-    # TODO: Define NVS_POSTSCRIPT
+    # Generate 32 bits of randomness, to avoid clashing with concurrent executions.
+    export NVS_POSTSCRIPT="${NVS_HOME}/nvs_tmp_$(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ").sh"
 
     local BOOTSTRAP_NODE_PATH="${NVS_HOME}/nvs_node/node"
     if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
@@ -34,16 +35,16 @@ nvs() {
         local BOOTSTRAP_NODE_FULLNAME="node-${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
 
         local BOOTSTRAP_NODE_URI="https://nodejs.org/dist/${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
-        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/node/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
+        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
 
         echo "Downloading bootstrap node binary..."
         echo "  ${BOOTSTRAP_NODE_URI} -> ${BOOTSTRAP_NODE_ARCHIVE}"
         curl -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
 
-        tar -zxvf "${NVS_HOME}/node/${BOOTSTRAP_NODE_FULLNAME}.tar.gz" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" -C "${NVS_HOME}/node" > /dev/null 2>&1
-        mv "${NVS_HOME}/node/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/node/node"
-        rm -r "${NVS_HOME}/node/${BOOTSTRAP_NODE_FULLNAME}"
-        rm "${NVS_HOME}/node/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
+        tar -zxvf "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/nvs_node" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
+        mv "${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/nvs_node/node"
+        rm -r "${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}"
+        rm "${BOOTSTRAP_NODE_ARCHIVE}"
 
         if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
             echo "Failed to download boostrap node binary."
@@ -56,7 +57,10 @@ nvs() {
 
     # TODO: Check exit code.
 
-    # TODO: Call the post-invocation script if it is present, then delete it.
+    # Call the post-invocation script if it is present, then delete it.
     # This allows the invocation to potentially modify the caller's environment (e.g. PATH)
-
+    if [ -f "${NVS_POSTSCRIPT}" ]; then
+        source "${NVS_POSTSCRIPT}"
+        #rm "${NVS_POSTSCRIPT}"
+    fi
 }
