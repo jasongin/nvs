@@ -7,7 +7,7 @@ IF "%NVS_HOME%"=="" SET NVS_HOME=%APPDATA%\nvs
 
 :: Generate 30 bits of randomness, to avoid clashing with concurrent executions.
 SET /A NVS_POSTSCRIPT=%RANDOM% * 32768 + %RANDOM%
-SET NVS_POSTSCRIPT=%NVS_HOME%\%NVS_POSTSCRIPT%.CMD
+SET NVS_POSTSCRIPT=%NVS_HOME%\nvs_tmp_%NVS_POSTSCRIPT%.cmd
 
 SETLOCAL
 

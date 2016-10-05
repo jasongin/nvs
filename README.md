@@ -33,8 +33,7 @@ Command | Description
 `nvs ls-available [feed]`     | List node versions available to install
 `nvs which [version]`         | Show the path to a node version
 
-A version string consists of a semantic version, optionally preceeded by
-a feed name, optionally followed by an architecture, separated by slashes. Examples: "4.6.0", "6.3.1/x86", "node/6.7.0/x64"
+A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceeded by a feed name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64"
 
 A feed name is one of the keys from `feeds.json`.
 

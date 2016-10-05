@@ -1,9 +1,14 @@
 # These ignore rules support using the repo simultaneously
 # as the $NVS_HOME directory where node versions are installed.
 
-# Ignore the user-configurable feeds file.
+# User-configurable feeds file
 feeds.json
 
-# Ignore all directories except for the lib directory.
+# Temporary post-execution scripts
+nvs_tmp_*
+
+# Node download cache directories
 */
+
+# Supporting script code
 !lib/

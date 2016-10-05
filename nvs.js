@@ -9,12 +9,20 @@ main(process.argv.slice(2));
 
 function main(args) {
     var asyncResult = null;
-    var version;
+    var version = null;
     try {
         switch (args[0]) {
             case '-v':
             case '--version':
                 nvsVersion();
+                break;
+
+            case 'w':
+            case 'which':
+                if (args[1]) {
+                    version = parseVersion(args[1]);
+                }
+                asyncResult = require('./lib/install').getPathAsync(version);
                 break;
 
             case '+':
@@ -48,23 +56,11 @@ function main(args) {
                 asyncResult = require('./lib/available').listAsync(args[1]);
                 break;
 
-            case 'w':
-            case 'which':
-                if (args[1]) {
-                    version = parseVersion(args[1]);
-                    asyncResult = require('./lib/env').getPathAsync(version);
-                } else {
-                    asyncResult = require('./lib/env').getPathAsync();
-                }
-                break;
-
             case 'default':
                 if (args[1]) {
                     version = parseVersion(args[1]);
-                    asyncResult = require('./lib/env').setDefaultAsync(version);
-                } else {
-                    asyncResult = require('./lib/env').setDefaultAsync();
                 }
+                asyncResult = require('./lib/env').setDefaultAsync(version);
                 break;
 
             case 'r':
@@ -74,7 +70,9 @@ function main(args) {
                 break;
 
             case 'use':
-                version = parseVersion(args[1]);
+                if (args[1]) {
+                    version = parseVersion(args[1]);
+                }
                 asyncResult = require('./lib/env').useAsync(version);
                 break;
 
@@ -84,8 +82,10 @@ function main(args) {
                 break;
         }
     } catch (e) {
-        console.error(e.stack || e.message);
-        console.log('');
+        if (args.length > 0) {
+            console.error(e.stack || e.message);
+            console.log('');
+        }
         usage();
     }
 
@@ -106,16 +106,17 @@ function usage() {
     console.log('');
     console.log('nvs install <version>        Download and install a node version');
     console.log('nvs uninstall <version>      Uninstall a node version');
-    console.log('nvs use <version>            Use a node version in the current environment');
+    console.log('nvs use [version]            Use a node version in the current environment');
     console.log('nvs default [version]        Configure a node version as the user default');
     console.log('nvs run <version> [args]...  Run a script using a node version');
     console.log('nvs ls                       List installed node versions');
     console.log('nvs ls-available [feed]      List node versions available to install');
     console.log('nvs which [version]          Show the path to a node version');
     console.log('');
-    console.log('A version string consists of a semantic version, optionally preceeded by');
-    console.log('a feed name, optionally followed by an architecture, separated by slashes.');
-    console.log('Examples: "4.6.0", "6.3.1/x86", "node/6.7.0/x64"');
+    console.log('A version string consists of a semantic version number or version label');
+    console.log('("lts" or "latest"), optionally preceeded by a feed name, optionally');
+    console.log('followed by an architecture, separated by slashes.');
+    console.log('Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64"');
     console.log('');
     console.log('Configured feed names: ' +
         require('./lib/available').feedNames.join(', '));
