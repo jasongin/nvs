@@ -28,12 +28,10 @@ nvs() {
 
         local BOOTSTRAP_NODE_VERSION="v6.7.0"
 
-        # TODO: Suppport other OS besides Mac
-        local BOOTSTRAP_NODE_OS="darwin"
-        local BOOTSTRAP_NODE_ARCH="x64"
+        local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
+        local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
 
         local BOOTSTRAP_NODE_FULLNAME="node-${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
-
         local BOOTSTRAP_NODE_URI="https://nodejs.org/dist/${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
         local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
 
