@@ -33,6 +33,8 @@ Command | Description
 `nvs ls`                      | List installed node versions
 `nvs ls-available [feed]`     | List node versions available to install
 `nvs which [version]`         | Show the path to a node version
+`nvs link [version]`          | Create a "current" dir symlink to a version
+`nvs unlink [version]`        | Remove a "current" dir symlink
 
 A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceeded by a feed name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64"
 

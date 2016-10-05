@@ -52,9 +52,11 @@ function main(args) {
                 break;
 
             case 'l':
+            case 'list':
             case 'ls':
             case 'lsi':
             case 'ls-installed':
+            case 'list-installed':
                 if (args[1]) {
                     try {
                         version = parseVersion(args[1]);
@@ -81,6 +83,8 @@ function main(args) {
             case 'lsr':
             case 'ls-available':
             case 'ls-remote':
+            case 'list-available':
+            case 'list-remote':
                 result = require('./lib/available').listAsync(args[1]);
                 break;
 
@@ -88,6 +92,22 @@ function main(args) {
             case 'run':
                 version = parseVersion(args[1]);
                 result = require('./lib/env').run(version, args.slice(2));
+                break;
+
+            case 'link':
+            case 'ln':
+                if (args[1]) {
+                    version = parseVersion(args[1]);
+                }
+                result = require('./lib/env').link(version);
+                break;
+
+            case 'unlink':
+            case 'ul':
+                if (args[1]) {
+                    version = parseVersion(args[1]);
+                }
+                result = require('./lib/env').unlink(version);
                 break;
 
             case 'use':
@@ -134,6 +154,8 @@ function usage() {
         'nvs ls                       List installed node versions',
         'nvs ls-available [feed]      List node versions available to install',
         'nvs which [version]          Show the path to a node version',
+        'nvs link [version]           Create a "current" dir symlink to a version',
+        'nvs unlink [version]         Remove a "current" dir symlink',
         '',
         'A version string consists of a semantic version number or version label',
         '("lts" or "latest"), optionally preceeded by a feed name, optionally',
