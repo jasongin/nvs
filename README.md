@@ -24,10 +24,9 @@ export NVS_HOME="$HOME/.nvs"
 ## Command-line usage
 Command | Description
 ------- | -----------
-`nvs install <version>`       | Download and install a node version
-`nvs uninstall <version>`     | Uninstall a node version
+`nvs add <version>`           | Download and install a node version
+`nvs rm <version>`            | Uninstall a node version
 `nvs use <version>`           | Use a node version in the current environment
-`nvs default [version]`       | Configure a node version as the user default
 `nvs run <version> [args]...` | Run a script using a node version
 `nvs ls`                      | List installed node versions
 `nvs ls-available [feed]`     | List node versions available to install

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const parseVersion = require('./lib/version').parse;
+const debug = process.env['NVS_DEBUG'];
 
 main(process.argv.slice(2));
 
@@ -56,17 +57,10 @@ function main(args) {
                 asyncResult = require('./lib/available').listAsync(args[1]);
                 break;
 
-            case 'default':
-                if (args[1]) {
-                    version = parseVersion(args[1]);
-                }
-                asyncResult = require('./lib/env').setDefaultAsync(version);
-                break;
-
             case 'r':
             case 'run':
                 version = parseVersion(args[1]);
-                asyncResult = require('./lib/env').runAsync(args.slice(1));
+                asyncResult = require('./lib/env').runAsync(version, args.slice(2));
                 break;
 
             case 'use':
@@ -83,7 +77,7 @@ function main(args) {
         }
     } catch (e) {
         if (args.length > 0) {
-            console.error(e.stack || e.message);
+            console.error(debug ? e.stack || e.message : e.message);
             console.log('');
         }
         usage();
@@ -95,8 +89,8 @@ function main(args) {
                 console.log(result);
             }
         }).catch(e => {
-            console.error(e.stack || e.message);
-            process.exit(process.exitCode || 1);
+            console.error(debug ? e.stack || e.message : e.message);
+            process.exitCode = process.exitCode || 1;
         });
     }
 }
@@ -104,10 +98,9 @@ function main(args) {
 function usage() {
     console.log('NVS (Node Version Switcher) usage');
     console.log('');
-    console.log('nvs install <version>        Download and install a node version');
-    console.log('nvs uninstall <version>      Uninstall a node version');
+    console.log('nvs add <version>            Download and install a node version');
+    console.log('nvs rm <version>             Uninstall a node version');
     console.log('nvs use [version]            Use a node version in the current environment');
-    console.log('nvs default [version]        Configure a node version as the user default');
     console.log('nvs run <version> [args]...  Run a script using a node version');
     console.log('nvs ls                       List installed node versions');
     console.log('nvs ls-available [feed]      List node versions available to install');
