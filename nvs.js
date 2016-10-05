@@ -112,7 +112,11 @@ function main(args) {
 
             case 'use':
                 if (args[1]) {
-                    version = parseVersion(args[1]);
+                    if (args[1] === 'link') {
+                        version = require('./lib/env').getLinkedVersion();
+                    } else {
+                        version = parseVersion(args[1]);
+                    }
                 }
                 result = require('./lib/env').use(version);
                 break;

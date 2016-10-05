@@ -64,7 +64,19 @@ In the future, the NVS tool may support command-line options as a convenient alt
 NVS uses a small amount of platform-specific shell code that bootstraps the tool by automatically downloading a private copy of node. The bootstrap code is just a few dozen lines each of Windows command script, Windows powershell script, and POSIX shell script. Besides bootstrapping, the shell scripts are also used to export PATH changes to the calling shell (which a separate node process cannot do). But all the code for querying available versions, downloading and installing node and matching npm, switching versions/architectures/engines, uninstalling, parsing and updating PATH, and more can be written in JavaScript, and mostly in a cross-platform way.
 
 ## Version switching
-NVS downloads node builds under the directory specified by the `NVS_HOME` environment variable, by default `~/.nvs` (or `%APPDATA%\nvs` on Windows). Each build goes in a subdirectory based on the feed name, semantic version, and architecture, for example `node/6.7.0/x64`. When you `nvs use`, the `PATH` of the current shell is updated to include that build's `bin` directory. (Of course you may also update the user or system default `PATH`.)
+NVS downloads node builds under the directory specified by the `NVS_HOME` environment variable, by default `~/.nvs` (or `%APPDATA%\nvs` on Windows). Each build goes in a subdirectory based on the feed name, semantic version, and architecture, for example `node/6.7.0/x64`.
+
+When you `nvs use` a version, the `PATH` of the current shell is updated to include that version's `bin` directory.
+
+## Symbolic links
+The `nvs link` command creates a symbolic directory link at `$NVS_HOME/current` that points to the specified version (or the current version from `PATH`). This can be useful when there is a need to configure a fixed path elsewhere. A new shell that sources the `nvs.sh` script also sets `PATH` to include the linked version, if a link is present.
+
+The `nvs ls` command lists all installed versions, marks the version currently in the path with a `>`, and marks the version currently linked with a `#`. These may be the same or different. For example:
+```
+  node/4.5.0/x64
+ #node/4.6.0/x64
+ >node/6.7.0/x64
+```
 
 ## Dependencies
 NVS has no dependencies beyond the private copy of node that it automatically downloads. The NVS JavaScript code does not currently depend on any non-core node modules. Longer term, as functionality is expanded, it could be possible to add dependencies on additional node modules. The simplest way to do that will be to check them into the repo (avoiding the need for an npm install during bootstrapping), assuming they are pure JavaScript modules.

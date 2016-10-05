@@ -2,13 +2,16 @@
 # as the $NVS_HOME directory where node versions are installed.
 
 # User-configurable feeds file
-feeds.json
+/feeds.json
 
 # Temporary post-execution scripts
-nvs_tmp_*
+/nvs_tmp_*
 
 # Node download cache directories
-*/
+/*/
 
 # Supporting script code
-!lib/
+/!lib/
+
+# Current version link
+/current

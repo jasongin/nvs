@@ -61,6 +61,11 @@ nvs() {
     # This allows the invocation to potentially modify the caller's environment (e.g. PATH)
     if [ -f "${NVS_POSTSCRIPT}" ]; then
         source "${NVS_POSTSCRIPT}"
-        #rm "${NVS_POSTSCRIPT}"
+        rm "${NVS_POSTSCRIPT}"
     fi
 }
+
+# If some version is linked, begin by using that version.
+if [ -d "${NVS_HOME}/current" ]; then
+    export PATH="${NVS_HOME}/current/bin:${PATH}"
+fi
