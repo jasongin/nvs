@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# DO NOT SOURCE THIS SCRIPT. Source nvs.sh instead.
+
+# This script enables running NVS as an executable.  The one limitation is
+# that it cannot modify environment variables (PATH) of the calling shell,
+# therefore the 'nvs use' command is not available.
+
+source ./nvs.sh
+export NVS_EXECUTE=1
+nvs $*
