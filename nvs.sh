@@ -51,16 +51,18 @@ nvs() {
     fi
 
     # Forward args to the main JavaScript file.
-    command "${BOOTSTRAP_NODE_PATH}" "${SCRIPT_DIR}/nvs.js" "$@"
-
-    # TODO: Check exit code.
+    command "${BOOTSTRAP_NODE_PATH}" "${SCRIPT_DIR}/lib/main.js" "$@"
+    local EXIT_CODE=$?
 
     # Call the post-invocation script if it is present, then delete it.
     # This allows the invocation to potentially modify the caller's environment (e.g. PATH)
     if [ -f "${NVS_POSTSCRIPT}" ]; then
         source "${NVS_POSTSCRIPT}"
         rm "${NVS_POSTSCRIPT}"
+        export NVS_POSTSCRIPT=
     fi
+
+    return $EXIT_CODE
 }
 
 # If some version is linked, begin by using that version.

@@ -9,7 +9,7 @@ IF "%NVS_HOME%"=="" SET NVS_HOME=%APPDATA%\nvs
 SET /A NVS_POSTSCRIPT=%RANDOM% * 32768 + %RANDOM%
 SET NVS_POSTSCRIPT=%NVS_HOME%\nvs_tmp_%NVS_POSTSCRIPT%.cmd
 
-SETLOCAL
+SETLOCAL ENABLEEXTENSIONS
 
 :: Check if the bootstrap node.exe is present.
 SET NVS_BOOTSTRAP_NODE_PATH=%NVS_HOME%\nvs_node\node.exe
@@ -36,11 +36,11 @@ GOTO :CLEANUP
 
 :RUN
 :: Forward the args to the main JavaScript file.
-%NVS_BOOTSTRAP_NODE_PATH% %~dp0nvs.js %*
-
-:: TODO: Check exit code!
+"%NVS_BOOTSTRAP_NODE_PATH%" "%~dp0lib\main.js" %*
 
 ENDLOCAL
+
+SET NVS_EXITCODE=%ERRORLEVEL%
 
 :POSTSCRIPT
 :: Call the post-invocation script if it is present, then delete it.
@@ -51,3 +51,5 @@ DEL %NVS_POSTSCRIPT%
 
 :CLEANUP
 SET NVS_POSTSCRIPT=
+
+EXIT /B %NVS_EXITCODE%

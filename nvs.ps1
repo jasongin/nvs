@@ -34,15 +34,14 @@ if (-not (Test-Path $bootstrapNodePath)) {
     if (-not (Test-Path $bootstrapNodePath)) {
         Write-Error "Failed to download bootstrap node.exe."
         $env:NVS_POSTSCRIPT = $null
-        return
+        exit 1
     }
 }
 
 # Forward the args to the main JavaScript file.
-$mainScript = Join-Path (Split-Path $MyInvocation.MyCommand.Path) "nvs.js"
-. $bootstrapNodePath $mainScript @args
-
-# TODO: Check exit code
+$mainScript = Join-Path (Split-Path $MyInvocation.MyCommand.Path) "lib\main.js"
+. "$bootstrapNodePath" "$mainScript" @args
+$exitCode = $LastExitCode
 
 # Call the post-invocation script if it is present, then delete it.
 # This allows the invocation to potentially modify the caller's environment (e.g. PATH).
@@ -52,3 +51,5 @@ if (Test-Path $env:NVS_POSTSCRIPT) {
 }
 
 $env:NVS_POSTSCRIPT = $null
+
+exit $exitCode
