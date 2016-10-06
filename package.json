@@ -4,15 +4,37 @@
   "description": "Node version switcher",
   "main": "lib/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint *.js lib; exit 0"
+    "test": "ava --verbose",
+    "lint": "eslint lib"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "ava": "^0.16.0",
     "eslint": "^3.7.1",
     "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^2.0.1",
-    "eslint-plugin-standard": "^2.0.1"
+    "eslint-plugin-standard": "^2.0.1",
+    "rewire": "^2.5.2"
+  },
+  "ava": {
+    "files": "test/*Tests.js"
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": "standard",
+    "plugins": [
+      "standard",
+      "promise"
+    ],
+    "rules": {
+      "indent": [2, 4, { "SwitchCase": 1 }],
+      "semi": [2, "always"],
+      "space-before-function-paren": [2, { "anonymous": "always", "named": "never" }],
+      "comma-dangle": [2, "always-multiline"]
+    }
   }
 }

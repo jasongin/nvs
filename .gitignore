@@ -1,8 +1,8 @@
 # These ignore rules support using the repo simultaneously
 # as the $NVS_HOME directory where node versions are installed.
 
-# User-configurable feeds file
-/feeds.json
+# User settings file
+/settings.json
 
 # Temporary post-execution scripts
 /nvs_tmp_*
@@ -10,8 +10,9 @@
 # Node download cache directories
 /*/
 
-# Supporting script code
+# Main code and tests
 !/lib/
+!/test/
 
 # Current version link
 /current

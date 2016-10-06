@@ -38,22 +38,26 @@ Command | Description
 
 A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceeded by a feed name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64"
 
-A feed name is one of the keys from `feeds.json`.
+A feed name is one of the keys from `settings.json`.
 
 ## Configurable feeds
-The first time you run NVS, it creates a `feeds.json` file under `$NVS_HOME`. By default it just includes a single `"node"` feed pointing to the official node.js distribution URI:
+The first time you run NVS, it creates a `settings.json` file under `$NVS_HOME`. By default it just includes a single `"node"` feed pointing to the official node.js distribution URI:
 ```json
 {
-  "default": "node",
-  "node": "https://nodejs.org/dist/"
+  "feeds": {
+    "default": "node",
+    "node": "https://nodejs.org/dist/"
+  }
 }
 ```
 To add another feed, for example nightly builds of node.js, just add an entry to the JSON file:
 ```json
 {
-  "default": "node",
-  "node": "https://nodejs.org/dist/",
-  "node-nightly": "https://nodejs.org/download/nightly/"
+  "feeds": {
+    "default": "node",
+    "node": "https://nodejs.org/dist/",
+    "node-nightly": "https://nodejs.org/download/nightly/"
+  }
 }
 ```
 In the future, the NVS tool may support command-line options as a convenient alternative way to edit these entries.

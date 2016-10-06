@@ -1,0 +1,6 @@
+{
+  "feeds": {
+    "default": "node",
+    "node": "https://nodejs.org/dist/"
+  }
+}
