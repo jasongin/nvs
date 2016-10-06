@@ -10,9 +10,10 @@
 # Node download cache directories
 /*/
 
-# Main code and tests
+# Main code, tests, and docs
 !/lib/
 !/test/
+!/doc/
 
 # Current version link
 /current

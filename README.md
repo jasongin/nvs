@@ -26,6 +26,7 @@ export NVS_HOME="$HOME/.nvs"
 ## Command-line usage
 Command | Description
 ------- | -----------
+'nvs help <command>           | Get detailed help for a command
 `nvs add <version>`           | Download and install a node version
 `nvs rm <version>`            | Uninstall a node version
 `nvs use <version>`           | Use a node version in the current environment
@@ -36,9 +37,9 @@ Command | Description
 `nvs link [version]`          | Create a "current" dir symlink to a version
 `nvs unlink [version]`        | Remove a "current" dir symlink
 
-A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceeded by a feed name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64"
+A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceded by a feed name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64"
 
-A feed name is one of the keys from `settings.json`.
+[Refer to the docs](./doc) for more details about each command.
 
 ## Configurable feeds
 The first time you run NVS, it creates a `settings.json` file under `$NVS_HOME`. By default it just includes a single `"node"` feed pointing to the official node.js distribution URI:
