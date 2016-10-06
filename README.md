@@ -22,11 +22,14 @@ This tool is obviously inspired by other node version manager tools, especially 
 export NVS_HOME="$HOME/.nvs"
 [ -s "$NVS_HOME/nvs.sh" ] && . "$NVS_HOME/nvs.sh"
 ```
+The `nvs.sh` script adds a shell function to the environment. Afterward the tool should be invoked as `nvs`, without any path.
+
+Note there is also an executable shell script named `nvs` (without the `.sh`), that may be used to invoke the tool without having to first *source* `nvs.sh`. However, when invoked in that way the script cannot update the caller's environment, so the `nvs use` command is disabled.
 
 ## Command-line usage
 Command | Description
 ------- | -----------
-'nvs help <command>           | Get detailed help for a command
+`nvs help <command>`           | Get detailed help for a command
 `nvs add <version>`           | Download and install a node version
 `nvs rm <version>`            | Uninstall a node version
 `nvs use <version>`           | Use a node version in the current environment

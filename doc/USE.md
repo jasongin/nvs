@@ -1,8 +1,7 @@
 # USE Command - Node Version Switcher
 ```
 nvs <version>
-nvs use <version>
-nvs use
+nvs use [version]
 ```
 Updates the `PATH` of the calling shell to include the specified node version (which must be already installed). If no version is specified, then any NVS-installed node directories are removed from the `PATH`.
 
