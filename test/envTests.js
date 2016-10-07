@@ -5,7 +5,7 @@ var rewire = require('rewire');
 var testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
 global.settings = {
     home: testHome,
-    feeds: {
+    remotes: {
         'test': 'http://example.com/test',
     },
 };
@@ -44,7 +44,7 @@ test('Get current version from PATH', t => {
 
     var v = nvsEnv.getCurrentVersion();
     t.truthy(v);
-    t.is(v.feedName, 'test');
+    t.is(v.remoteName, 'test');
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.arch, 'x64');
 
@@ -55,7 +55,7 @@ test('Get current version from PATH', t => {
 
     var v = nvsEnv.getCurrentVersion();
     t.truthy(v);
-    t.is(v.feedName, 'test');
+    t.is(v.remoteName, 'test');
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.arch, 'x64');
 });
@@ -70,7 +70,7 @@ test('Get linked version', t => {
 
     var v = nvsEnv.getLinkedVersion();
     t.truthy(v);
-    t.is(v.feedName, 'test');
+    t.is(v.remoteName, 'test');
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.arch, 'x64');
 });
@@ -90,7 +90,7 @@ test('Get linked version from PATH', t => {
 
     var v = nvsEnv.getCurrentVersion();
     t.truthy(v);
-    t.is(v.feedName, 'test');
+    t.is(v.remoteName, 'test');
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.arch, 'x64');
 });
@@ -98,7 +98,7 @@ test('Get linked version from PATH', t => {
 test('Link - specified version', t => {
     mockFs.statMap[testHome + 'test/5.6.7/x64' + bin + '/' + exe] = {};
 
-    nvsEnv.link({ feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+    nvsEnv.link({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
 
     if (nvsEnv.isWindows) {
         t.is(mockFs.linkMap[linkPath],
@@ -134,7 +134,7 @@ test('Unlink - specified version', t => {
         mockFs.linkMap[linkPath] = 'test/5.6.7/x64';
     }
 
-    nvsEnv.unlink({ feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+    nvsEnv.unlink({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
 
     t.is(mockFs.unlinkPaths.length, 1);
     t.is(mockFs.unlinkPaths[0], linkPath);
@@ -150,7 +150,7 @@ test('Unlink - different version', t => {
         mockFs.linkMap[linkPath] = 'test/5.6.7/x64';
     }
 
-    nvsEnv.unlink({ feedName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
+    nvsEnv.unlink({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
 
     t.is(mockFs.unlinkPaths.length, 0);
     t.truthy(mockFs.linkMap[linkPath]);
@@ -183,7 +183,7 @@ test('Use - no overwrite', t => {
     setPath([
         '/bin',
     ]);
-    nvsEnv.use({ feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' }, true);
+    nvsEnv.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' }, true);
     var newPath = getPath();
     t.is(newPath.length, 2);
     t.is(newPath[0], binDir);
@@ -198,7 +198,7 @@ test('Use - overwrite', t => {
         binDir,
         '/bin',
     ]);
-    nvsEnv.use({ feedName: 'test2', semanticVersion: '5.6.7', arch: 'x64' }, true);
+    nvsEnv.use({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' }, true);
     var newPath = getPath();
     t.is(newPath.length, 2);
     t.is(newPath[0], binDir.replace('test/5', 'test2/5'));
@@ -221,7 +221,7 @@ test('Use - none', t => {
 
 test('Use - not installed', t => {
     t.throws(() => {
-        nvsEnv.use({ feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' }, true);
+        nvsEnv.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' }, true);
     }, error => {
         return error.code === 'ENOENT';
     });
@@ -244,7 +244,7 @@ test('Get bin path - specified version', t => {
     mockFs.statMap[binPath] = {};
 
     var result = nvsEnv.getVersionBinary(
-        { feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+        { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
     t.is(result, binPath);
 });
 
@@ -253,7 +253,7 @@ test('Get bin path - not installed', t => {
     mockFs.statMap[binPath] = {};
 
     var result = nvsEnv.getVersionBinary(
-        { feedName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
+        { remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
     t.is(result, null);
 });
 
@@ -265,7 +265,7 @@ test('Run', t => {
     mockCp.errors.push(null);
 
     nvsEnv.run(
-        { feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
+        { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
         ['test.js', '1', '2']);
     var exitCode = process.exitCode;
     process.exitCode = 0;
@@ -279,7 +279,7 @@ test('Run', t => {
 test('Run - not installed', t => {
     t.throws(() => {
         nvsEnv.run(
-            { feedName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
+            { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
             ['test.js', '1', '2']);
     }, error => {
         return error.code === 'ENOENT';
