@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var mockFs = {
     dirMap: {},
     linkMap: {},
@@ -6,7 +8,9 @@ var mockFs = {
 
     reset: function () {
         this.dirMap = {};
+        this.linkMap = {};
         this.statMap = {};
+        this.unlinkPaths = [];
     },
 
     readdirSync: function (path) {
@@ -25,6 +29,10 @@ var mockFs = {
         throw e;
     },
 
+    accessSync: function (path, mode) {
+        this.statSync(path);
+    },
+
     statSync: function (path) {
         var result = this.statMap[path];
         if (result) return result;
@@ -33,14 +41,18 @@ var mockFs = {
         throw e;
     },
 
-    symlinkSync: function(path, target) {
-        linkMap[path] = target;
+    symlinkSync: function(target, path) {
+        this.linkMap[path] = target;
+        this.statMap[path] = {};
     },
 
     unlinkSync: function(path) {
-        delete linkMap[path];
+        this.statSync(path);
+        delete this.linkMap[path];
         this.unlinkPaths.push(path);
     },
+
+    constants: fs.constants,
 };
 
 module.exports = mockFs;
