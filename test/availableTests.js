@@ -1,4 +1,4 @@
-var test = require('ava').test;
+const test = require('ava').test;
 
 test.todo('List available - single remote');
 test.todo('List available - all remotes');

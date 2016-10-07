@@ -1,6 +1,6 @@
-var fs = require('fs');
+const fs = require('fs');
 
-var mockFs = {
+const mockFs = {
     dirMap: {},
     linkMap: {},
     statMap: {},
@@ -14,17 +14,17 @@ var mockFs = {
     },
 
     readdirSync: function (path) {
-        var result = this.dirMap[path];
+        let result = this.dirMap[path];
         if (result) return result;
-        var e = new Error('Path not found: ' + path);
+        let e = new Error('Path not found: ' + path);
         e.code = 'ENOENT';
         throw e;
     },
 
     readlinkSync: function (path) {
-        var result = this.linkMap[path];
+        let result = this.linkMap[path];
         if (result) return result;
-        var e = new Error('Path not found: ' + path);
+        let e = new Error('Path not found: ' + path);
         e.code = 'ENOENT';
         throw e;
     },
@@ -34,9 +34,9 @@ var mockFs = {
     },
 
     statSync: function (path) {
-        var result = this.statMap[path];
+        let result = this.statMap[path];
         if (result) return result;
-        var e = new Error('Path not found: ' + path);
+        let e = new Error('Path not found: ' + path);
         e.code = 'ENOENT';
         throw e;
     },

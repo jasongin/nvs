@@ -1,4 +1,4 @@
-var test = require('ava').test;
+const test = require('ava').test;
 
 test.todo('List installed - all');
 test.todo('List installed - filter');

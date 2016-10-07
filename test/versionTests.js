@@ -1,7 +1,7 @@
-var test = require('ava').test;
-var rewire = require('rewire');
+const test = require('ava').test;
 
 global.settings = {
+    aliases: {},
     remotes: {
         'default': 'test',
         'test': 'http://example.com/test',
@@ -9,7 +9,7 @@ global.settings = {
     },
 };
 
-var nvsVersion = rewire('../lib/version');
+const nvsVersion = require('../lib/version');
 
 test('Parse semantic version', t => {
     let v = nvsVersion.parse('5.6.7');
