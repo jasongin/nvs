@@ -21,8 +21,8 @@ const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
 const mockFs = require('./mockFs');
 nvsEnv.__set__('fs', mockFs);
 
-const mockCp = require('./mockCp');
-nvsEnv.__set__('childProcess', mockCp);
+const mockChildProc = require('./mockChildProc');
+nvsEnv.__set__('childProcess', mockChildProc);
 
 function mockFile(filePath) {
     mockFs.statMap[filePath.replace(/\//g, path.sep)] = {};
@@ -40,7 +40,7 @@ function getPath() {
 
 test.beforeEach(t => {
     mockFs.reset();
-    mockCp.reset();
+    mockChildProc.reset();
 });
 
 test('Get current version from PATH', t => {
@@ -268,8 +268,7 @@ test('Run', t => {
     let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
     mockFile(binPath);
 
-    mockCp.exitCodes.push(99);
-    mockCp.errors.push(null);
+    mockChildProc.mockActions.push({ status: 99, error: null });
 
     nvsEnv.run(
         { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
@@ -277,9 +276,9 @@ test('Run', t => {
     let exitCode = process.exitCode;
     process.exitCode = 0;
 
-    t.is(mockCp.spawns.length, 1);
-    t.is(mockCp.spawns[0].exe, binPath.replace(/\//g, path.sep));
-    t.deepEqual(mockCp.spawns[0].args, ['test.js', '1', '2']);
+    t.is(mockChildProc.spawns.length, 1);
+    t.is(mockChildProc.spawns[0].exe, binPath.replace(/\//g, path.sep));
+    t.deepEqual(mockChildProc.spawns[0].args, ['test.js', '1', '2']);
     t.is(exitCode, 99);
 });
 
