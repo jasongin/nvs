@@ -175,11 +175,9 @@ test('Uninstall - non-current', t => {
     if (nvsEnv.isWindows) {
         mockFs.linkMap[linkPath] =
             path.join(testHome, 'test1\\5.6.7\\x64');
+        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [exe]);
     } else {
         mockFs.linkMap[linkPath] = 'test1/5.6.7/x64';
-    }
-
-    if (!nvsEnv.isWindows) {
         mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
         mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
     }
@@ -206,11 +204,9 @@ test('Uninstall - current', t => {
     if (nvsEnv.isWindows) {
         mockFs.linkMap[linkPath] =
             path.join(testHome, 'test1\\5.6.7\\x86');
+        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [exe]);
     } else {
         mockFs.linkMap[linkPath] = 'test1/5.6.7/x86';
-    }
-
-    if (!nvsEnv.isWindows) {
         mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
         mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
     }
