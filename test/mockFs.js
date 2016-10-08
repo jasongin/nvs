@@ -9,6 +9,7 @@ const mockFs = {
     unlinkPaths: [],
 
     reset() {
+        this.trace = false;
         this.dirMap = {};
         this.linkMap = {};
         this.statMap = {};
@@ -64,6 +65,7 @@ const mockFs = {
         if (this.trace) console.log('unlinkSync(' + path + ')');
         this.statSync(path);
         delete this.linkMap[path];
+        delete this.statMap[path];
         this.unlinkPaths.push(path);
     },
 
@@ -93,6 +95,22 @@ const mockFs = {
 
     renameSync(oldPath, newPath) {
         if (this.trace) console.log('renameSync(' + oldPath, newPath + ')');
+
+        if (this.dirMap[oldPath]) {
+            // Support for renaming directories is limited to a single level.
+            // Subdirectory paths currently do not get updated.
+            this.dirMap[newPath] = this.dirMap[oldPath];
+            delete this.dirMap[oldPath];
+            this.dirMap[newPath].forEach(childName => {
+                let oldChildPath = require('path').join(oldPath, childName);
+                let newChildPath = require('path').join(newPath, childName);
+                if (this.statMap[oldChildPath]) {
+                    this.statMap[newChildPath] = this.statMap[oldChildPath];
+                    delete this.statMap[oldChildPath];
+                }
+            });
+        }
+
         if (!this.statMap[oldPath]) {
             if (this.trace) console.log('  => not found in stat map: ' + JSON.stringify(this.statMap));
             let e = new Error('Path not found: ' + path);

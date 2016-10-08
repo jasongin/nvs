@@ -9,6 +9,7 @@ global.settings = {
     remotes: {
         'test': 'http://example.com/test',
     },
+    skipPostScript: true,
 };
 
 const linkPath = testHome + 'current';
@@ -30,6 +31,7 @@ function mockFile(filePath) {
 
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
+        .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
         .join(nvsEnv.pathSeparator).replace(/\//g, path.sep);
 }
 
@@ -190,7 +192,7 @@ test('Use - no overwrite', t => {
     setPath([
         '/bin',
     ]);
-    nvsEnv.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' }, true);
+    nvsEnv.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
     let newPath = getPath();
     t.is(newPath.length, 2);
     t.is(newPath[0], binDir);
@@ -205,7 +207,7 @@ test('Use - overwrite', t => {
         binDir,
         '/bin',
     ]);
-    nvsEnv.use({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' }, true);
+    nvsEnv.use({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
     let newPath = getPath();
     t.is(newPath.length, 2);
     t.is(newPath[0], binDir.replace('test/5', 'test2/5'));
@@ -219,7 +221,7 @@ test('Use - none', t => {
         binDir.replace('test', 'test2'),
         '/bin',
     ]);
-    nvsEnv.use(null, true);
+    nvsEnv.use(null);
     let newPath = getPath();
     t.is(newPath.length, 2);
     t.is(newPath[0], binDir.replace('test', 'test2'));
@@ -228,7 +230,7 @@ test('Use - none', t => {
 
 test('Use - not installed', t => {
     t.throws(() => {
-        nvsEnv.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' }, true);
+        nvsEnv.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
     }, error => {
         return error.code === 'ENOENT';
     });

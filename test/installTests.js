@@ -11,6 +11,7 @@ global.settings = {
         'test2': 'http://example.com/test2',
     },
     quiet: true,
+    skipPostScript: true,
 };
 
 const linkPath = testHome + 'current';
@@ -32,6 +33,8 @@ nvsInstall.__set__('https', mockHttp);
 
 const bin = (nvsEnv.isWindows ? '' : 'bin');
 const exe = (nvsEnv.isWindows ? 'node.exe' : 'node');
+const plat = (nvsEnv.isWindows ? 'win' : process.platform);
+const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
 
 function mockFile(filePath) {
     mockFs.statMap[filePath.replace(/\//g, path.sep)] = {
@@ -48,7 +51,13 @@ function mockDir(dirPath, childNames) {
 
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
+        .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
         .join(nvsEnv.pathSeparator).replace(/\//g, path.sep);
+}
+
+function getPath() {
+    return process.env['PATH']
+        .replace(sepRegex, '/').split(nvsEnv.pathSeparator);
 }
 
 test.beforeEach(t => {
@@ -69,7 +78,7 @@ test.beforeEach(t => {
     mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-win-x64.zip'] = 'test';
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' +
-        process.platform + '-x86.tar.gz'] = 'test';
+        plat + '-x64.tar.gz'] = 'test';
 });
 
 test('List installed - all', t => {
@@ -92,7 +101,7 @@ test('List installed - filter', t => {
 
 test('List installed - marks', t => {
     setPath([
-        testHome + 'test1/5.6.7/x64' + bin + '/',
+        [testHome, 'test1/5.6.7/x64', bin],
         '/bin',
     ]);
     mockFs.statMap[linkPath] = {};
@@ -116,8 +125,19 @@ test('Install - download binary', t => {
     let version = nvsVersion.parse('test1/7.8.9/x64');
 
     mockChildProc.mockActions.push({ cb: () => {
-        mockDir(path.join(testHome, 'test1', '7.8.9', 'x64', 'node-v7.8.9-win-x64'), [exe]);
-        mockFile(path.join(testHome, 'test1', '7.8.9', 'x64', 'node-v7.8.9-win-x64', exe));
+        if (nvsEnv.isWindows) {
+            mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+                'node-v7.8.9-' + plat + '-x64'), [exe]);
+            mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
+                'node-v7.8.9-' + plat + '-x64', exe));
+        } else {
+            mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+                'node-v7.8.9-' + plat + '-x64'), [bin]);
+            mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+                'node-v7.8.9-' + plat + '-x64', bin), [exe]);
+            mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
+                'node-v7.8.9-' + plat + '-x64', bin, exe));
+        }
     }});
 
     return nvsInstall.installAsync(version).then(message => {
@@ -145,5 +165,73 @@ test('Install - already installed', t => {
     });
 });
 
-test.todo('Uninstall');
-test.todo('Uninstall - not installed');
+test('Uninstall - non-current', t => {
+    setPath([
+        [testHome, 'test1/5.6.7/x64', bin],
+        '/bin',
+    ]);
+    mockFs.statMap[linkPath] = {};
+
+    if (nvsEnv.isWindows) {
+        mockFs.linkMap[linkPath] =
+            path.join(testHome, 'test1\\5.6.7\\x64');
+    } else {
+        mockFs.linkMap[linkPath] = 'test1/5.6.7/x64';
+    }
+
+    if (!nvsEnv.isWindows) {
+        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
+        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
+    }
+
+    let version = nvsVersion.parse('test1/5.6.7/x86');
+    nvsInstall.uninstall(version);
+    t.falsy(mockFs.statMap[path.join(testHome, 'test1', '5.6.7', 'x86', bin, exe)]);
+    t.falsy(mockFs.dirMap[path.join(testHome, 'test1', '5.6.7', 'x86')]);
+    t.truthy(mockFs.dirMap[path.join(testHome, 'test1', '5.6.7')]);
+    t.truthy(mockFs.dirMap[path.join(testHome, 'test1')]);
+
+    let newPath = getPath();
+    t.is(newPath.length, 2);
+    t.truthy(mockFs.linkMap[linkPath]);
+});
+
+test('Uninstall - current', t => {
+    setPath([
+        [testHome, 'test1/5.6.7/x86', bin],
+        '/bin',
+    ]);
+    mockFs.statMap[linkPath] = {};
+
+    if (nvsEnv.isWindows) {
+        mockFs.linkMap[linkPath] =
+            path.join(testHome, 'test1\\5.6.7\\x86');
+    } else {
+        mockFs.linkMap[linkPath] = 'test1/5.6.7/x86';
+    }
+
+    if (!nvsEnv.isWindows) {
+        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
+        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
+    }
+
+    let version = nvsVersion.parse('test1/5.6.7/x86');
+    nvsInstall.uninstall(version);
+    t.falsy(mockFs.statMap[path.join(testHome, 'test1', '5.6.7', 'x86', bin, exe)]);
+    t.falsy(mockFs.dirMap[path.join(testHome, 'test1', '5.6.7', 'x86')]);
+    t.truthy(mockFs.dirMap[path.join(testHome, 'test1', '5.6.7')]);
+    t.truthy(mockFs.dirMap[path.join(testHome, 'test1')]);
+
+    let newPath = getPath();
+    t.is(newPath.length, 1);
+    t.is(newPath[0], '/bin');
+
+    t.true(mockFs.unlinkPaths.indexOf(linkPath) >= 0);
+    t.falsy(mockFs.linkMap[linkPath]);
+});
+
+test('Uninstall - not installed', t => {
+    let version = nvsVersion.parse('test1/9.9.9/x86');
+    nvsInstall.uninstall(version);
+    t.truthy(mockFs.dirMap[path.join(testHome, 'test1')]);
+});
