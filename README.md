@@ -10,12 +10,17 @@ Also, NVS uniquely supports multiple configurable remotes for node downloads, ra
 This tool is obviously inspired by other node version manager tools, especially [**nvm**](https://github.com/creationix/nvm), from which it borrows a lot of ideas and some command-line syntax.
 
 ## Installation
+NVS currently works on any platform for which Node.js binaries are available. The ability to build and install Node.js from source may be added later.
 
 ### Windows
 1. Clone this repo.
 2. Add the repo root directory to your `PATH`.
 
-### Mac, Linux, or other Unix
+Running the `nvs` command from Windows then invokes either the `nvs.cmd` or `nvs.ps1` script, depending on whether the shell is Command Prompt or PowerShell.
+
+NVS can also work in Unbutu Bash on Windows 10 using the Linux installation instructions below.
+
+### Mac, Linux
 1. Clone this repo.
 2. Source the `nvs.sh` script from your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file:
 ```sh
