@@ -14,7 +14,7 @@ global.settings = {
     skipPostScript: true,
 };
 
-const linkPath = testHome + 'current';
+const linkPath = testHome + 'default';
 
 const mockFs = require('./mockFs');
 const mockChildProc = require('./mockChildProc');

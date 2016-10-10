@@ -9,4 +9,4 @@ nvs list-installed
 Lists installed node versions.
 
 The version currently in the path (if any) is marked with a `>`.
-The version currently linked (if any) is marked with a `#`.
+The default (linked) version (if any) is marked with a `#`.

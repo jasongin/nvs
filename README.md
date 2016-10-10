@@ -5,7 +5,7 @@ NVS is a cross-platform tool for switching between different versions and forks 
 ## Why yet another version manager tool?
 None of the existing node version manager tools support both Windows and non-Windows platforms. The obvious way to build a cross-platform tool for the node ecosystem is to write the tool itself in node JavaScript. While it may seem to be a "chicken-and-egg" problem for a node-downloader tool to itself require node, that's actually not such a big challenge, and once that is solved then a version manager tool can benefit tremendously from being coded in a language that is both cross-platform and familiar to everyone using it.
 
-Also, NVS uniquely supports multiple configurable remotes for node downloads, rather than getting node versions only from a single source (`http://nodejs.org/dist/`). That allows for not only switching versions but switching between builds from other forks of node, potentially using other JavaScript engines.
+Also, NVS uniquely supports multiple configurable remotes for node downloads, rather than getting node versions only from a single source (`https://nodejs.org/dist/`). That allows for not only switching versions but switching between builds from other forks of node, potentially using other JavaScript engines.
 
 This tool is obviously inspired by other node version manager tools, especially [**nvm**](https://github.com/creationix/nvm), from which it borrows a lot of ideas and some command-line syntax.
 
@@ -42,8 +42,8 @@ Command | Description
 `nvs which [version]`         | Show the path to a node version
 `nvs ls`                      | List installed node versions
 `nvs ls-remote [remote]`      | List node versions available to download
-`nvs link [version]`          | Create a "current" dir symlink to a version
-`nvs unlink [version]`        | Remove a "current" dir symlink
+`nvs link [version]`          | Create a "default" dir symlink to a version
+`nvs unlink [version]`        | Remove a "default" dir symlink
 `nvs alias [name] [value]`    | Set or recall aliases for versions
 `nvs remote [name] [value]`   | Set or recall download base URIs
 
@@ -93,9 +93,9 @@ NVS downloads node builds under the directory specified by the `NVS_HOME` enviro
 When you `nvs use` a version, the `PATH` of the current shell is updated to include that version's `bin` directory.
 
 ## Symbolic links
-The `nvs link` command creates a symbolic directory link at `$NVS_HOME/current` that points to the specified version (or the current version from `PATH`). This can be useful when there is a need to configure a fixed path elsewhere. A new shell that sources the `nvs.sh` script also sets `PATH` to include the linked version, if a link is present.
+The `nvs link` command creates a symbolic directory link at `$NVS_HOME/default` that points to the specified version (or the current version from `PATH` at the time of the command). This can be useful when there is a need to configure a fixed path elsewhere. A new shell that sources the `nvs.sh` script also sets `PATH` to include the default version, if a link is present.
 
-The `nvs ls` command lists all installed versions, marks the version currently in the path with a `>`, and marks the version currently linked with a `#`. These may be the same or different. For example:
+The `nvs ls` command lists all installed versions, marks the version currently in the path with a `>`, and marks the default (linked) version, if any, with a `#`. These may be the same or different. For example:
 ```
   node/4.5.0/x64
  #node/4.6.0/x64

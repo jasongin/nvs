@@ -66,6 +66,6 @@ nvs() {
 }
 
 # If some version is linked, begin by using that version.
-if [ -d "${NVS_HOME}/current" ]; then
-    export PATH="${NVS_HOME}/current/bin:${PATH}"
+if [ -d "${NVS_HOME}/default" ]; then
+    export PATH="${NVS_HOME}/default/bin:${PATH}"
 fi

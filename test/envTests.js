@@ -12,7 +12,7 @@ global.settings = {
     skipPostScript: true,
 };
 
-const linkPath = testHome + 'current';
+const linkPath = testHome + 'default';
 
 const nvsEnv = rewire('../lib/env');
 const bin = (nvsEnv.isWindows ? '' : '/bin');
