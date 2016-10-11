@@ -1,6 +1,7 @@
 # REMOTE Command - Node Version Switcher
 ```
-nvs remote [name]
+nvs remote
+nvs remote <name>
 nvs remote <name> <uri>
 nvs remote -d <name>
 ```

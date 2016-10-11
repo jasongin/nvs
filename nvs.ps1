@@ -1,9 +1,11 @@
 # NVS (Node Version Switcher) PowerShell script
 # Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
 
+$scriptDir = Split-Path $MyInvocation.MyCommand.Path
+
 # The NVS_HOME path may be overridden in the environment.
 if (-not $env:NVS_HOME) {
-    $env:NVS_HOME = Join-Path $env:APPDATA "nvs"
+    $env:NVS_HOME = $scriptDir
 }
 
 # Generate 31 bits of randomness, to avoid clashing with concurrent executions.
@@ -39,7 +41,7 @@ if (-not (Test-Path $bootstrapNodePath)) {
 }
 
 # Forward the args to the main JavaScript file.
-$mainScript = Join-Path (Split-Path $MyInvocation.MyCommand.Path) "lib\main.js"
+$mainScript = Join-Path $scriptDir "lib\main.js"
 . "$bootstrapNodePath" "$mainScript" @args
 $exitCode = $LastExitCode
 

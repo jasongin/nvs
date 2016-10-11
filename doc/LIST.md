@@ -1,12 +1,9 @@
-# LIST-INSTALLED Command - Node Version Switcher
+# LIST Command - Node Version Switcher
 ```
 nvs ls
-nvs lsi
 nvs list
-nvs ls-installed
-nvs list-installed
 ```
-Lists installed node versions.
+Lists local node versions that are immediately available to use.
 
 The version currently in the path (if any) is marked with a `>`.
 The default (linked) version (if any) is marked with a `#`.

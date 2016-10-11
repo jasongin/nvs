@@ -3,7 +3,7 @@
 @ECHO OFF
 
 :: The NVS_HOME path may be overridden in the environment.
-IF "%NVS_HOME%"=="" SET NVS_HOME=%APPDATA%\nvs
+IF "%NVS_HOME%"=="" SET NVS_HOME=%~dp0
 
 :: Generate 30 bits of randomness, to avoid clashing with concurrent executions.
 SET /A NVS_POSTSCRIPT=%RANDOM% * 32768 + %RANDOM%

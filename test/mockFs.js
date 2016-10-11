@@ -45,6 +45,7 @@ const mockFs = {
         if (this.trace) console.log('statSync(' + path + ')');
         let result = this.statMap[path];
         if (result) return result;
+        else if (this.linkMap[path])  return { isSymbolicLink() { return true; } }
         if (this.trace) console.log('  => not found in stat map: ' + JSON.stringify(this.statMap));
         let e = new Error('Path not found: ' + path);
         e.code = 'ENOENT';
@@ -58,7 +59,7 @@ const mockFs = {
     symlinkSync(target, path) {
         if (this.trace) console.log('symlinkSync(' + target + ', ' + path + ')');
         this.linkMap[path] = target;
-        this.statMap[path] = {};
+        this.statMap[path] = { isDirectory() { return false; }, isSymbolicLink() { return true; } };
     },
 
     unlinkSync(path) {

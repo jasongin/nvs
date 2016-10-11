@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
 nvs() {
     # The NVS_HOME path may be overridden in the environment.
     if [ -z "${NVS_HOME-}" ]; then
-        export NVS_HOME="${HOME}/.nvs"
+        export NVS_HOME="${SCRIPT_DIR}"
     fi
 
     # Generate 32 bits of randomness, to avoid clashing with concurrent executions.
@@ -65,7 +65,16 @@ nvs() {
     return $EXIT_CODE
 }
 
+nvsudo() {
+    sudo "PATH=$PATH" "${SCRIPT_DIR}/nvs" $*
+}
+
 # If some version is linked, begin by using that version.
 if [ -d "${NVS_HOME}/default" ]; then
     export PATH="${NVS_HOME}/default/bin:${PATH}"
+fi
+
+# If sourced with parameters, invoke the function now with those parameters.
+if [ -n "$*" -a -z "${NVS_EXECUTE}" ]; then
+    nvs $*
 fi

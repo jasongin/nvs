@@ -1,6 +1,7 @@
 # ALIAS Command - Node Version Switcher
 ```
-nvs alias [name]
+nvs alias
+nvs alias <name>
 nvs alias <name> <version>
 nvs alias -d <name>
 ```

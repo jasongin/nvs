@@ -2,4 +2,4 @@
 ```
 nvs which [version]
 ```
-Shows the path to a specified installed node version, or the current version if a version is not specified.
+Shows the path to a specified local node version, or the current version in the PATH if a version is not specified.
