@@ -66,7 +66,12 @@ nvs() {
 }
 
 nvsudo() {
-    sudo "PATH=$PATH" "${SCRIPT_DIR}/nvs" $*
+    # Forward the current version path to the sudo environment.
+    local NVS_CURRENT=`nvs which`
+    if [ -n "${NVS_CURRENT}" ]; then
+        NVS_CURRENT=`dirname "${NVS_CURRENT}"`
+    fi
+    sudo "NVS_CURRENT=${NVS_CURRENT}" "${SCRIPT_DIR}/nvs" $*
 }
 
 # If some version is linked, begin by using that version.
