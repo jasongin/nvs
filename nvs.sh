@@ -18,31 +18,30 @@ nvs() {
     # Generate 32 bits of randomness, to avoid clashing with concurrent executions.
     export NVS_POSTSCRIPT="${NVS_HOME}/nvs_tmp_$(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ").sh"
 
-    local BOOTSTRAP_NODE_PATH="${NVS_HOME}/nvs_node/node"
+    local BOOTSTRAP_NODE_PATH="${NVS_HOME}/cache/node"
     if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
         # Download a node binary to use to bootstrap the NVS script.
 
-        if [ ! -d "${NVS_HOME}/nvs_node" ]; then
-            command mkdir -p "${NVS_HOME}/nvs_node"
+        if [ ! -d "${NVS_HOME}/cache" ]; then
+            command mkdir -p "${NVS_HOME}/cache"
         fi
 
-        local BOOTSTRAP_NODE_VERSION="v6.7.0"
+        local BOOTSTRAP_NODE_VERSION="v6.8.1"
 
         local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
         local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
 
         local BOOTSTRAP_NODE_FULLNAME="node-${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
         local BOOTSTRAP_NODE_URI="https://nodejs.org/dist/${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
-        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
+        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
 
         echo "Downloading bootstrap node binary..."
         echo "  ${BOOTSTRAP_NODE_URI} -> ${BOOTSTRAP_NODE_ARCHIVE}"
         curl -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
 
-        tar -zxvf "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/nvs_node" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
-        mv "${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/nvs_node/node"
-        rm -r "${NVS_HOME}/nvs_node/${BOOTSTRAP_NODE_FULLNAME}"
-        rm "${BOOTSTRAP_NODE_ARCHIVE}"
+        tar -zxvf "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
+        mv "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/cache/node"
+        rm -r "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}"
 
         if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
             echo "Failed to download boostrap node binary."

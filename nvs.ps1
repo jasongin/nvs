@@ -12,7 +12,7 @@ if (-not $env:NVS_HOME) {
 $env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random) + ".ps1")
 
 # Check if the bootstrap node.exe is present.
-$bootstrapNodePath = Join-Path $env:NVS_HOME (Join-Path "nvs_node" "node.exe")
+$bootstrapNodePath = Join-Path $env:NVS_HOME (Join-Path "cache" "node.exe")
 if (-not (Test-Path $bootstrapNodePath)) {
     # Download a node.exe binary to use to bootstrap the NVS script.
 
@@ -20,21 +20,30 @@ if (-not (Test-Path $bootstrapNodePath)) {
         New-Item -ItemType Directory -Force -Path (Split-Path $bootstrapNodePath) > $null
     }
 
-    $bootstrapNodeVersion = "v6.7.0"
+    $bootstrapNodeVersion = "v6.8.1"
     $bootstrapNodeArch = "x86"
     if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64") {
         $bootstrapNodeArch = "x64"
     }
 
-    $bootstrapNodeUri = "https://nodejs.org/dist/$bootstrapNodeVersion/win-$bootstrapNodeArch/node.exe"
-    Write-Output "Downloading boostrap node.exe..."
-    Write-Output "  $bootstrapNodeUri -> $bootstrapNodePath"
-    powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodePath' "
+    $bootstrapNodeArchive = "node-$bootstrapNodeVersion-win-$bootstrapNodeArch.7z"
+    $bootstrapNodeUri = "https://nodejs.org/dist/$bootstrapNodeVersion/$bootstrapNodeArchive"
+    $bootstrapNodeArchivePath = Join-Path $env:NVS_HOME (Join-Path "cache" $bootstrapNodeArchive)
+
+    Write-Output "Downloading boostrap node binary..."
+    Write-Output "  $bootstrapNodeUri -> $bootstrapNodeArchivePath"
+
+    # Download the archive using PowerShell Invoke-WebRequest.
+    powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodeArchivePath' "
+
+    # Extract node.exe from the archive using 7zr.exe.
+    . "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" "$bootstrapNodeArchivePath" "node-$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
+
     Write-Output "Done."
     Write-Output ""
 
     if (-not (Test-Path $bootstrapNodePath)) {
-        Write-Error "Failed to download bootstrap node.exe."
+        Write-Error "Failed to download bootstrap node binary."
         $env:NVS_POSTSCRIPT = $null
         exit 1
     }
