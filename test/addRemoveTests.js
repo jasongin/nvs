@@ -5,6 +5,7 @@ const rewire = require('rewire');
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
 global.settings = {
     home: testHome,
+    cache: path.join(testHome, 'cache'),
     aliases: {},
     remotes: {
         'test1': 'http://example.com/test1',
@@ -25,6 +26,7 @@ const nvsVersion = require('../lib/version');
 const nvsUse = rewire('../lib/use');
 const nvsLink = rewire('../lib/link');
 const nvsAddRemove = rewire('../lib/addRemove');
+const nvsDownload = rewire('../lib/download');
 
 nvsUse.__set__('fs', mockFs);
 nvsLink.__set__('fs', mockFs);
@@ -32,10 +34,12 @@ nvsLink.__set__('nvsUse', nvsUse);
 nvsUse.__set__('nvsLink', nvsLink);
 nvsAddRemove.__set__('nvsUse', nvsUse);
 nvsAddRemove.__set__('nvsLink', nvsLink);
+nvsAddRemove.__set__('nvsDownload', nvsDownload);
 nvsAddRemove.__set__('fs', mockFs);
 nvsAddRemove.__set__('childProcess', mockChildProc);
-nvsAddRemove.__set__('http', mockHttp);
-nvsAddRemove.__set__('https', mockHttp);
+nvsDownload.__set__('http', mockHttp);
+nvsDownload.__set__('https', mockHttp);
+nvsDownload.__set__('fs', mockFs);
 
 let mockWindowsEnv = {
     getEnvironmentVariable() {
@@ -107,6 +111,9 @@ test.beforeEach(t => {
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-win-x64.zip'] = 'test';
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' +
         plat + '-x64.tar.gz'] = 'test';
+    mockHttp.resourceMap['http://example.com/test1/v7.8.9/SHASUMS256.txt'] =
+        '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 ' +
+        'node-v7.8.9-' + plat + '-x64.tar.gz';
 });
 
 test('List - all', t => {

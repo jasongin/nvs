@@ -23,6 +23,7 @@ const mockHttp = {
                         isFile() { return true; },
                         isDirectory() { return false; },
                     };
+                    stream.mockFs.dataMap[stream.filePath] = responseContent;
                     mockResponse.emit('finish');
                 });
                 return mockResponse;

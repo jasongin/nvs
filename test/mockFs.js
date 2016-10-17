@@ -1,4 +1,5 @@
 const fs = require('fs');
+const stream = require('stream');
 
 const mockFs = {
     trace: false,
@@ -6,6 +7,7 @@ const mockFs = {
     dirMap: {},
     linkMap: {},
     statMap: {},
+    dataMap: {},
     unlinkPaths: [],
 
     reset() {
@@ -13,6 +15,7 @@ const mockFs = {
         this.dirMap = {};
         this.linkMap = {};
         this.statMap = {};
+        this.dataMap = {};
         this.unlinkPaths = [];
     },
 
@@ -129,11 +132,42 @@ const mockFs = {
     },
 
     createWriteStream(filePath) {
+        if (this.trace) console.log('createWriteStream(' + filePath + ')');
+
         return {
             mockFs,
             filePath,
             end() {},
         };
+    },
+
+    createReadStream(filePath) {
+        if (this.trace) console.log('createReadStream(' + filePath + ')');
+
+        let data = this.dataMap[filePath];
+        if (data) {
+            var s = new stream.Readable();
+            s.push(data);
+            s.push(null);
+            return s;
+        }
+
+        let e = new Error('Mock file data not found: ' + filePath);
+        e.code = 'ENOENT';
+        throw e;
+    },
+
+    readFileSync(filePath) {
+        if (this.trace) console.log('readFileSync(' + filePath + ')');
+
+        let data = this.dataMap[filePath];
+        if (data) {
+            return data;
+        }
+
+        let e = new Error('Mock file data not found: ' + filePath);
+        e.code = 'ENOENT';
+        throw e;
     },
 
     constants: fs.constants,
