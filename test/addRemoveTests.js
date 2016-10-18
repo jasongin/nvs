@@ -119,9 +119,9 @@ test.beforeEach(t => {
         '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 ' +
         'node-v7.8.9-' + plat + '-x64.7z\n' +
         '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 ' +
-        'node-v7.8.9-' + plat + '-x64.tar.gz' +
+        'node-v7.8.9-' + plat + '-x64.tar.gz\n' +
         '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 ' +
-        'node-v7.8.9-' + plat + '-x64.tar.xz';
+        'node-v7.8.9-' + plat + '-x64.tar.xz\n';
 });
 
 test('List - all', t => {

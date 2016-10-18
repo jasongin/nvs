@@ -80,13 +80,21 @@ nvsudo() {
     sudo "NVS_CURRENT=${NVS_CURRENT}" "${NVS_ROOT}/nvs" $*
 }
 
-# Check if `tar` has xz support. For now just look for a minimum libarchive version.
+# Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
 if [ -z "${NVS_USE_XZ}" ]; then
     export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p")"
     if [ -n "${LIBARCHIVE_VER}" ]; then
         LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
         if [ $LIBARCHIVE_VER -ge 002008000 ]; then
             export NVS_USE_XZ=1
+        fi
+    else
+        LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p")"
+        if [ -n "${LIBARCHIVE_VER}" ]; then
+            LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
+            if [ $LIBARCHIVE_VER -ge 001022000 ]; then
+                export NVS_USE_XZ=1
+            fi
         fi
     fi
     export LIBARCHIVE_VER=
