@@ -16,5 +16,12 @@
 !/doc/
 !/tools/
 
+# Exclude most packages under node_modules because they are dev dependencies
+!/node_modules/
+/node_modules/*/
+
+# This one is actually a runtime dependency
+!/node_modules/progress/
+
 # Default version link
 /default

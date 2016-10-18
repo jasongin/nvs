@@ -27,6 +27,7 @@ const nvsUse = rewire('../lib/use');
 const nvsLink = rewire('../lib/link');
 const nvsAddRemove = rewire('../lib/addRemove');
 const nvsDownload = rewire('../lib/download');
+const nvsExtract = rewire('../lib/extract');
 
 nvsUse.__set__('fs', mockFs);
 nvsLink.__set__('fs', mockFs);
@@ -35,11 +36,12 @@ nvsUse.__set__('nvsLink', nvsLink);
 nvsAddRemove.__set__('nvsUse', nvsUse);
 nvsAddRemove.__set__('nvsLink', nvsLink);
 nvsAddRemove.__set__('nvsDownload', nvsDownload);
+nvsAddRemove.__set__('nvsExtract', nvsExtract);
 nvsAddRemove.__set__('fs', mockFs);
-nvsAddRemove.__set__('childProcess', mockChildProc);
 nvsDownload.__set__('http', mockHttp);
 nvsDownload.__set__('https', mockHttp);
 nvsDownload.__set__('fs', mockFs);
+nvsExtract.__set__('childProcess', mockChildProc);
 
 let mockWindowsEnv = {
     getEnvironmentVariable() {

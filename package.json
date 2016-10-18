@@ -10,8 +10,8 @@
   "author": "",
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/jasongin/nvs"
+    "type": "git",
+    "url": "https://github.com/jasongin/nvs"
   },
   "devDependencies": {
     "ava": "^0.16.0",
@@ -35,11 +35,32 @@
       "promise"
     ],
     "rules": {
-      "indent": ["error", 4, { "SwitchCase": 1 }],
-      "semi": ["error", "always"],
-      "space-before-function-paren": ["error", { "anonymous": "always", "named": "never" }],
-      "comma-dangle": ["error", "always-multiline"],
+      "indent": [
+        "error",
+        4,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "space-before-function-paren": [
+        "error",
+        {
+          "anonymous": "always",
+          "named": "never"
+        }
+      ],
+      "comma-dangle": [
+        "error",
+        "always-multiline"
+      ],
       "no-var": "error"
     }
+  },
+  "dependencies": {
+    "progress": "^1.1.8"
   }
 }

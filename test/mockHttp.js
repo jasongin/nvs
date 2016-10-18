@@ -17,6 +17,9 @@ const mockHttp = {
         let responseContent = this.resourceMap[uri];
         if (responseContent) {
             mockResponse.statusCode = 200;
+            mockResponse.headers = {
+                'content-length': '' + responseContent.length,
+            };
             mockResponse.pipe = stream => {
                 setImmediate(() => {
                     stream.mockFs.statMap[stream.filePath] = {
