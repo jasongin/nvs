@@ -7,12 +7,12 @@
 # This shell script merely bootstraps node.exe if necessary, then forwards
 # arguments to the main nvs.js script.
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
+export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
 
 nvs() {
     # The NVS_HOME path may be overridden in the environment.
-    if [ -z "${NVS_HOME-}" ]; then
-        export NVS_HOME="${SCRIPT_DIR}"
+    if [ -z "${NVS_HOME}" ]; then
+        export NVS_HOME="${NVS_ROOT}"
     fi
 
     # Generate 32 bits of randomness, to avoid clashing with concurrent executions.
@@ -31,15 +31,21 @@ nvs() {
         local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
         local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
 
+        local BOOTSTRAP_ARCHIVE_EXT=".tar.gz"
+        local TAR_FLAGS="-zxvf"
+        if [ "${NVS_USE_XZ}" -eq "1" ]; then
+            BOOTSTRAP_ARCHIVE_EXT=".tar.xz"
+            TAR_FLAGS="-Jxvf"
+        fi
+
         local BOOTSTRAP_NODE_FULLNAME="node-${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
-        local BOOTSTRAP_NODE_URI="https://nodejs.org/dist/${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
-        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}.tar.gz"
+        local BOOTSTRAP_NODE_URI="https://nodejs.org/dist/${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
+        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
 
         echo "Downloading bootstrap node binary..."
-        echo "  ${BOOTSTRAP_NODE_URI} -> ${BOOTSTRAP_NODE_ARCHIVE}"
         curl -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
 
-        tar -zxvf "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
+        tar $TAR_FLAGS "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
         mv "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/cache/node"
         rm -r "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}"
 
@@ -47,10 +53,11 @@ nvs() {
             echo "Failed to download boostrap node binary."
             return 1
         fi
+        echo ""
     fi
 
     # Forward args to the main JavaScript file.
-    command "${BOOTSTRAP_NODE_PATH}" "${SCRIPT_DIR}/lib/main.js" "$@"
+    command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
     local EXIT_CODE=$?
 
     # Call the post-invocation script if it is present, then delete it.
@@ -70,8 +77,20 @@ nvsudo() {
     if [ -n "${NVS_CURRENT}" ]; then
         NVS_CURRENT=`dirname "${NVS_CURRENT}"`
     fi
-    sudo "NVS_CURRENT=${NVS_CURRENT}" "${SCRIPT_DIR}/nvs" $*
+    sudo "NVS_CURRENT=${NVS_CURRENT}" "${NVS_ROOT}/nvs" $*
 }
+
+# Check if `tar` has xz support. For now just look for a minimum libarchive version.
+if [ -z "${NVS_USE_XZ}" ]; then
+    export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p")"
+    if [ -n "${LIBARCHIVE_VER}" ]; then
+        LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
+        if [ $LIBARCHIVE_VER -ge 002008000 ]; then
+            export NVS_USE_XZ=1
+        fi
+    fi
+    export LIBARCHIVE_VER=
+fi
 
 # If some version is linked, begin by using that version.
 if [ -d "${NVS_HOME}/default" ]; then

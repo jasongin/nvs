@@ -31,7 +31,6 @@ if (-not (Test-Path $bootstrapNodePath)) {
     $bootstrapNodeArchivePath = Join-Path $env:NVS_HOME (Join-Path "cache" $bootstrapNodeArchive)
 
     Write-Output "Downloading boostrap node binary..."
-    Write-Output "  $bootstrapNodeUri -> $bootstrapNodeArchivePath"
 
     # Download the archive using PowerShell Invoke-WebRequest.
     powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodeArchivePath' "
@@ -39,7 +38,6 @@ if (-not (Test-Path $bootstrapNodePath)) {
     # Extract node.exe from the archive using 7zr.exe.
     . "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" "$bootstrapNodeArchivePath" "node-$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
 
-    Write-Output "Done."
     Write-Output ""
 
     if (-not (Test-Path $bootstrapNodePath)) {
