@@ -51,6 +51,8 @@ const mockChildProc = {
         }
 
         let mockChild = new EventEmitter();
+        mockChild.stdout = new EventEmitter();
+        mockChild.stderr = new EventEmitter();
         setImmediate(() => {
             if (mockAction.error) {
                 mockChild.emit('error', mockAction.error);
