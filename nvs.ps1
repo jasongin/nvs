@@ -12,12 +12,21 @@ if (-not $env:NVS_HOME) {
 $env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random) + ".ps1")
 
 # Check if the bootstrap node.exe is present.
-$bootstrapNodePath = Join-Path $env:NVS_HOME (Join-Path "cache" "node.exe")
+$cacheDir = Join-Path $env:NVS_HOME "cache"
+$bootstrapNodePath = Join-Path $cacheDir "node.exe"
 if (-not (Test-Path $bootstrapNodePath)) {
     # Download a node.exe binary to use to bootstrap the NVS script.
 
-    if (-not (Test-Path (Split-Path $bootstrapNodePath))) {
-        New-Item -ItemType Directory -Force -Path (Split-Path $bootstrapNodePath) > $null
+    try {
+        if (-not (Test-Path $cacheDir)) {
+            New-Item -ItemType Directory -Force -Path $cacheDir -ErrorAction:Stop > $null
+        }
+        $testFile = Join-Path $cacheDir "test.txt"
+        New-Item -ItemType File -Force -Path $testFile -ErrorAction:Stop > $null
+        Remove-Item -Force -Path $testFile -ErrorAction:Stop > $null
+    } catch [UnauthorizedAccessException] {
+        Write-Error "No write access to $cacheDir`nTry running again as Administrator."
+        exit 1
     }
 
     $bootstrapNodeVersion = "v6.8.1"
@@ -36,7 +45,7 @@ if (-not (Test-Path $bootstrapNodePath)) {
     powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodeArchivePath' "
 
     # Extract node.exe from the archive using 7zr.exe.
-    . "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" "$bootstrapNodeArchivePath" "node-$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
+    . "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" -y "$bootstrapNodeArchivePath" "node-$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
 
     Write-Output ""
 

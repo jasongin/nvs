@@ -33,7 +33,7 @@ ECHO Downloading boostrap node binary...
 powershell.exe -Command " $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '%NVS_BOOTSTRAP_NODE_URI%' -OutFile '%NVS_BOOTSTRAP_NODE_ARCHIVE_PATH%' "
 
 :: Extract node.exe from the archive using 7zr.exe.
-"%NVS_HOME%\tools\7-Zip\7zr.exe" e "-o%NVS_HOME%\cache" "%NVS_BOOTSTRAP_NODE_ARCHIVE_PATH%" "node-%NVS_BOOTSTRAP_NODE_VERSION%-win-%NVS_BOOTSTRAP_NODE_ARCH%\node.exe" > nul
+"%NVS_HOME%\tools\7-Zip\7zr.exe" e "-o%NVS_HOME%\cache" -y "%NVS_BOOTSTRAP_NODE_ARCHIVE_PATH%" "node-%NVS_BOOTSTRAP_NODE_VERSION%-win-%NVS_BOOTSTRAP_NODE_ARCH%\node.exe" > nul
 
 ECHO.
 

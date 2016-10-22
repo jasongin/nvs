@@ -15,6 +15,7 @@
 !/test/
 !/doc/
 !/tools/
+!/setup/
 
 # Exclude most packages under node_modules because they are dev dependencies
 !/node_modules/

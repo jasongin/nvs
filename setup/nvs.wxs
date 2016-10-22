@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <?define ProductName = "NVS" ?>
+  <?define ProductDescription = "Node Version Switcher" ?>
+  <?define ProductAuthor = "jasongin@microsoft.com" ?>
+
+  <?define SourceDir="$(var.ProjectDir)..\" ?>
+
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Language="1033"
+           Version="$(var.ProductVersion)"
+           Manufacturer="$(var.ProductAuthor)"
+           UpgradeCode="33835604-c515-4917-a1cd-b9a399669366">
+
+    <Package Languages="1033"
+             InstallerVersion="200"
+             Compressed="yes"/>
+
+    <Property Id="ALLUSERS" Value="2"/>
+    <Property Id="MSIINSTALLPERUSER" Value="1"/>
+    <PropertyRef Id="WIX_ACCOUNT_ADMINISTRATORS" />
+    <PropertyRef Id="WIX_ACCOUNT_USERS" />
+
+    <Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
+      <![CDATA[Installed OR (VersionNT >= 601)]]>
+    </Condition>
+
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes"/>
+
+    <MajorUpgrade AllowSameVersionUpgrades="no"
+                  DowngradeErrorMessage="A newer version of [ProductName] is already installed."/>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR"/>
+
+    <Feature Id="NVS"
+             Level="1"
+             Title="Node Version Switcher"
+             Absent="disallow">
+
+      <ComponentRef Id="NvsDir"/>
+      <ComponentRef Id="NvsReadme"/>
+      <ComponentRef Id="NvsLicense"/>
+      <ComponentRef Id="NvsPackageJson"/>
+      <ComponentRef Id="NvsCmdScript"/>
+      <ComponentRef Id="NvsPSScript"/>
+      <ComponentRef Id="NvsDefaults"/>
+      <ComponentRef Id="SevenZipTool" />
+      <ComponentGroupRef Id="NvsLibFiles"/>
+      <ComponentGroupRef Id="NvsDocFiles"/>
+      <ComponentGroupRef Id="NMProgressFiles"/>
+      <ComponentRef Id="EnvironmentPathPerUser" />
+      <ComponentRef Id="EnvironmentPathPerMachine" />
+
+    </Feature>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="nvs">
+          <Directory Id="NodeModulesDir" Name="node_modules">
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <SetProperty Id="INSTALLDIR"
+      Action="SetPerUserInstallDir"
+      Sequence="first"
+      Before="CostInitialize"
+      Value="[LocalAppDataFolder]nvs">ALLUSERS &lt;&gt; 1 AND MSIINSTALLPERUSER = 1</SetProperty>
+    <SetProperty Id="INSTALLDIR"
+      Action="SetPerMachineInstallDir"
+      Sequence="first"
+      Before="CostInitialize"
+      Value="[CommonAppDataFolder]nvs">NOT (ALLUSERS &lt;&gt; 1 AND MSIINSTALLPERUSER = 1)</SetProperty>
+
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="NvsReadme">
+        <File Id="README.md" KeyPath="yes" Source="$(var.SourceDir)\README.md"/>
+      </Component>
+      <Component Id="NvsLicense">
+        <File Id="LICENSE.txt" KeyPath="yes" Source="$(var.SourceDir)\LICENSE.txt"/>
+      </Component>
+      <Component Id="NvsPackageJson">
+        <File Id="package.json" KeyPath="yes" Source="$(var.SourceDir)\package.json"/>
+      </Component>
+      <Component Id="NvsCmdScript">
+        <File Id="nvs.cmd" KeyPath="yes" Source="$(var.SourceDir)\nvs.cmd"/>
+      </Component>
+      <Component Id="NvsPSScript">
+        <File Id="nvs.ps1" KeyPath="yes" Source="$(var.SourceDir)\nvs.ps1"/>
+      </Component>
+      <Component Id="NvsDefaults">
+        <File Id="defaults.json" KeyPath="yes" Source="$(var.SourceDir)\defaults.json"/>
+      </Component>
+
+      <Directory Id="ToolsDir" Name="tools">
+        <Directory Id="SevenZipDir" Name="7-Zip">
+          <Component Id="SevenZipTool">
+            <File Id="SevenZipTool_exe" KeyPath="yes" Source="$(var.SourceDir)\tools\7-Zip\7zr.exe"/>
+            <File Id="SevenZipTool_readme" Source="$(var.SourceDir)\tools\7-Zip\readme.txt"/>
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Component Id="NvsDir" Guid="9db87eeb-d18a-4b34-9ea0-560df8ec5622">
+        <CreateFolder />
+
+        <!-- TODO: This doesn't work if INSTALLDIR was customized by the user. -->
+        <util:RemoveFolderEx On="uninstall" Property="INSTALLDIR" />
+      </Component>
+
+      <Component Id="EnvironmentPathPerUser" Guid="3809d1c9-37e2-4ea8-9558-7e71b7e12ad9">
+        <Condition>ALLUSERS &lt;&gt; 1 AND MSIINSTALLPERUSER = 1</Condition>
+        <CreateFolder />
+        <Environment Id="EnvironmentPathPerUser"
+                     Action="set"
+                     Name="PATH"
+                     Part="last"
+                     System="no"
+                     Value="[INSTALLDIR]"/>
+      </Component>
+      <Component Id="EnvironmentPathPerMachine" Guid="8a9874ca-144b-465a-98da-50a295beffd1">
+        <CreateFolder>
+          <Permission User="[WIX_ACCOUNT_USERS]"
+              GenericRead="yes"
+              GenericExecute="yes"
+              GenericWrite="no"/>
+          <Permission User="[WIX_ACCOUNT_ADMINISTRATORS]"
+              GenericAll="yes"/>
+        </CreateFolder>
+        <Condition>NOT (ALLUSERS &lt;&gt; 1 AND MSIINSTALLPERUSER = 1)</Condition>
+        <Environment Id="EnvironmentPathPerMachine"
+                     Action="set"
+                     Name="PATH"
+                     Part="last"
+                     System="yes"
+                     Value="[INSTALLDIR]"/>
+      </Component>
+    </DirectoryRef>
+
+    <UI Id="NvsInstallUI">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8"/>
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12"/>
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes"/>
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal"/>
+      <Property Id="WixUI_Mode" Value="FeatureTree"/>
+
+      <DialogRef Id="ErrorDlg"/>
+      <DialogRef Id="FatalError"/>
+      <DialogRef Id="FilesInUse"/>
+      <DialogRef Id="MsiRMFilesInUse"/>
+      <DialogRef Id="PrepareDlg"/>
+      <DialogRef Id="ProgressDlg"/>
+      <DialogRef Id="ResumeDlg"/>
+      <DialogRef Id="UserExit"/>
+      <DialogRef Id="WelcomeDlg"/>
+      <DialogRef Id="LicenseAgreementDlg"/>
+      <DialogRef Id="InstallDirDlg"/>
+      <DialogRef Id="BrowseDlg"/>
+      <DialogRef Id="InvalidDirDlg"/>
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">NOT Installed</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">LicenseAccepted = "1"</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="20">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="10">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="10">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="20">1</Publish>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg" Order="1">NOT Installed OR WixUI_InstallMode = "Change"</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT PATCH</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="3">Installed AND PATCH</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="CustomizeDlg">1</Publish>
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">Installed</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+
+      <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="NVS has been successfully installed."/>
+    </UI>
+
+    <UIRef Id="WixUI_Common"/>
+  </Product>
+
+</Wix>
