@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -12,28 +12,19 @@
     <EnableProjectHarvesting>True</EnableProjectHarvesting>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <NvsVersion Condition=" '$(NvsVersion)' == '' ">0.0.0</NvsVersion>
+    <SuppressIces>ICE105</SuppressIces>
     <HeatDirPaths>NvsLibDir=..\lib\;NvsDocDir=..\doc\;NMProgressDir=..\node_modules\progress\</HeatDirPaths>
+    <DefineConstants>$(HeatDirPaths)</DefineConstants>
+    <OutputPath>$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>.\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
-    <DefineConstants>Debug;ProductVersion=$(NvsVersion);$(HeatDirPaths)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>.\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
-    <DefineConstants>ProductVersion=$(NvsVersion);$(HeatDirPaths)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <OutputPath>.\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
-    <DefineConstants>Debug;ProductVersion=$(NvsVersion);$(HeatDirPaths)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>.\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
-    <DefineConstants>ProductVersion=$(NvsVersion);$(HeatDirPaths)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="nvs.wxs" />
@@ -52,7 +43,14 @@
     </WixExtension>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <Import Project="PackageVersion.targets" />
   <Target Name="BeforeBuild">
+    <GetPackageVersion PackageJsonPath="..\package.json" Condition=" '$(NvsVersion)' == '' ">
+      <Output PropertyName="NvsVersion" TaskParameter="PackageVersion" />
+    </GetPackageVersion>
+    <PropertyGroup>
+      <DefineConstants>$(DefineConstants);ProductVersion=$(NvsVersion)</DefineConstants>
+    </PropertyGroup>
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\lib" PreprocessorVariable="var.NvsLibDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsLibFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvslib.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\doc" PreprocessorVariable="var.NvsDocDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsDocFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvsdoc.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\node_modules\progress" PreprocessorVariable="var.NMProgressDir" DirectoryRefId="NodeModulesDir" ComponentGroupName="NMProgressFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\_progress.wxs" RunAsSeparateProcess="true" />

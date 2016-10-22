@@ -21,7 +21,7 @@ if (-not (Test-Path $bootstrapNodePath)) {
         if (-not (Test-Path $cacheDir)) {
             New-Item -ItemType Directory -Force -Path $cacheDir -ErrorAction:Stop > $null
         }
-        $testFile = Join-Path $cacheDir "test.txt"
+        $testFile = Join-Path $cacheDir "check-access.txt"
         New-Item -ItemType File -Force -Path $testFile -ErrorAction:Stop > $null
         Remove-Item -Force -Path $testFile -ErrorAction:Stop > $null
     } catch [UnauthorizedAccessException] {
@@ -31,7 +31,7 @@ if (-not (Test-Path $bootstrapNodePath)) {
 
     $bootstrapNodeVersion = "v6.8.1"
     $bootstrapNodeArch = "x86"
-    if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64") {
+    if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64" -or $env:PROCESSOR_ARCHITEW6432 -ieq "AMD64") {
         $bootstrapNodeArch = "x64"
     }
 
