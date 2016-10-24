@@ -1,0 +1,66 @@
+# NVS Setup
+NVS currently works on any platform for which Node.js binaries are available. The ability to build and install Node.js from source may be added later.
+
+Before installing, decide on either a single-user installation or a system installation:
+  * For individual development, a single-user installation is recommended because then NVS does not require root/admin privileges for any commands.
+  * If multi-user functionality is desired, or if NVS should be able to link a version as a system Node.js installation, then it may be installed to a system folder. Adding, removing, or linking node versions will then require root/admin privileges, but *using* a node version will not.
+
+By default, downloaded Node.js files are cached under the NVS installation directory. To override this behavior, set the `NVS_HOME` environment variable to another location.
+
+## Windows
+Download and run the Windows Installer (MSI) package from the [Releases page on GitHub](https://github.com/jasongin/nvs/releases). Note the single MSI package supports both x86 and x64 systems and both per-user and per-machine installations.
+
+### Manual setup - Command Prompt
+1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
+```cmd
+set NVS_HOME=%LOCALAPPDATA%\nvs
+set NVS_HOME=%ProgramFiles%\nvs
+```
+2. Clone this repo:
+```cmd
+git clone https://github.com/jasongin/nvs "%NVS_HOME"
+```
+3. Run the `install` command:
+```cmd
+"%NVS_HOME%\nvs.cmd" install
+```
+
+### Manual setup - PowerShell
+1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
+```powershell
+$env:NVS_HOME="$env:LOCALAPPDATA\nvs"
+$env:NVS_HOME="$env:ProgramFiles\nvs"
+```
+2. Clone this repo:
+```powershell
+git clone https://github.com/jasongin/nvs "$env:NVS_HOME"
+```
+3. Run the `install` command:
+```powershell
+. "$env:NVS_HOME\nvs.ps1" install
+```
+
+After installation, running just `nvs` from the current shell or any new Command Prompt or PowerShell then invokes either the `nvs.cmd` or `nvs.ps1` script accordingly.
+
+### Bash on Windows
+
+NVS can also work in [Unbutu Bash on Windows 10](https://msdn.microsoft.com/en-us/commandline/wsl/about) using the following installation instructions. Of course then that instance of NVS and any Node.js versions it installs in that environment are only available to the Ubuntu subsystem.
+
+## Mac, Linux
+1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
+```sh
+export NVS_HOME="$HOME/.nvs"
+export NVS_HOME="/usr/local/nvs"
+```
+2. Clone this repo:
+```sh
+git clone https://github.com/jasongin/nvs "$NVS_HOME"
+```
+3. Source the `install` command:
+```sh
+. "$NVS_HOME/nvs.sh" install
+```
+
+The `nvs.sh` script adds an `nvs` shell function to the environment. Afterward the tool should be invoked as just `nvs` without any path. The `install` command also adds lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to source `nvs.sh`, so that the `nvs` function is available in future shells.
+
+Note there is also an executable shell script named `nvs` (without the `.sh`), that may be used to invoke the tool without having to first *source* `nvs.sh`. However, when invoked in that way the script cannot update the caller's environment, so the `nvs use` command is disabled. And there is a `nvsudo` shell function that invokes `nvs` under `sudo` while preserving the `PATH` (and thus the *current* node version). The latter may be helpful when NVS is installed in a system directory.
