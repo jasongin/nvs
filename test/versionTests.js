@@ -1,5 +1,7 @@
 const test = require('ava').test;
 
+test.before(require('./checkNodeVersion'));
+
 global.settings = {
     aliases: {},
     remotes: {

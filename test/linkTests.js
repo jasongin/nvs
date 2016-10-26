@@ -2,6 +2,8 @@ const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
 
+test.before(require('./checkNodeVersion'));
+
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
 global.settings = {
     home: testHome,
