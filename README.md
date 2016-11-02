@@ -32,21 +32,22 @@ The `nvs.sh` script adds an `nvs` shell function to the environment. Afterward t
 ## Command-line usage
 Command | Description
 ------- | -----------
-`nvs help <command>`          | Get detailed help for a command
-`nvs install`                 | Initialize your profile for using NVS
-`nvs uninstall`               | Remove NVS from profile and environment
-`nvs --version`               | Display the NVS tool version
-`nvs add <version>`           | Download and extract a node version
-`nvs rm <version>`            | Remove a node version
-`nvs use <version>`           | Use a node version in the current environment
-`nvs run <version> [args]...` | Run a script using a node version
-`nvs which [version]`         | Show the path to a node version
-`nvs ls`                      | List local node versions
-`nvs ls-remote [remote]`      | List node versions available to download
-`nvs link [version]`          | Link a version as the default
-`nvs unlink`                  | Remove links to a default version
-`nvs alias [name] [value]`    | Set or recall aliases for versions
-`nvs remote [name] [value]`   | Set or recall download base URIs
+`nvs help <command>`             | Get detailed help for a command
+`nvs install`                    | Initialize your profile for using NVS
+`nvs uninstall`                  | Remove NVS from profile and environment
+`nvs --version`                  | Display the NVS tool version
+`nvs add <version>`              | Download and extract a node version
+`nvs rm <version>`               | Remove a node version
+`nvs use <version>`              | Use a node version in the current shell
+`nvs run <ver> <js> [args...]`   | Run a script using a node version
+`nvs exec <ver> <exe> [args...]` | Run an executable using a node version
+`nvs which [version]`            | Show the path to a node version binary
+`nvs ls`                         | List local node versions
+`nvs ls-remote [remote]`         | List node versions available to download
+`nvs link [version]`             | Link a version as the default
+`nvs unlink`                     | Remove links to a default version
+`nvs alias [name] [value]`       | Set or recall aliases for versions
+`nvs remote [name] [value]`      | Set or recall download base URIs
 
 A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceded by a remote name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64".
 

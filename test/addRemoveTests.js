@@ -14,7 +14,7 @@ global.settings = {
         'test2': 'http://example.com/test2',
     },
     quiet: true,
-    skipPostScript: true,
+    skipUpdateShellEnv: true,
     linkToSystem: false,
 };
 
@@ -88,12 +88,12 @@ function mockDir(dirPath, childNames) {
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
-        .join(nvsUse.pathSeparator).replace(/\//g, path.sep);
+        .join(path.delimiter).replace(/\//g, path.sep);
 }
 
 function getPath() {
     return process.env['PATH']
-        .replace(sepRegex, '/').split(nvsUse.pathSeparator);
+        .replace(sepRegex, '/').split(path.delimiter);
 }
 
 test.beforeEach(t => {

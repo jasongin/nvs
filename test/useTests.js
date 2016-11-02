@@ -11,7 +11,7 @@ global.settings = {
     remotes: {
         'test': 'http://example.com/test',
     },
-    skipPostScript: true,
+    skipUpdateShellEnv: true,
 };
 
 const linkPath = testHome + 'default';
@@ -38,12 +38,12 @@ function mockFile(filePath) {
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
-        .join(nvsUse.pathSeparator).replace(/\//g, path.sep);
+        .join(path.delimiter).replace(/\//g, path.sep);
 }
 
 function getPath() {
     return process.env['PATH']
-        .replace(sepRegex, '/').split(nvsUse.pathSeparator);
+        .replace(sepRegex, '/').split(path.delimiter);
 }
 
 test.beforeEach(t => {

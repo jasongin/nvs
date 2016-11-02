@@ -10,11 +10,13 @@ By default, downloaded Node.js files are cached under the NVS installation direc
 ## Windows
 Download and run the Windows Installer (MSI) package from the [Releases page on GitHub](https://github.com/jasongin/nvs/releases). Note the single MSI package supports both x86 and x64 systems and both per-user and per-machine installations.
 
+As an alternative to installing the MSI, the following manual steps may be used to setup NVS on Windows, from either a Command Prompt or PowerShell.
+
 ### Manual setup - Command Prompt
 1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
 ```cmd
 set NVS_HOME=%LOCALAPPDATA%\nvs
-set NVS_HOME=%ProgramFiles%\nvs
+set NVS_HOME=%ProgramData%\nvs
 ```
 2. Clone this repo:
 ```cmd
@@ -29,7 +31,7 @@ git clone https://github.com/jasongin/nvs "%NVS_HOME"
 1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
 ```powershell
 $env:NVS_HOME="$env:LOCALAPPDATA\nvs"
-$env:NVS_HOME="$env:ProgramFiles\nvs"
+$env:NVS_HOME="$env:ProgramData\nvs"
 ```
 2. Clone this repo:
 ```powershell

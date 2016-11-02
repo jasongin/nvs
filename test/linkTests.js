@@ -11,7 +11,7 @@ global.settings = {
     remotes: {
         'test': 'http://example.com/test',
     },
-    skipPostScript: true,
+    skipUpdateShellEnv: true,
     linkToSystem: false,
 };
 
@@ -60,7 +60,7 @@ function mockLink(linkPath, linkTarget) {
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
-        .join(nvsUse.pathSeparator).replace(/\//g, path.sep);
+        .join(path.delimiter).replace(/\//g, path.sep);
 }
 
 test.beforeEach(t => {
