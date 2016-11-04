@@ -26,7 +26,7 @@ nvs() {
             command mkdir -p "${NVS_HOME}/cache"
         fi
 
-        local BOOTSTRAP_NODE_VERSION="v6.8.1"
+        local BOOTSTRAP_NODE_VERSION="v6.9.1"
 
         local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
         local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
@@ -65,7 +65,7 @@ nvs() {
     if [ -f "${NVS_POSTSCRIPT}" ]; then
         source "${NVS_POSTSCRIPT}"
         rm "${NVS_POSTSCRIPT}"
-        export NVS_POSTSCRIPT=
+        unset NVS_POSTSCRIPT
     fi
 
     return $EXIT_CODE
@@ -97,12 +97,13 @@ if [ -z "${NVS_USE_XZ}" ]; then
             fi
         fi
     fi
-    export LIBARCHIVE_VER=
+    unset LIBARCHIVE_VER
 fi
 
 # If some version is linked, begin by using that version.
 if [ -d "${NVS_HOME}/default" ]; then
     export PATH="${NVS_HOME}/default/bin:${PATH}"
+    unset NPM_CONFIG_PREFIX
 fi
 
 # If sourced with parameters, invoke the function now with those parameters.

@@ -29,7 +29,7 @@ if (-not (Test-Path $bootstrapNodePath)) {
         exit 1
     }
 
-    $bootstrapNodeVersion = "v6.8.1"
+    $bootstrapNodeVersion = "v6.9.1"
     $bootstrapNodeArch = "x86"
     if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64" -or $env:PROCESSOR_ARCHITEW6432 -ieq "AMD64") {
         $bootstrapNodeArch = "x64"

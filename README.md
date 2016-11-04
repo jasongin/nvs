@@ -38,6 +38,7 @@ Command | Description
 `nvs --version`                  | Display the NVS tool version
 `nvs add <version>`              | Download and extract a node version
 `nvs rm <version>`               | Remove a node version
+`nvs migrate <fromver> [tover]`  | Migrate global modules
 `nvs use <version>`              | Use a node version in the current shell
 `nvs run <ver> <js> [args...]`   | Run a script using a node version
 `nvs exec <ver> <exe> [args...]` | Run an executable using a node version
