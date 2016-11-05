@@ -46,6 +46,11 @@ function setPath(pathEntries) {
         .join(path.delimiter).replace(/\//g, path.sep);
 }
 
+function getPath() {
+    return process.env['PATH']
+        .replace(sepRegex, '/').split(path.delimiter);
+}
+
 test.beforeEach(t => {
     mockFs.reset();
 });
@@ -114,17 +119,30 @@ test('Link - current version from PATH', t => {
 });
 
 test('Unlink - specified version', t => {
+    let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
+    mockFs.mockFile(binDir + '/' + exe);
+
     if (nvsUse.isWindows) {
         mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
     } else {
         mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
+    setPath([
+        linkPath + bin,
+        '/bin',
+    ]);
+
     nvsLink.unlink({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
 
     t.is(mockFs.unlinkPaths.length, 1);
     t.is(mockFs.unlinkPaths[0], linkPath);
     t.falsy(mockFs.linkMap[linkPath]);
+
+    let newPath = getPath();
+    t.is(newPath.length, 2);
+    t.is(newPath[0], '/home/test/nvs/test/5.6.7/x64');
+    t.is(newPath[1], '/bin');
 });
 
 test('Unlink - different version', t => {
@@ -134,10 +152,18 @@ test('Unlink - different version', t => {
         mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
+    setPath([
+        linkPath + bin,
+        '/bin',
+    ]);
+
     nvsLink.unlink({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
 
     t.is(mockFs.unlinkPaths.length, 0);
     t.truthy(mockFs.linkMap[linkPath]);
+
+    let newPath = getPath();
+    t.is(newPath.length, 2);
 });
 
 test('Unlink - any version', t => {
@@ -147,16 +173,33 @@ test('Unlink - any version', t => {
         mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
+    setPath([
+        linkPath + bin,
+        '/bin',
+    ]);
+
     nvsLink.unlink();
 
     t.is(mockFs.unlinkPaths.length, 1);
     t.is(mockFs.unlinkPaths[0], linkPath);
     t.falsy(mockFs.linkMap[linkPath]);
+
+    let newPath = getPath();
+    t.is(newPath.length, 1);
+    t.is(newPath[0], '/bin');
 });
 
 test('Unlink - no link', t => {
+    setPath([
+        '/bin',
+    ]);
+
     nvsLink.unlink();
     t.is(mockFs.unlinkPaths.length, 0);
+
+    let newPath = getPath();
+    t.is(newPath.length, 1);
+    t.is(newPath[0], '/bin');
 });
 
 test.todo('Link - link to system');

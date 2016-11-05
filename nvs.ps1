@@ -2,6 +2,7 @@
 # Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
 
 $scriptDir = Split-Path $MyInvocation.MyCommand.Path
+$mainScript = Join-Path $scriptDir "lib\main.js"
 
 # The NVS_HOME path may be overridden in the environment.
 if (-not $env:NVS_HOME) {
@@ -56,10 +57,39 @@ if (-not (Test-Path $bootstrapNodePath)) {
     }
 }
 
-# Forward the args to the main JavaScript file.
-$mainScript = Join-Path $scriptDir "lib\main.js"
-. "$bootstrapNodePath" "$mainScript" @args
-$exitCode = $LastExitCode
+# Check if this script was invoked as a PS prompt function that enables auto-switching.
+if ($args -eq "prompt") {
+    Invoke-Expression $env:NVS_ORIGINAL_PROMPT
+
+    # Find the nearest .node-version file in current or parent directories
+    for ($parentDir = $pwd.Path; $parentDir; $parentDir = Split-Path $parentDir) {
+        if (Test-Path (Join-Path $parentDir ".node-version") -PathType Leaf) { break }
+    }
+
+    # If it's still the same as the last auto-switched directory, then there's nothing to do.
+    if ([string]$parentDir -eq [string]$env:NVS_AUTO_DIRECTORY) {
+        exit 0
+    }
+    $env:NVS_AUTO_DIRECTORY = $parentDir
+
+    # Output needs to be redirected to Write-Host, because stdout is ignored by prompt.
+    # Process a byte at a time so that output like progress bars is real-time.
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo $bootstrapNodePath
+    $startInfo.Arguments = ($mainScript, "auto", "at", $pwd.Path)
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardOutput = $true
+    $proc = [System.Diagnostics.Process]::Start($startInfo)
+    while (($b = $proc.StandardOutput.Read()) -ne -1) {
+        Write-Host -NoNewline ([char]$b)
+    }
+    $proc.WaitForExit
+    $exitCode = $proc.ExitCode
+}
+else {
+    # Forward the args to the main JavaScript file.
+    . "$bootstrapNodePath" "$mainScript" @args
+    $exitCode = $LastExitCode
+}
 
 # Call the post-invocation script if it is present, then delete it.
 # This allows the invocation to potentially modify the caller's environment (e.g. PATH).
@@ -69,5 +99,4 @@ if (Test-Path $env:NVS_POSTSCRIPT) {
 }
 
 $env:NVS_POSTSCRIPT = $null
-
 exit $exitCode
