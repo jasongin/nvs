@@ -1,0 +1,31 @@
+{
+  "name": "console-menu",
+  "version": "0.1.0",
+  "description": "A scrollable menu for the Node.js console",
+  "main": "console-menu.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasongin/console-menu.git"
+  },
+  "keywords": [
+    "menu"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jasongin/console-menu/issues"
+  },
+  "homepage": "https://github.com/jasongin/console-menu#readme",
+  "dependencies": {
+    "keypress": "^0.2.1"
+  },
+  "readme": "# console-menu\r\nDisplays a menu of items in the console and asynchronously waits for the user to select an item. Each item title is prefixed by a hotkey. An item may be selected by typing a hotkey or by using Down/Up arrows followed by Enter.\r\n```\r\n.--------------.\r\n| Example menu |\r\n+--------------+\r\n| [a] Item A   |\r\n|  b) Item B   |\r\n|  c) Item C   |\r\n|  d) Item D   |\r\n|  e) Item E   |\r\n'--\\/----------'\r\n```\r\nThe menu may be scrollable (hinted by `/\\` and `\\/` indicators). PageUp, PageDown, Home, and End keys are also supported.\r\n\r\n## Usage\r\nThe `menu` function takes two parameters: an `items` array and an `options` object.\r\n\r\nEach item must be an object with the following properties:\r\n * `separator` (boolean): If true, this is a separator item that inserts a blank line into the menu. (All other properties are ignored on separator items.)\r\n * `title` (string): Item title text.\r\n * `hotkey` (character): Unique item hotkey; must be a single letter, number, or other character. If omitted, the item is only selectable via arrow keys + Enter.\r\n * `selected` (boolean) True if this item should initially selected. If unspecified then the first item is initially selected.\r\n\r\nItems may have additional user-defined properties, which will be included in the returned result.\r\n\r\nThe following options are supported:\r\n * `header` (string): Optional header text for the menu.\r\n * `border` (boolean): True to draw a border around the menu. False for a simpler-looking menu.\r\n * `pageSize` (integer): Max number of items to show at a time;  additional items cause the menu to be scrollable. Omitting this value (or specifying 0) disables scrolling.\r\n * `helpMessage` (string): Message text to show under the menu.\r\n\r\nThe return value is a `Promise` that resolves to the chosen item object, or to `null` if the menu was cancelled by pressing Esc or Ctrl-C.\r\n\r\n## Example\r\n```JavaScript\r\nvar menu = require('console-menu');\r\nmenu([\r\n    { hotkey: '1', title: 'One' },\r\n    { hotkey: '2', title: 'Two', selected: true },\r\n    { hotkey: '3', title: 'Three' },\r\n    { separator: true },\r\n    { hotkey: '?', title: 'Help' },\r\n], {\r\n    header: 'Example menu',\r\n    border: true,\r\n}).then(item => {\r\n    if (item) {\r\n        console.log('You chose: ' + JSON.stringify(item));\r\n    } else {\r\n        console.log('You cancelled the menu.');\r\n    }\r\n});\r\n```\r\n",
+  "readmeFilename": "README.md",
+  "gitHead": "48bf4a044ea4221045ecfdfbd07108d5a309df06",
+  "_id": "console-menu@0.1.0",
+  "_shasum": "65baa6dbf3aea0c15d99ddf302e40bbc3d5df33e",
+  "_from": "console-menu@latest"
+}
