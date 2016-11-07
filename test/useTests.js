@@ -27,14 +27,6 @@ nvsUse.__set__('childProcess', mockChildProc);
 const mockFs = require('./mockFs');
 nvsUse.__set__('fs', mockFs);
 
-function mockFile(filePath) {
-    mockFs.statMap[filePath.replace(/\//g, path.sep)] = {
-        isDirectory() { return false; },
-        isFile() { return true; },
-        isSymbolicLink() { return false; },
-    };
-}
-
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
@@ -77,7 +69,7 @@ test('Get version from PATH - current', t => {
 
 test('Use - no overwrite', t => {
     let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
-    mockFile(binDir + '/' + exe);
+    mockFs.mockFile(binDir + '/' + exe);
     setPath([
         '/bin',
     ]);
@@ -90,8 +82,8 @@ test('Use - no overwrite', t => {
 
 test('Use - overwrite', t => {
     let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
-    mockFile(binDir + '/' + exe);
-    mockFile(binDir.replace('test/5', 'test2/5') + '/' + exe);
+    mockFs.mockFile(binDir + '/' + exe);
+    mockFs.mockFile(binDir.replace('test/5', 'test2/5') + '/' + exe);
     setPath([
         binDir,
         '/bin',
@@ -127,7 +119,7 @@ test('Use - not found', t => {
 
 test('Get bin path - current version', t => {
     let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
-    mockFile(binPath);
+    mockFs.mockFile(binPath);
     setPath([
         path.dirname(binPath),
         '/bin',
@@ -139,7 +131,7 @@ test('Get bin path - current version', t => {
 
 test('Get bin path - specified version', t => {
     let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
-    mockFile(binPath);
+    mockFs.mockFile(binPath);
 
     let result = nvsUse.getVersionBinary(
         { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
@@ -148,7 +140,7 @@ test('Get bin path - specified version', t => {
 
 test('Get bin path - not found', t => {
     let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
-    mockFile(binPath);
+    mockFs.mockFile(binPath);
 
     let result = nvsUse.getVersionBinary(
         { remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
@@ -157,7 +149,7 @@ test('Get bin path - not found', t => {
 
 test('Run', t => {
     let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
-    mockFile(binPath);
+    mockFs.mockFile(binPath);
 
     mockChildProc.mockActions.push({ status: 99, error: null });
 

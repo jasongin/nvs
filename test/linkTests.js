@@ -40,23 +40,6 @@ let mockWindowsEnv = {
 };
 nvsLink.__set__('nvsWindowsEnv', mockWindowsEnv);
 
-function mockFile(filePath) {
-    mockFs.statMap[filePath.replace(/\//g, path.sep)] = {
-        isDirectory() { return false; },
-        isFile() { return true; },
-        isSymbolicLink() { return false; },
-    };
-}
-
-function mockLink(linkPath, linkTarget) {
-    mockFs.statMap[linkPath.replace(/\//g, path.sep)] = {
-        isDirectory() { return false; },
-        isFile() { return false; },
-        isSymbolicLink() { return true; },
-    };
-    mockFs.linkMap[linkPath.replace(/\//g, path.sep)] = linkTarget.replace(/\//g, path.sep);
-}
-
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
@@ -69,9 +52,9 @@ test.beforeEach(t => {
 
 test('Get linked version', t => {
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
     } else {
-        mockLink(linkPath, 'test/5.6.7/x64');
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
     let v = nvsLink.getLinkedVersion();
@@ -83,9 +66,9 @@ test('Get linked version', t => {
 
 test('Get version from PATH - linked', t => {
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
     } else {
-        mockLink(linkPath, 'test/5.6.7/x64');
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
     setPath([
@@ -101,7 +84,7 @@ test('Get version from PATH - linked', t => {
 });
 
 test('Link - specified version', t => {
-    mockFile(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
+    mockFs.mockFile(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
 
     nvsLink.link({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
 
@@ -114,7 +97,7 @@ test('Link - specified version', t => {
 });
 
 test('Link - current version from PATH', t => {
-    mockFile(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
+    mockFs.mockFile(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
     setPath([
         testHome + 'test/5.6.7/x64' + bin + '/',
         '/bin',
@@ -132,9 +115,9 @@ test('Link - current version from PATH', t => {
 
 test('Unlink - specified version', t => {
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
     } else {
-        mockLink(linkPath, 'test/5.6.7/x64');
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
     nvsLink.unlink({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
@@ -146,9 +129,9 @@ test('Unlink - specified version', t => {
 
 test('Unlink - different version', t => {
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
     } else {
-        mockLink(linkPath, 'test/5.6.7/x64');
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
     nvsLink.unlink({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
@@ -159,9 +142,9 @@ test('Unlink - different version', t => {
 
 test('Unlink - any version', t => {
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
     } else {
-        mockLink(linkPath, 'test/5.6.7/x64');
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
     }
 
     nvsLink.unlink();

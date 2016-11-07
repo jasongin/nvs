@@ -59,32 +59,6 @@ const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
 const plat = (nvsUse.isWindows ? 'win' : process.platform);
 const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
 
-function mockFile(filePath) {
-    mockFs.statMap[filePath.replace(/\//g, path.sep)] = {
-        isDirectory() { return false; },
-        isFile() { return true; },
-        isSymbolicLink() { return false; },
-    };
-}
-
-function mockLink(linkPath, linkTarget) {
-    mockFs.statMap[linkPath.replace(/\//g, path.sep)] = {
-        isDirectory() { return false; },
-        isFile() { return false; },
-        isSymbolicLink() { return true; },
-    };
-    mockFs.linkMap[linkPath.replace(/\//g, path.sep)] = linkTarget.replace(/\//g, path.sep);
-}
-
-function mockDir(dirPath, childNames) {
-    mockFs.statMap[dirPath.replace(/\//g, path.sep)] = {
-        isFile() { return false; },
-        isDirectory() { return true; },
-        isSymbolicLink() { return false; },
-    };
-    mockFs.dirMap[dirPath.replace(/\//g, path.sep)] = childNames;
-}
-
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
@@ -101,17 +75,17 @@ test.beforeEach(t => {
     mockChildProc.reset();
     mockHttp.reset();
 
-    mockDir(testHome, ['test1', 'test2']);
-    mockDir(path.join(testHome, 'test1'), ['5.6.7']);
-    mockDir(path.join(testHome, 'test1', '5.6.7'), ['x86', 'x64']);
-    mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), []);
-    mockDir(path.join(testHome, 'test1', '5.6.7', 'x64'), []);
-    mockDir(path.join(testHome, 'test2'), ['6.7.8']);
-    mockDir(path.join(testHome, 'test2', '6.7.8'), ['x64']);
-    mockDir(path.join(testHome, 'test2', '6.7.8', 'x64'), []);
-    mockFile(path.join(testHome, 'test1', '5.6.7', 'x86', bin, exe));
-    mockFile(path.join(testHome, 'test1', '5.6.7', 'x64', bin, exe));
-    mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
+    mockFs.mockDir(testHome, ['test1', 'test2']);
+    mockFs.mockDir(path.join(testHome, 'test1'), ['5.6.7']);
+    mockFs.mockDir(path.join(testHome, 'test1', '5.6.7'), ['x86', 'x64']);
+    mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), []);
+    mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x64'), []);
+    mockFs.mockDir(path.join(testHome, 'test2'), ['6.7.8']);
+    mockFs.mockDir(path.join(testHome, 'test2', '6.7.8'), ['x64']);
+    mockFs.mockDir(path.join(testHome, 'test2', '6.7.8', 'x64'), []);
+    mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x86', bin, exe));
+    mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x64', bin, exe));
+    mockFs.mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-win-x64.7z'] = 'test';
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' +
         plat + '-x64.tar.gz'] = 'test';
@@ -150,9 +124,9 @@ test('List - marks', t => {
         '/bin',
     ]);
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test2/6.7.8/x64'));
+        mockFs.mockLink(linkPath, path.join(testHome, 'test2/6.7.8/x64'));
     } else {
-        mockLink(linkPath, 'test2/6.7.8/x64');
+        mockFs.mockLink(linkPath, 'test2/6.7.8/x64');
     }
 
     let result = nvsAddRemove.list();
@@ -169,16 +143,16 @@ test('Add - download binary', t => {
 
     mockChildProc.mockActions.push({ cb: () => {
         if (nvsUse.isWindows) {
-            mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+            mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
                 'node-v7.8.9-' + plat + '-x64'), [exe]);
-            mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
+            mockFs.mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
                 'node-v7.8.9-' + plat + '-x64', exe));
         } else {
-            mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+            mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
                 'node-v7.8.9-' + plat + '-x64'), [bin]);
-            mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+            mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
                 'node-v7.8.9-' + plat + '-x64', bin), [exe]);
-            mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
+            mockFs.mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
                 'node-v7.8.9-' + plat + '-x64', bin, exe));
         }
     }});
@@ -216,12 +190,12 @@ test('Remove - non-current', t => {
     ]);
 
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test1/5.6.7/x64'));
-        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [exe]);
+        mockFs.mockLink(linkPath, path.join(testHome, 'test1/5.6.7/x64'));
+        mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [exe]);
     } else {
-        mockLink(linkPath, 'test1/5.6.7/x64');
-        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
-        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
+        mockFs.mockLink(linkPath, 'test1/5.6.7/x64');
+        mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
+        mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
     }
 
     let version = nvsVersion.parse('test1/5.6.7/x86');
@@ -243,12 +217,12 @@ test('Remove - current', t => {
     ]);
 
     if (nvsUse.isWindows) {
-        mockLink(linkPath, path.join(testHome, 'test1/5.6.7/x86'));
-        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [exe]);
+        mockFs.mockLink(linkPath, path.join(testHome, 'test1/5.6.7/x86'));
+        mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [exe]);
     } else {
-        mockLink(linkPath, 'test1/5.6.7/x86');
-        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
-        mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
+        mockFs.mockLink(linkPath, 'test1/5.6.7/x86');
+        mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86'), [bin]);
+        mockFs.mockDir(path.join(testHome, 'test1', '5.6.7', 'x86', bin), [exe]);
     }
 
     let version = nvsVersion.parse('test1/5.6.7/x86');
