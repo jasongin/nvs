@@ -4,12 +4,15 @@ const rewire = require('rewire');
 
 test.before(require('./checkNodeVersion'));
 
-const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
+const mockFs = require('./mockFs');
+const testHome = mockFs.fixSep('/home/test/nvs/');
+
 global.settings = {
     home: testHome,
     aliases: {},
     remotes: {
         'test': 'http://example.com/test',
+        'test2': 'http://example.com/test2',
     },
     skipUpdateShellEnv: true,
 };
@@ -17,25 +20,27 @@ global.settings = {
 const linkPath = testHome + 'default';
 
 const nvsUse = rewire('../lib/use');
+const nvsLink = rewire('../lib/link');
 const bin = (nvsUse.isWindows ? '' : '/bin');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
-const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
+
+nvsUse.__set__('nvsLink', nvsLink);
 
 const mockChildProc = require('./mockChildProc');
 nvsUse.__set__('childProcess', mockChildProc);
 
-const mockFs = require('./mockFs');
 nvsUse.__set__('fs', mockFs);
+nvsLink.__set__('fs', mockFs);
 
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
-        .join(path.delimiter).replace(/\//g, path.sep);
+        .map(mockFs.fixSep)
+        .join(path.delimiter);
 }
 
 function getPath() {
-    return process.env['PATH']
-        .replace(sepRegex, '/').split(path.delimiter);
+    return process.env['PATH'].split(path.delimiter);
 }
 
 test.beforeEach(t => {
@@ -68,45 +73,115 @@ test('Get version from PATH - current', t => {
 });
 
 test('Use - no overwrite', t => {
-    let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
     mockFs.mockFile(binDir + '/' + exe);
     setPath([
         '/bin',
     ]);
     nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
     let newPath = getPath();
-    t.is(newPath.length, 2);
-    t.is(newPath[0], binDir);
-    t.is(newPath[1], '/bin');
+    t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
 });
 
 test('Use - overwrite', t => {
-    let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
     mockFs.mockFile(binDir + '/' + exe);
-    mockFs.mockFile(binDir.replace('test/5', 'test2/5') + '/' + exe);
+    let binDir2 = mockFs.fixSep(testHome + 'test2/5.6.7/x64' + bin);
+    mockFs.mockFile(binDir2 + '/' + exe);
     setPath([
         binDir,
         '/bin',
     ]);
     nvsUse.use({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
     let newPath = getPath();
-    t.is(newPath.length, 2);
-    t.is(newPath[0], binDir.replace('test/5', 'test2/5'));
-    t.is(newPath[1], '/bin');
+    t.deepEqual(newPath, [binDir2, mockFs.fixSep('/bin')]);
 });
 
 test('Use - none', t => {
-    let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
+    let binDir2 = mockFs.fixSep(testHome + 'test2/5.6.7/x64' + bin);
     setPath([
+        linkPath,
         binDir,
-        binDir.replace('test', 'test2'),
+        binDir2,
         '/bin',
     ]);
     nvsUse.use(null);
     let newPath = getPath();
-    t.is(newPath.length, 2);
-    t.is(newPath[0], binDir.replace('test', 'test2'));
-    t.is(newPath[1], '/bin');
+    t.deepEqual(newPath, [mockFs.fixSep('/bin')]);
+});
+
+test('Use - use default version', t => {
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
+    mockFs.mockFile(binDir + '/' + exe);
+    let binDir2 = mockFs.fixSep(testHome + 'test/6.7.8/x64' + bin);
+    mockFs.mockFile(binDir2 + '/' + exe);
+
+    if (nvsUse.isWindows) {
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+    } else {
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
+    }
+
+    setPath([
+        binDir2,
+        mockFs.fixSep('/bin'),
+    ]);
+
+    nvsUse.use('default');
+
+    let newPath = getPath();
+    t.deepEqual(newPath, [linkPath, mockFs.fixSep('/bin')]);
+});
+
+test('Use - re-use current version', t => {
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
+    mockFs.mockFile(binDir + '/' + exe);
+
+    if (nvsUse.isWindows) {
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+    } else {
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
+    }
+
+    setPath([
+        binDir,
+        '/bin',
+    ]);
+
+    let result = nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+    t.is(result.length, 0);
+
+    let newPath = getPath();
+    t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
+});
+
+test('Use - re-use default version', t => {
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
+    mockFs.mockFile(binDir + '/' + exe);
+    let binDir2 = mockFs.fixSep(testHome + 'test/6.7.8/x64' + bin);
+    mockFs.mockFile(binDir2 + '/' + exe);
+
+    if (nvsUse.isWindows) {
+        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
+    } else {
+        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
+    }
+
+    setPath([
+        linkPath,
+        '/bin',
+    ]);
+
+    nvsUse.use('default');
+
+    let newPath = getPath();
+    t.deepEqual(newPath, [linkPath, mockFs.fixSep('/bin')]);
+
+    nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+
+    newPath = getPath();
+    t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
 });
 
 test('Use - not found', t => {
@@ -118,7 +193,7 @@ test('Use - not found', t => {
 });
 
 test('Get bin path - current version', t => {
-    let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
+    let binPath = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
     mockFs.mockFile(binPath);
     setPath([
         path.dirname(binPath),
@@ -130,7 +205,7 @@ test('Get bin path - current version', t => {
 });
 
 test('Get bin path - specified version', t => {
-    let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
+    let binPath = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
     mockFs.mockFile(binPath);
 
     let result = nvsUse.getVersionBinary(
@@ -139,7 +214,7 @@ test('Get bin path - specified version', t => {
 });
 
 test('Get bin path - not found', t => {
-    let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
+    let binPath = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
     mockFs.mockFile(binPath);
 
     let result = nvsUse.getVersionBinary(
@@ -148,7 +223,7 @@ test('Get bin path - not found', t => {
 });
 
 test('Run', t => {
-    let binPath = (testHome + 'test/5.6.7/x64' + bin + '/' + exe).replace(sepRegex, '/');
+    let binPath = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
     mockFs.mockFile(binPath);
 
     mockChildProc.mockActions.push({ status: 99, error: null });

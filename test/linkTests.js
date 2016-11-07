@@ -4,7 +4,9 @@ const rewire = require('rewire');
 
 test.before(require('./checkNodeVersion'));
 
-const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
+const mockFs = require('./mockFs');
+const testHome = mockFs.fixSep('/home/test/nvs/');
+
 global.settings = {
     home: testHome,
     aliases: {},
@@ -25,9 +27,6 @@ nvsUse.__set__('nvsLink', nvsLink);
 const bin = (nvsUse.isWindows ? '' : '/bin');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
 
-const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
-
-const mockFs = require('./mockFs');
 nvsUse.__set__('fs', mockFs);
 nvsLink.__set__('fs', mockFs);
 
@@ -43,12 +42,12 @@ nvsLink.__set__('nvsWindowsEnv', mockWindowsEnv);
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
         .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
-        .join(path.delimiter).replace(/\//g, path.sep);
+        .map(mockFs.fixSep)
+        .join(path.delimiter);
 }
 
 function getPath() {
-    return process.env['PATH']
-        .replace(sepRegex, '/').split(path.delimiter);
+    return process.env['PATH'].split(path.delimiter);
 }
 
 test.beforeEach(t => {
@@ -119,8 +118,7 @@ test('Link - current version from PATH', t => {
 });
 
 test('Unlink - specified version', t => {
-    let binDir = (testHome + 'test/5.6.7/x64' + bin).replace(sepRegex, '/');
-    mockFs.mockFile(binDir + '/' + exe);
+    mockFs.mockFile(testHome + 'test/5.6.7/x64' + bin + '/' + exe);
 
     if (nvsUse.isWindows) {
         mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
@@ -140,9 +138,7 @@ test('Unlink - specified version', t => {
     t.falsy(mockFs.linkMap[linkPath]);
 
     let newPath = getPath();
-    t.is(newPath.length, 2);
-    t.is(newPath[0], '/home/test/nvs/test/5.6.7/x64');
-    t.is(newPath[1], '/bin');
+    t.deepEqual(newPath, [mockFs.fixSep('/bin')]);
 });
 
 test('Unlink - different version', t => {
@@ -185,8 +181,7 @@ test('Unlink - any version', t => {
     t.falsy(mockFs.linkMap[linkPath]);
 
     let newPath = getPath();
-    t.is(newPath.length, 1);
-    t.is(newPath[0], '/bin');
+    t.deepEqual(newPath, [mockFs.fixSep('/bin')]);
 });
 
 test('Unlink - no link', t => {
@@ -198,8 +193,7 @@ test('Unlink - no link', t => {
     t.is(mockFs.unlinkPaths.length, 0);
 
     let newPath = getPath();
-    t.is(newPath.length, 1);
-    t.is(newPath[0], '/bin');
+    t.deepEqual(newPath, [mockFs.fixSep('/bin')]);
 });
 
 test.todo('Link - link to system');

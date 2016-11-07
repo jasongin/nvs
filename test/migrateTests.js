@@ -5,7 +5,9 @@ const Error = require('../lib/error');
 
 test.before(require('./checkNodeVersion'));
 
-const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
+const mockFs = require('./mockFs');
+const testHome = mockFs.fixSep('/home/test/nvs/');
+
 global.settings = {
     home: testHome,
     aliases: {},
@@ -13,6 +15,7 @@ global.settings = {
         'default': 'test',
         'test': 'http://example.com/test',
     },
+    quiet: true,
 };
 
 const nvsVersion = require('../lib/version');
@@ -21,7 +24,6 @@ const nvsUse = rewire('../lib/use');
 const bin = (nvsUse.isWindows ? '' : '/bin');
 const lib = (nvsUse.isWindows ? '' : '/lib');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
-const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
 
 nvsMigrate.__set__('nvsUse', nvsUse);
 
@@ -29,7 +31,6 @@ const mockChildProc = require('./mockChildProc');
 nvsUse.__set__('childProcess', mockChildProc);
 nvsMigrate.__set__('childProcess', mockChildProc);
 
-const mockFs = require('./mockFs');
 nvsUse.__set__('fs', mockFs);
 nvsMigrate.__set__('fs', mockFs);
 

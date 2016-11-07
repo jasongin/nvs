@@ -2,10 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
 
-function fixSep(p) {
-    return p && p.replace(/\\|\//g, path.sep);
-}
-
 const mockFs = {
     trace: false,
 
@@ -24,8 +20,12 @@ const mockFs = {
         this.unlinkPaths = [];
     },
 
+    fixSep(p) {
+        return p && p.replace(/\\|\//g, path.sep);
+    },
+
     mockFile(filePath, data) {
-        filePath = fixSep(filePath);
+        filePath = this.fixSep(filePath);
         this.statMap[filePath] = {
             isDirectory() { return false; },
             isFile() { return true; },
@@ -37,8 +37,8 @@ const mockFs = {
     },
 
     mockLink(linkPath, linkTarget) {
-        linkPath = fixSep(linkPath);
-        linkTarget = fixSep(linkTarget);
+        linkPath = this.fixSep(linkPath);
+        linkTarget = this.fixSep(linkTarget);
         this.statMap[linkPath] = {
             isDirectory() { return false; },
             isFile() { return false; },
@@ -48,7 +48,7 @@ const mockFs = {
     },
 
     mockDir(dirPath, childNames) {
-        dirPath = fixSep(dirPath);
+        dirPath = this.fixSep(dirPath);
         this.statMap[dirPath] = {
             isFile() { return false; },
             isDirectory() { return true; },
@@ -64,7 +64,7 @@ const mockFs = {
     },
 
     readdirSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('readdirSync(' + path + ')');
         path = this.resolveLink(path);
         let result = this.dirMap[path];
@@ -76,7 +76,7 @@ const mockFs = {
     },
 
     readlinkSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('readlinkSync(' + path + ')');
         let result = this.linkMap[path];
         if (result) return result;
@@ -87,13 +87,13 @@ const mockFs = {
     },
 
     accessSync(path, mode) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('accessSync(' + path + ', ' + mode + ')');
         this.statSync(path);
     },
 
     statSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('statSync(' + path + ')');
         path = this.resolveLink(path);
         let result = this.statMap[path];
@@ -106,7 +106,7 @@ const mockFs = {
     },
 
     lstatSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('statSync(' + path + ')');
         let result = this.statMap[path];
         if (result) return result;
@@ -118,14 +118,14 @@ const mockFs = {
     },
 
     symlinkSync(target, path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('symlinkSync(' + target + ', ' + path + ')');
         this.linkMap[path] = target;
         this.statMap[path] = { isDirectory() { return false; }, isSymbolicLink() { return true; } };
     },
 
     unlinkSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('unlinkSync(' + path + ')');
         this.lstatSync(path);
         delete this.linkMap[path];
@@ -134,7 +134,7 @@ const mockFs = {
     },
 
     mkdirSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('mkdirSync(' + path + ')');
         if (!this.dirMap[path]) {
             this.dirMap[path] = [];
@@ -147,7 +147,7 @@ const mockFs = {
     },
 
     rmdirSync(path) {
-        path = fixSep(path);
+        path = this.fixSep(path);
         if (this.trace) console.log('rmdirSync(' + path + ')');
         if (this.dirMap[path]) {
             delete this.dirMap[path];
@@ -160,8 +160,8 @@ const mockFs = {
     },
 
     renameSync(oldPath, newPath) {
-        oldPath = fixSep(oldPath);
-        newPath = fixSep(newPath);
+        oldPath = this.fixSep(oldPath);
+        newPath = this.fixSep(newPath);
         if (this.trace) console.log('renameSync(' + oldPath, newPath + ')');
 
         if (this.dirMap[oldPath]) {
@@ -196,7 +196,7 @@ const mockFs = {
     },
 
     createWriteStream(filePath) {
-        filePath = fixSep(filePath);
+        filePath = this.fixSep(filePath);
         if (this.trace) console.log('createWriteStream(' + filePath + ')');
 
         return {
@@ -207,7 +207,7 @@ const mockFs = {
     },
 
     createReadStream(filePath) {
-        filePath = fixSep(filePath);
+        filePath = this.fixSep(filePath);
         if (this.trace) console.log('createReadStream(' + filePath + ')');
 
         let data = this.dataMap[filePath];
@@ -227,7 +227,7 @@ const mockFs = {
     },
 
     readFileSync(filePath) {
-        filePath = fixSep(filePath);
+        filePath = this.fixSep(filePath);
         if (this.trace) console.log('readFileSync(' + filePath + ')');
 
         let data = this.dataMap[filePath];
