@@ -1,0 +1,4 @@
+/nvs text eol=lf
+/nvs.sh text eol=lf
+/nvs.cmd text eol=crlf
+/nvs.ps1 text eol=crlf

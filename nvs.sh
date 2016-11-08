@@ -56,9 +56,32 @@ nvs() {
         echo ""
     fi
 
-    # Forward args to the main JavaScript file.
-    command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
-    local EXIT_CODE=$?
+    local EXIT_CODE
+
+    # Check if invoked as a CD function that enables auto-switching.
+    if [[ "$@" == "cd" ]]; then
+        # Find the nearest .node-version file in current or parent directories
+        local DIR=$PWD
+        while [[ "$DIR" != "" && ! -e "$DIR/.node-version" ]]; do
+            if [[ "$DIR" == "/" ]]; then
+                DIR=
+            else
+                DIR=$(dirname "$DIR")
+            fi
+        done
+
+        # If it's different from the last auto-switched directory, then switch.
+        if [[ "$DIR" != "$NVS_AUTO_DIRECTORY" ]]; then
+            command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" auto
+            EXIT_CODE=$?
+        fi
+
+        export NVS_AUTO_DIRECTORY=$DIR
+    else
+        # Forward args to the main JavaScript file.
+        command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
+        EXIT_CODE=$?
+    fi
 
     # Call the post-invocation script if it is present, then delete it.
     # This allows the invocation to potentially modify the caller's environment (e.g. PATH)

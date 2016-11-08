@@ -21,7 +21,7 @@ A Windows Installer (MSI) package is available from the [NVS releases page on Gi
 
 ### Mac, Linux
 Specify the installation path, clone the repo, and *source* the `install` command:
-```sh
+```
 export NVS_HOME="$HOME/.nvs"
 git clone https://github.com/jasongin/nvs "$NVS_HOME"
 . "$NVS_HOME/nvs.sh" install
@@ -40,6 +40,7 @@ Command | Description
 `nvs rm <version>`               | Remove a node version
 `nvs migrate <fromver> [tover]`  | Migrate global modules
 `nvs use <version>`              | Use a node version in the current shell
+`nvs auto [on/off]`              | Automatically switch based on cwd
 `nvs run <ver> <js> [args...]`   | Run a script using a node version
 `nvs exec <ver> <exe> [args...]` | Run an executable using a node version
 `nvs which [version]`            | Show the path to a node version binary
@@ -68,9 +69,10 @@ $ nvs remote
 default  node
 nightly  https://nodejs.org/download/nightly/
 node     https://nodejs.org/dist/
-$ nvs lsr nightly
-7.0.0-nightly20161006bd0bedb86a ...
-$ nvs add nightly/7.0.0-nightly20161006bd0bedb86a
+$ nvs lsr nightly 7
+7.0.1-nightly2016102527e1749dcb
+...
+$ nvs add nightly/7.0.1-nightly2016102527e1749dcb
 ```
 ## Aliases
 An alias refers to a combination of a remote name and a semantic version. (Processor architectures are not aliased.) When setting an alias, the remote name may be omitted, in which case the alias refers to the default remote. An alias may be used in place of a version string in any of the other commands.
@@ -85,6 +87,23 @@ $ nvs which myalias
 $ nvs which myalias/32
 ~/.nvs/node/6.7.0/x86/bin/node
 ```
+## Automatic switching per directory
+In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenver you `cd` or `pushd` under a directory containing a `.node-version` file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` file anywhere above it, then the default (linked) version is restored, if any.
+```
+~$ nvs link 6.9.1
+~/.nvs/default -> ~/.nvs/node/6.9.1/x64
+~$ nvs use
+PATH += ~/.nvs/default/bin
+~$ nvs auto on
+~$ cd myproject
+PATH -= ~/.nvs/default/bin
+PATH += ~/.nvs/node/4.6.1/x64/bin
+~/myproject$ cd ..
+PATH -= ~/.nvs/node/4.6.1/x64/bin
+PATH += ~/.nvs/default/bin
+```
+*This feature is not available in Windows Command Prompt. Use PowerShell instead.*
+
 # How it works
 
 ## Bootstrapping node
