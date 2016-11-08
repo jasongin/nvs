@@ -4,5 +4,6 @@
   "remotes": {
     "default": "node",
     "node": "https://nodejs.org/dist/"
-  }
+  },
+  "bootstrap": "node/6.9.1"
 }

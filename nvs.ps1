@@ -9,15 +9,16 @@ if (-not $env:NVS_HOME) {
     $env:NVS_HOME = $scriptDir
 }
 
-# Generate 31 bits of randomness, to avoid clashing with concurrent executions.
-$env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random) + ".ps1")
+if (-not ($args -eq "bootstrap")) {
+    # Generate 31 bits of randomness, to avoid clashing with concurrent executions.
+    $env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random) + ".ps1")
+}
 
 # Check if the bootstrap node.exe is present.
 $cacheDir = Join-Path $env:NVS_HOME "cache"
 $bootstrapNodePath = Join-Path $cacheDir "node.exe"
 if (-not (Test-Path $bootstrapNodePath)) {
     # Download a node.exe binary to use to bootstrap the NVS script.
-
     try {
         if (-not (Test-Path $cacheDir)) {
             New-Item -ItemType Directory -Force -Path $cacheDir -ErrorAction:Stop > $null
@@ -30,23 +31,27 @@ if (-not (Test-Path $bootstrapNodePath)) {
         exit 1
     }
 
-    $bootstrapNodeVersion = "v6.9.1"
+    # Parse the bootstrap parameters from defaults.json.
+    $bootstrapNodeVersion = ((Get-Content .\defaults.json | ConvertFrom-Json |% "bootstrap") -replace ".*/")
+    $bootstrapNodeRemote = ((Get-Content .\defaults.json | ConvertFrom-Json |% "bootstrap") -replace "/.*")
+    $bootstrapNodeBaseUri = (Get-Content .\defaults.json | ConvertFrom-Json |% "remotes" |% $bootstrapNodeRemote)
+
     $bootstrapNodeArch = "x86"
     if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64" -or $env:PROCESSOR_ARCHITEW6432 -ieq "AMD64") {
         $bootstrapNodeArch = "x64"
     }
 
-    $bootstrapNodeArchive = "node-$bootstrapNodeVersion-win-$bootstrapNodeArch.7z"
-    $bootstrapNodeUri = "https://nodejs.org/dist/$bootstrapNodeVersion/$bootstrapNodeArchive"
+    $bootstrapNodeArchive = "node-v$bootstrapNodeVersion-win-$bootstrapNodeArch.7z"
+    $bootstrapNodeUri = "$($bootstrapNodeBaseUri)v$bootstrapNodeVersion/$bootstrapNodeArchive"
     $bootstrapNodeArchivePath = Join-Path $env:NVS_HOME (Join-Path "cache" $bootstrapNodeArchive)
 
-    Write-Output "Downloading boostrap node binary..."
+    Write-Output "Downloading boostrap node from $bootstrapNodeUri"
 
     # Download the archive using PowerShell Invoke-WebRequest.
     powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodeArchivePath' "
 
     # Extract node.exe from the archive using 7zr.exe.
-    . "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" -y "$bootstrapNodeArchivePath" "node-$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
+    . "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" -y "$bootstrapNodeArchivePath" "node-v$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
 
     Write-Output ""
 
@@ -57,8 +62,12 @@ if (-not (Test-Path $bootstrapNodePath)) {
     }
 }
 
-# Check if this script was invoked as a PS prompt function that enables auto-switching.
-if ($args -eq "prompt") {
+if ($args -eq "bootstrap") {
+    # This script was invoked by nvs.cmd just for bootstrapping.
+    exit 0
+}
+elseif ($args -eq "prompt") {
+    # This script was invoked as a PS prompt function that enables auto-switching.
     Invoke-Expression $env:NVS_ORIGINAL_PROMPT
 
     # Find the nearest .node-version file in current or parent directories

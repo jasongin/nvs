@@ -26,8 +26,13 @@ nvs() {
             command mkdir -p "${NVS_HOME}/cache"
         fi
 
-        local BOOTSTRAP_NODE_VERSION="v6.9.1"
+        # Parse the bootstrap parameters from defaults.json. This isn't real JSON parsing so
+        # its extremely limited, but defaults.json should not be edited by the user anyway.
+        local BOOTSTRAP_NODE_VERSION="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/",* *//' -e 's/.*\///')"
+        local BOOTSTRAP_NODE_REMOTE="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/",* *//' -e 's/\/.*//')"
+        local BOOTSTRAP_NODE_BASE_URI="$(grep "\"${BOOTSTRAP_NODE_REMOTE}\" *:" "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/",* *//')"
 
+        # Parse the OS name and architecture from `uname`.
         local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
         local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
 
@@ -38,12 +43,12 @@ nvs() {
             TAR_FLAGS="-Jxvf"
         fi
 
-        local BOOTSTRAP_NODE_FULLNAME="node-${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
-        local BOOTSTRAP_NODE_URI="https://nodejs.org/dist/${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
+        local BOOTSTRAP_NODE_FULLNAME="node-v${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
+        local BOOTSTRAP_NODE_URI="${BOOTSTRAP_NODE_BASE_URI}v${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
         local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
 
-        echo "Downloading bootstrap node binary..."
-        curl -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
+        echo "Downloading bootstrap node from ${BOOTSTRAP_NODE_URI}"
+        curl -L -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
 
         tar $TAR_FLAGS "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
         mv "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/cache/node"

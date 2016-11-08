@@ -16,31 +16,10 @@ SET NVS_BOOTSTRAP_NODE_PATH=%NVS_HOME%\cache\node.exe
 IF EXIST %NVS_BOOTSTRAP_NODE_PATH% GOTO :RUN
 
 :BOOTSTRAP
-:: Download a node.exe binary to use to bootstrap the NVS script.
-IF NOT EXIST %NVS_HOME%\cache MKDIR %NVS_HOME%\cache
-
-SET NVS_BOOTSTRAP_NODE_VERSION=v6.9.1
-SET NVS_BOOTSTRAP_NODE_ARCH=x86
-IF "%PROCESSOR_ARCHITECTURE%"=="AMD64" SET NVS_BOOTSTRAP_NODE_ARCH=x64
-IF "%PROCESSOR_ARCHITEW6432%"=="AMD64" SET NVS_BOOTSTRAP_NODE_ARCH=x64
-
-SET NVS_BOOTSTRAP_NODE_ARCHIVE=node-%NVS_BOOTSTRAP_NODE_VERSION%-win-%NVS_BOOTSTRAP_NODE_ARCH%.7z
-SET NVS_BOOTSTRAP_NODE_URI=https://nodejs.org/dist/%NVS_BOOTSTRAP_NODE_VERSION%/%NVS_BOOTSTRAP_NODE_ARCHIVE%
-SET NVS_BOOTSTRAP_NODE_ARCHIVE_PATH=%NVS_HOME%\cache\%NVS_BOOTSTRAP_NODE_ARCHIVE%
-
-ECHO Downloading boostrap node binary...
-
-:: Download the archive using PowerShell Invoke-WebRequest.
-powershell.exe -NoProfile -Command " $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '%NVS_BOOTSTRAP_NODE_URI%' -OutFile '%NVS_BOOTSTRAP_NODE_ARCHIVE_PATH%' "
-
-:: Extract node.exe from the archive using 7zr.exe.
-"%NVS_HOME%\tools\7-Zip\7zr.exe" e "-o%NVS_HOME%\cache" -y "%NVS_BOOTSTRAP_NODE_ARCHIVE_PATH%" "node-%NVS_BOOTSTRAP_NODE_VERSION%-win-%NVS_BOOTSTRAP_NODE_ARCH%\node.exe" > nul
-
-ECHO.
-
-IF EXIST %NVS_BOOTSTRAP_NODE_PATH% GOTO :RUN
-ECHO Failed to download bootstrap node binary.
-GOTO :CLEANUP
+:: Call the PowerShell flavor of this script to download the bootstrap node.exe.
+powershell.exe -NoProfile -Command "%~dp0nvs.ps1 bootstrap"
+SET NVS_EXITCODE=%ERRORLEVEL%
+IF %NVS_EXITCODE% NEQ 0 GOTO :CLEANUP
 
 :RUN
 :: Forward the args to the main JavaScript file.
