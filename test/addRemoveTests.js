@@ -138,10 +138,12 @@ test('List - marks', t => {
     t.true(resultLines.indexOf('#test2/6.7.8/x64') >= 0);
 });
 
-test('Add - download binary', t => {
+test('Add - download', t => {
     let version = nvsVersion.parse('test1/7.8.9/x64');
 
     mockChildProc.mockActions.push({ cb: () => {
+        mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64'),
+            ['node-v7.8.9-' + plat + '-x64']);
         if (nvsUse.isWindows) {
             mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
                 'node-v7.8.9-' + plat + '-x64'), [exe]);
