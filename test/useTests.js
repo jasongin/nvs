@@ -101,7 +101,7 @@ test('Use - none', t => {
     let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
     let binDir2 = mockFs.fixSep(testHome + 'test2/5.6.7/x64' + bin);
     setPath([
-        linkPath,
+        linkPath + bin,
         binDir,
         binDir2,
         '/bin',
@@ -131,7 +131,7 @@ test('Use - use default version', t => {
     nvsUse.use('default');
 
     let newPath = getPath();
-    t.deepEqual(newPath, [linkPath, mockFs.fixSep('/bin')]);
+    t.deepEqual(newPath, [linkPath + bin, mockFs.fixSep('/bin')]);
 });
 
 test('Use - re-use current version', t => {
@@ -169,14 +169,14 @@ test('Use - re-use default version', t => {
     }
 
     setPath([
-        linkPath,
+        linkPath + bin,
         '/bin',
     ]);
 
     nvsUse.use('default');
 
     let newPath = getPath();
-    t.deepEqual(newPath, [linkPath, mockFs.fixSep('/bin')]);
+    t.deepEqual(newPath, [linkPath + bin, mockFs.fixSep('/bin')]);
 
     nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
 
