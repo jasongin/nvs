@@ -17,7 +17,7 @@ IF EXIST %NVS_BOOTSTRAP_NODE_PATH% GOTO :RUN
 
 :BOOTSTRAP
 :: Call the PowerShell flavor of this script to download the bootstrap node.exe.
-powershell.exe -NoProfile -Command "%~dp0nvs.ps1 bootstrap"
+powershell.exe -NoProfile -ExecutionPolicy Unrestricted -Command "%~dp0nvs.ps1 bootstrap"
 SET NVS_EXITCODE=%ERRORLEVEL%
 IF %NVS_EXITCODE% NEQ 0 GOTO :CLEANUP
 

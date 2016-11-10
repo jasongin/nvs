@@ -67,9 +67,14 @@
     </Directory>
 
     <!-- Find the installation directory so it is available for RemoveFolderEx. -->
-    <Property Id="NVS_DIR_FOUND">
+    <Property Id="NVS_CLEANUP_DIR">
       <ComponentSearch Id="FindNvsDir" Guid="9db87eeb-d18a-4b34-9ea0-560df8ec5622" Type="directory"/>
     </Property>
+    <SetProperty Id="NVS_CLEANUP_DIR"
+      Action="CheckIfCleanupNeeded"
+      Sequence="both"
+      After="AppSearch"
+      Value="">UPGRADINGPRODUCTCODE</SetProperty>
 
     <SetProperty Id="INSTALLDIR"
       Action="SetPerUserInstallDir"
@@ -121,7 +126,7 @@
         </CreateFolder>
 
         <!-- Cleanup all files from the install directory. -->
-        <util:RemoveFolderEx On="uninstall" Property="NVS_DIR_FOUND" />
+        <util:RemoveFolderEx On="uninstall" Property="NVS_CLEANUP_DIR" />
       </Component>
 
       <Component Id="EnvironmentPathPerUser" Guid="3809d1c9-37e2-4ea8-9558-7e71b7e12ad9">
@@ -171,7 +176,7 @@
 
     <InstallExecuteSequence>
       <Custom Action="InitializeNvs" After="InstallFiles">NOT Installed</Custom>
-      <Custom Action="UnlinkNvs" Before="RemoveFiles">REMOVE = "All"</Custom>
+      <Custom Action="UnlinkNvs" Before="RemoveFiles">REMOVE = "ALL" AND NOT UPGRADINGPRODUCTCODE</Custom>
     </InstallExecuteSequence>
 
     <WixVariable Id="WixUISupportPerUser" Value="1" Overridable="yes" />

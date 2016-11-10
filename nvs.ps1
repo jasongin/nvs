@@ -32,9 +32,9 @@ if (-not (Test-Path $bootstrapNodePath)) {
     }
 
     # Parse the bootstrap parameters from defaults.json.
-    $bootstrapNodeVersion = ((Get-Content .\defaults.json | ConvertFrom-Json |% "bootstrap") -replace ".*/")
-    $bootstrapNodeRemote = ((Get-Content .\defaults.json | ConvertFrom-Json |% "bootstrap") -replace "/.*")
-    $bootstrapNodeBaseUri = (Get-Content .\defaults.json | ConvertFrom-Json |% "remotes" |% $bootstrapNodeRemote)
+    $bootstrapNodeVersion = ((Get-Content $scriptDir\defaults.json | ConvertFrom-Json |% "bootstrap") -replace ".*/")
+    $bootstrapNodeRemote = ((Get-Content $scriptDir\defaults.json | ConvertFrom-Json |% "bootstrap") -replace "/.*")
+    $bootstrapNodeBaseUri = (Get-Content $scriptDir\defaults.json | ConvertFrom-Json |% "remotes" |% $bootstrapNodeRemote)
 
     $bootstrapNodeArch = "x86"
     if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64" -or $env:PROCESSOR_ARCHITEW6432 -ieq "AMD64") {
