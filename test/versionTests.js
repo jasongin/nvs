@@ -11,34 +11,34 @@ global.settings = {
     },
 };
 
-const nvsVersion = require('../lib/version');
+const NodeVersion = require('../lib/version');
 
 test('Parse semantic version', t => {
-    let v = nvsVersion.parse('5.6.7');
+    let v = NodeVersion.parse('5.6.7');
     t.truthy(v);
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.remoteName, 'test');
-    t.is(v.arch, process.arch);
+    t.is(v.arch, undefined);
 });
 
 test('Parse semantic version with label', t => {
-    let v = nvsVersion.parse('5.6.7-nightly201610057b5ffa46fe');
+    let v = NodeVersion.parse('5.6.7-nightly201610057b5ffa46fe');
     t.truthy(v);
     t.is(v.semanticVersion, '5.6.7-nightly201610057b5ffa46fe');
     t.is(v.remoteName, 'test');
-    t.is(v.arch, process.arch);
+    t.is(v.arch, undefined);
 });
 
 test('Parse remote and semantic version', t => {
-    let v = nvsVersion.parse('test2/5.6.7');
+    let v = NodeVersion.parse('test2/5.6.7');
     t.truthy(v);
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.remoteName, 'test2');
-    t.is(v.arch, process.arch);
+    t.is(v.arch, undefined);
 });
 
 test('Parse remote, semantic version, and arch', t => {
-    let v = nvsVersion.parse('test2/5.6.7/x86');
+    let v = NodeVersion.parse('test2/5.6.7/x86');
     t.truthy(v);
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.remoteName, 'test2');
@@ -46,7 +46,7 @@ test('Parse remote, semantic version, and arch', t => {
 });
 
 test('Parse semantic version and arch', t => {
-    let v = nvsVersion.parse('5.6.7/x86');
+    let v = NodeVersion.parse('5.6.7/x86');
     t.truthy(v);
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.remoteName, 'test');
@@ -54,25 +54,25 @@ test('Parse semantic version and arch', t => {
 });
 
 test('Parse version label', t => {
-    let v = nvsVersion.parse('lts');
+    let v = NodeVersion.parse('lts');
     t.truthy(v);
     t.is(v.semanticVersion, null);
     t.is(v.label, 'lts');
     t.is(v.remoteName, 'test');
-    t.is(v.arch, process.arch);
+    t.is(v.arch, undefined);
 });
 
 test('Parse remote and version label', t => {
-    let v = nvsVersion.parse('test2/lts');
+    let v = NodeVersion.parse('test2/lts');
     t.truthy(v);
     t.is(v.semanticVersion, null);
     t.is(v.label, 'lts');
     t.is(v.remoteName, 'test2');
-    t.is(v.arch, process.arch);
+    t.is(v.arch, undefined);
 });
 
 test('Parse version label and arch', t => {
-    let v = nvsVersion.parse('lts/x86');
+    let v = NodeVersion.parse('lts/x86');
     t.truthy(v);
     t.is(v.semanticVersion, null);
     t.is(v.label, 'lts');
@@ -81,10 +81,13 @@ test('Parse version label and arch', t => {
 });
 
 test('Parse remote, version label and arch', t => {
-    let v = nvsVersion.parse('test2/lts/x86');
+    let v = NodeVersion.parse('test2/lts/x86');
     t.truthy(v);
     t.is(v.semanticVersion, null);
     t.is(v.label, 'lts');
     t.is(v.remoteName, 'test2');
     t.is(v.arch, 'x86');
 });
+
+test.todo('Compare');
+test.todo('Match');

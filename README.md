@@ -39,19 +39,19 @@ Command | Description
 `nvs add <version>`              | Download and extract a node version
 `nvs rm <version>`               | Remove a node version
 `nvs migrate <fromver> [tover]`  | Migrate global modules
-`nvs use <version>`              | Use a node version in the current shell
+`nvs use [version]`              | Use a node version in the current shell
 `nvs auto [on/off]`              | Automatically switch based on cwd
 `nvs run <ver> <js> [args...]`   | Run a script using a node version
 `nvs exec <ver> <exe> [args...]` | Run an executable using a node version
 `nvs which [version]`            | Show the path to a node version binary
-`nvs ls`                         | List local node versions
-`nvs ls-remote [remote]`         | List node versions available to download
+`nvs ls [filter]`                | List local node versions
+`nvs ls-remote [filter]`         | List node versions available to download
 `nvs link [version]`             | Link a version as the default
-`nvs unlink`                     | Remove links to a default version
+`nvs unlink [version]`           | Remove links to a default version
 `nvs alias [name] [value]`       | Set or recall aliases for versions
 `nvs remote [name] [value]`      | Set or recall download base URIs
 
-A version string consists of a semantic version number or version label ("lts" or "latest"), optionally preceded by a remote name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6.3.1/x86", "node/6.7.0/x64".
+A version or filter consists of a complete or partial semantic version number or version label  ("lts", "latest", "Argon", etc.), optionally preceded by a remote name, optionally followed by an architecture, separated by slashes. Examples: "lts", "4.6.0", "6/x86", "node/6.7/x64".
 
 [Refer to the docs](./doc) for more details about each command.
 

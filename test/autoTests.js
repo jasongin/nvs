@@ -41,9 +41,16 @@ const mockNvsAddRemove = {
     },
 };
 
+const mockNvsList = {
+    find(version) {
+        return version.semanticVersion === '1.2.3' ? version : null;
+    }
+};
+
 nvsAuto.__set__('fs', mockFs);
 nvsAuto.__set__('nvsUse', mockNvsUse);
 nvsAuto.__set__('nvsAddRemove', mockNvsAddRemove);
+nvsAuto.__set__('nvsList', mockNvsList);
 
 test.beforeEach(t => {
     mockFs.reset();

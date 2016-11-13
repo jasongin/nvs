@@ -2,6 +2,8 @@ const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
 
+const NodeVersion = require('../lib/version');
+
 test.before(require('./checkNodeVersion'));
 
 const mockFs = require('./mockFs');
@@ -21,16 +23,21 @@ const linkPath = testHome + 'default';
 
 const nvsUse = rewire('../lib/use');
 const nvsLink = rewire('../lib/link');
+const nvsList = rewire('../lib/list');
 const bin = (nvsUse.isWindows ? '' : '/bin');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
 
+nvsUse.__set__('nvsList', nvsList);
 nvsUse.__set__('nvsLink', nvsLink);
+nvsList.__set__('nvsUse', nvsUse);
+nvsList.__set__('nvsLink', nvsLink);
 
 const mockChildProc = require('./mockChildProc');
 nvsUse.__set__('childProcess', mockChildProc);
 
 nvsUse.__set__('fs', mockFs);
 nvsLink.__set__('fs', mockFs);
+nvsList.__set__('fs', mockFs);
 
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
@@ -46,6 +53,16 @@ function getPath() {
 test.beforeEach(t => {
     mockFs.reset();
     mockChildProc.reset();
+
+    mockFs.mockDir(testHome, ['test', 'test2']);
+    mockFs.mockDir(path.join(testHome, 'test'), ['5.6.7']);
+    mockFs.mockDir(path.join(testHome, 'test', '5.6.7'), ['x86', 'x64']);
+    mockFs.mockDir(path.join(testHome, 'test', '5.6.7', 'x86'), []);
+    mockFs.mockDir(path.join(testHome, 'test', '5.6.7', 'x64'), []);
+    mockFs.mockDir(path.join(testHome, 'test2'), ['5.6.7']);
+    mockFs.mockDir(path.join(testHome, 'test2', '5.6.7'), ['x86', 'x64']);
+    mockFs.mockDir(path.join(testHome, 'test2', '5.6.7', 'x86'), []);
+    mockFs.mockDir(path.join(testHome, 'test2', '5.6.7', 'x64'), []);
 });
 
 test('Get version from PATH - current', t => {
@@ -72,13 +89,35 @@ test('Get version from PATH - current', t => {
     t.is(v.arch, 'x64');
 });
 
-test('Use - no overwrite', t => {
+test('Use - full version', t => {
     let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
     mockFs.mockFile(binDir + '/' + exe);
     setPath([
         '/bin',
     ]);
-    nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+    nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
+    let newPath = getPath();
+    t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
+});
+
+test('Use - no arch', t => {
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/' + NodeVersion.defaultArch + bin);
+    mockFs.mockFile(binDir + '/' + exe);
+    setPath([
+        '/bin',
+    ]);
+    nvsUse.use(new NodeVersion('test', '5.6.7'));
+    let newPath = getPath();
+    t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
+});
+
+test('Use - partial version', t => {
+    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/' + NodeVersion.defaultArch + bin);
+    mockFs.mockFile(binDir + '/' + exe);
+    setPath([
+        '/bin',
+    ]);
+    nvsUse.use(new NodeVersion('test', '5'));
     let newPath = getPath();
     t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
 });
@@ -92,7 +131,7 @@ test('Use - overwrite', t => {
         binDir,
         '/bin',
     ]);
-    nvsUse.use({ remoteName: 'test2', semanticVersion: '5.6.7', arch: 'x64' });
+    nvsUse.use(new NodeVersion('test2', '5.6.7', 'x64'));
     let newPath = getPath();
     t.deepEqual(newPath, [binDir2, mockFs.fixSep('/bin')]);
 });
@@ -149,7 +188,7 @@ test('Use - re-use current version', t => {
         '/bin',
     ]);
 
-    let result = nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+    let result = nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
     t.is(result.length, 0);
 
     let newPath = getPath();
@@ -178,7 +217,7 @@ test('Use - re-use default version', t => {
     let newPath = getPath();
     t.deepEqual(newPath, [linkPath + bin, mockFs.fixSep('/bin')]);
 
-    nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+    nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
 
     newPath = getPath();
     t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
@@ -186,7 +225,7 @@ test('Use - re-use default version', t => {
 
 test('Use - not found', t => {
     t.throws(() => {
-        nvsUse.use({ remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' });
+        nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
     }, error => {
         return error.code === 'ENOENT';
     });
@@ -229,7 +268,7 @@ test('Run', t => {
     mockChildProc.mockActions.push({ status: 99, error: null });
 
     nvsUse.run(
-        { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
+        new NodeVersion('test', '5.6.7', 'x64'),
         ['test.js', '1', '2']);
     let exitCode = process.exitCode;
     process.exitCode = 0;
@@ -243,10 +282,9 @@ test('Run', t => {
 test('Run - not found', t => {
     t.throws(() => {
         nvsUse.run(
-            { remoteName: 'test', semanticVersion: '5.6.7', arch: 'x64' },
+            new NodeVersion('test', '5.6.7', 'x64'),
             ['test.js', '1', '2']);
     }, error => {
         return error.code === 'ENOENT';
     });
 });
-

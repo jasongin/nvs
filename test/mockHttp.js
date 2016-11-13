@@ -3,6 +3,7 @@ const https = require('https');
 const EventEmitter = require('events');
 
 const mockHttp = {
+    trace: false,
     resourceMap: {},
     requests: [],
 
@@ -12,6 +13,8 @@ const mockHttp = {
     },
 
     get(uri, cb) {
+        if (this.trace) console.log('GET ' + uri);
+
         let mockRequest = new EventEmitter();
         let mockResponse = new EventEmitter();
         let responseContent = this.resourceMap[uri];
@@ -36,7 +39,17 @@ const mockHttp = {
         }
 
         setImmediate(() => {
+            if (this.trace) console.log('  ' + mockResponse.statusCode);
             cb(mockResponse);
+
+            if (responseContent) {
+                setImmediate(() => {
+                    mockResponse.emit('data', responseContent);
+                    setImmediate(() => {
+                        mockResponse.emit('end');
+                    });
+                });
+            }
         });
 
         return mockRequest;

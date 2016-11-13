@@ -18,7 +18,7 @@ global.settings = {
     quiet: true,
 };
 
-const nvsVersion = require('../lib/version');
+const NodeVersion = require('../lib/version');
 const nvsMigrate = rewire('../lib/migrate');
 const nvsUse = rewire('../lib/use');
 const bin = (nvsUse.isWindows ? '' : '/bin');
@@ -65,7 +65,7 @@ test('Migrate installed module, no version at target', t => {
         JSON.stringify({ version: '1.0.0' }));
 
     nvsMigrate.migrateGlobalModules(
-        nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+        NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     t.is(0, linkPackageCalls.length);
     t.is(1, installPackageCalls.length);
     t.is('test', installPackageCalls[0].packageName);
@@ -86,7 +86,7 @@ test('Migrate installed module, same version at target', t => {
         JSON.stringify({ version: '1.0.0' }));
 
     nvsMigrate.migrateGlobalModules(
-        nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+        NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     t.is(0, linkPackageCalls.length);
     t.is(0, installPackageCalls.length);
 });
@@ -106,7 +106,7 @@ test('Migrate installed module, different version at target', t => {
         JSON.stringify({ version: '2.0.0' }));
 
     nvsMigrate.migrateGlobalModules(
-        nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+        NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     t.is(0, linkPackageCalls.length);
     t.is(0, installPackageCalls.length);
 });
@@ -124,7 +124,7 @@ test('Migrate linked module, no version at target', t => {
         JSON.stringify({ version: '1.0.0' }));
 
     nvsMigrate.migrateGlobalModules(
-        nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+        NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     t.is(0, installPackageCalls.length);
     t.is(1, linkPackageCalls.length);
     t.is('test', linkPackageCalls[0].packageName);
@@ -147,7 +147,7 @@ test('Migrate linked module, same version at target', t => {
         JSON.stringify({ version: '1.0.0' }));
 
     nvsMigrate.migrateGlobalModules(
-        nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+        NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     t.is(0, installPackageCalls.length);
     t.is(0, linkPackageCalls.length);
 });
@@ -169,7 +169,7 @@ test('Migrate linked module, different version at target', t => {
         JSON.stringify({ version: '2.0.0' }));
 
     nvsMigrate.migrateGlobalModules(
-        nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+        NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     t.is(0, installPackageCalls.length);
     t.is(0, linkPackageCalls.length);
 });
@@ -181,7 +181,7 @@ test('Migrate source version not found', t => {
 
     t.throws(() => {
         nvsMigrate.migrateGlobalModules(
-            nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+            NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     }, e => {
         return e.code === Error.ENOENT;
     });
@@ -194,7 +194,7 @@ test('Migrate target version not found', t => {
 
     t.throws(() => {
         nvsMigrate.migrateGlobalModules(
-            nvsVersion.parse('5.99.1/x64'), nvsVersion.parse('5.99.2/x64'));
+            NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
     }, e => {
         return e.code === Error.ENOENT;
     });
