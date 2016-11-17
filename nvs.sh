@@ -128,10 +128,15 @@ if [ -z "${NVS_USE_XZ}" ]; then
     unset LIBARCHIVE_VER
 fi
 
-# If some version is linked, begin by using that version.
+# If some version is linked as the default, begin by using that version.
 if [ -d "${NVS_HOME}/default" ]; then
-    export PATH="${NVS_HOME}/default/bin:${PATH}"
-    unset NPM_CONFIG_PREFIX
+    if [ -f "${NVS_HOME}/default/bin/node" ]; then
+        export PATH="${NVS_HOME}/default/bin:${PATH}"
+        unset NPM_CONFIG_PREFIX
+    elif [ -f "${NVS_HOME}/default/node" ]; then
+        export PATH="${NVS_HOME}/default:${PATH}"
+        unset NPM_CONFIG_PREFIX
+    fi
 fi
 
 # If sourced with parameters, invoke the function now with those parameters.

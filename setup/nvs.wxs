@@ -4,7 +4,7 @@
 
   <?define ProductName = "NVS" ?>
   <?define ProductDescription = "Node Version Switcher" ?>
-  <?define ProductAuthor = "jasongin@microsoft.com" ?>
+  <?define ProductAuthor = "Microsoft Corporation" ?>
 
   <?define SourceDir="$(var.ProjectDir)..\" ?>
 
@@ -24,6 +24,7 @@
     <Property Id="ARPNOMODIFY" Value="1" />
     <Property Id="ARPCOMMENTS" Value="Node Version Switcher" />
     <Property Id="ARPHELPLINK" Value="https://github.com/jasongin/nvs" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/jasongin/nvs" />
 
     <Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
       <![CDATA[Installed OR (VersionNT >= 601)]]>
