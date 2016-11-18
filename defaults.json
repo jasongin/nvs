@@ -3,7 +3,9 @@
   },
   "remotes": {
     "default": "node",
-    "node": "https://nodejs.org/dist/"
+    "node": "https://nodejs.org/dist/",
+    "nightly": "https://nodejs.org/download/nightly/",
+    "chakracore-nightly": "https://nodejs.org/download/chakracore-nightly/"
   },
   "bootstrap": "node/6.9.1"
 }

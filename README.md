@@ -55,24 +55,35 @@ A version or filter consists of a complete or partial semantic version number or
 
 [Refer to the docs](./doc) for more details about each command.
 
+## Getting started
+To add the latest version of node:
+```
+$ nvs add latest
+```
+Or to add the latest LTS version of node:
+```
+$ nvs add lts
+```
+Then run the `nvs use` command to add a version of node to your PATH:
+```
+$ nvs use lts
+PATH += ~/.nvs/node/6.9.1/x64
+```
+
 ## Configurable remotes
-The `nvs remote` command allows configuration of multiple named download locations. NVS manages versions from different remote locations separately, so there is no risk of version collisions across forks. By default there is single `"node"` remote pointing to the official node.js distribution URI:
+The `nvs remote` command allows configuration of multiple named download locations. NVS manages versions from different remote locations separately, so there is no risk of version collisions. By default there are remotes pointing to Node.js official releases and nightly builds:
 ```
-$ nvs remote
-default  node
-node     https://nodejs.org/dist/
-```
-It's easy to add another remote. The following command sequence adds a remote pointing to nightly builds of node.js, then lists builds from that remote, and adds a build:
-```
-$ nvs remote nightly https://nodejs.org/download/nightly/
 $ nvs remote
 default  node
 nightly  https://nodejs.org/download/nightly/
 node     https://nodejs.org/dist/
-$ nvs lsr nightly 7
+```
+This makes it easy to get builds from other sources. The following command sequence lists nightly builds, and adds a build:
+```
+$ nvs lsr nightly/7
 7.0.1-nightly2016102527e1749dcb
 ...
-$ nvs add nightly/7.0.1-nightly2016102527e1749dcb
+$ nvs add nightly/7
 ```
 ## Aliases
 An alias refers to a combination of a remote name and a semantic version. (Processor architectures are not aliased.) When setting an alias, the remote name may be omitted, in which case the alias refers to the default remote. An alias may be used in place of a version string in any of the other commands.
@@ -87,7 +98,7 @@ $ nvs which myalias
 $ nvs which myalias/32
 ~/.nvs/node/6.7.0/x86/bin/node
 ```
-[An alias may also refer to a local directory](doc/ALIAS.md#aliasing-directories), enabling NVS to switch to a private build of Node.
+[An alias may also refer to a local directory](doc/ALIAS.md#aliasing-directories), enabling NVS to switch to a local private build of node.
 
 ## Automatic switching per directory
 In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenver you `cd` or `pushd` under a directory containing a `.node-version` file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` file anywhere above it, then the default (linked) version is restored, if any.
@@ -115,6 +126,9 @@ NVS uses a small amount of platform-specific shell code that bootstraps the tool
 NVS downloads node builds under the directory specified by the `NVS_HOME` environment variable, or under the NVS tool directory if `NVS_HOME` is not set. Each build goes in a subdirectory based on the remote name, semantic version, and architecture, for example `node/6.7.0/x64`.
 
 When you `nvs use` a version, the `PATH` of the current shell is updated to include that version's `bin` directory.
+
+## Global modules
+When using `npm install -g` or `npm link` with NVS-installed node, global modules are installed or linked into a version-specific directory. (NVS clears any `NPM_CONFIG_PREFIX` environment variable that may have been set.) This means when NVS switches versions it is also switching the set of available global modules. The `nvs migrate` command can migrate those global modules from one node version to another.
 
 ## Symbolic links
 The `nvs link` command creates a symbolic directory link at `$NVS_HOME/default` that points to the specified version (or the current version from `PATH` at the time of the command). This can be useful when there is a need to configure a fixed path elsewhere.
