@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\WiX.3.10.3\build\wix.props" Condition="Exists('packages\WiX.3.10.3\build\wix.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -17,6 +18,9 @@
     <DefineConstants>$(HeatDirPaths)</DefineConstants>
     <OutputPath>$(Configuration)\</OutputPath>
     <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
+    <IsPackage>true</IsPackage>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
   </PropertyGroup>
@@ -42,6 +46,9 @@
       <Name>WiXUtilExtension</Name>
     </WixExtension>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Import Project="PackageVersion.targets" />
   <Target Name="BeforeBuild">
@@ -62,5 +69,11 @@
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\lib" PreprocessorVariable="var.NvsLibDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsLibFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvslib.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\doc" PreprocessorVariable="var.NvsDocDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsDocFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvsdoc.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\node_modules\progress" PreprocessorVariable="var.NMProgressDir" DirectoryRefId="NodeModulesDir" ComponentGroupName="NMProgressFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\_progress.wxs" RunAsSeparateProcess="true" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\WiX.3.10.3\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\WiX.3.10.3\build\wix.props'))" />
   </Target>
 </Project>

@@ -27,5 +27,8 @@
 # Default version link
 /default
 
+# Nuget packages
+packages/
+
 # Other excluded files
 *.suo
