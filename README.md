@@ -72,7 +72,10 @@ A version or filter consists of a complete or partial semantic version number or
 
 ## Interactive menus
 When invoked with no parameters, `nvs` displays an interactive menu for switching and downloading node versions.
+
 ![nvs menu](https://github.com/jasongin/nvs/releases/download/v0.8.0/nvs-menu.gif)
+
+*NVS uses [**console-menu**](https://github.com/jasongin/console-menu), a module originally written for this project then published separately.*
 
 ## Configurable remotes
 The `nvs remote` command allows configuration of multiple named download locations. NVS manages versions from different remote locations separately, so there is no risk of version collisions. By default there are remotes pointing to Node.js official releases and nightly builds:
