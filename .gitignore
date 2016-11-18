@@ -26,3 +26,6 @@
 
 # Default version link
 /default
+
+# Other excluded files
+*.suo

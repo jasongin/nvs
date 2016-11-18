@@ -50,7 +50,15 @@
     </GetPackageVersion>
     <PropertyGroup>
       <DefineConstants>$(DefineConstants);ProductVersion=$(NvsVersion)</DefineConstants>
+      <TargetName>nvs-$(NvsVersion)</TargetName>
+      <TargetFileName>$(TargetName)$(TargetExt)</TargetFileName>
+      <TargetPdbName>$(TargetName)$(TargetPdbExt)</TargetPdbName>
     </PropertyGroup>
+    <ItemGroup>
+      <FilesToSign Include="$(TargetDir)\$(TargetName)$(TargetExt)">
+        <Authenticode>MicrosoftSHA2</Authenticode>
+      </FilesToSign>
+    </ItemGroup>
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\lib" PreprocessorVariable="var.NvsLibDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsLibFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvslib.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\doc" PreprocessorVariable="var.NvsDocDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsDocFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvsdoc.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\node_modules\progress" PreprocessorVariable="var.NMProgressDir" DirectoryRefId="NodeModulesDir" ComponentGroupName="NMProgressFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\_progress.wxs" RunAsSeparateProcess="true" />
