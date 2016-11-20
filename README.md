@@ -29,7 +29,22 @@ git clone https://github.com/jasongin/nvs "$NVS_HOME"
 
 The `nvs.sh` script adds an `nvs` shell function to the environment. Afterward the tool should be invoked as just `nvs` without any path. The `install` command adds lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to source `nvs.sh`, so that the `nvs` function is available in future shells.
 
-## Command-line usage
+## Basic usage
+To add the latest version of node:
+```
+$ nvs add latest
+```
+Or to add the latest LTS version of node:
+```
+$ nvs add lts
+```
+Then run the `nvs use` command to add a version of node to your PATH:
+```
+$ nvs use lts
+PATH += ~/.nvs/node/6.9.1/x64
+```
+
+## Command reference
 Command | Description
 ------- | -----------
 `nvs help <command>`             | Get detailed help for a command
@@ -55,20 +70,9 @@ A version or filter consists of a complete or partial semantic version number or
 
 [Refer to the docs](./doc) for more details about each command.
 
-## Getting started
-To add the latest version of node:
-```
-$ nvs add latest
-```
-Or to add the latest LTS version of node:
-```
-$ nvs add lts
-```
-Then run the `nvs use` command to add a version of node to your PATH:
-```
-$ nvs use lts
-PATH += ~/.nvs/node/6.9.1/x64
-```
+## Interactive menus
+When invoked with no parameters, `nvs` displays an interactive menu for switching and downloading node versions.
+![nvs menu](https://github.com/jasongin/nvs/releases/download/v0.8.0/nvs-menu.gif)
 
 ## Configurable remotes
 The `nvs remote` command allows configuration of multiple named download locations. NVS manages versions from different remote locations separately, so there is no risk of version collisions. By default there are remotes pointing to Node.js official releases and nightly builds:
