@@ -52,7 +52,7 @@
       <ComponentRef Id="SevenZipTool" />
       <ComponentGroupRef Id="NvsLibFiles"/>
       <ComponentGroupRef Id="NvsDocFiles"/>
-      <ComponentGroupRef Id="NMProgressFiles"/>
+      <ComponentGroupRef Id="NvsDepsFiles"/>
       <ComponentRef Id="EnvironmentPathPerUser" />
       <ComponentRef Id="EnvironmentPathPerMachine" />
 

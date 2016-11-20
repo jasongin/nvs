@@ -14,7 +14,7 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <SuppressIces>ICE105</SuppressIces>
-    <HeatDirPaths>NvsLibDir=..\lib\;NvsDocDir=..\doc\;NMProgressDir=..\node_modules\progress\</HeatDirPaths>
+    <HeatDirPaths>NvsLibDir=..\lib\;NvsDocDir=..\doc\;NvsDepsDir=..\deps\</HeatDirPaths>
     <DefineConstants>$(HeatDirPaths)</DefineConstants>
     <OutputPath>$(Configuration)\</OutputPath>
     <IntermediateOutputPath>$(OutputPath)</IntermediateOutputPath>
@@ -34,7 +34,7 @@
     <Compile Include="nvs.wxs" />
     <Compile Include="$(IntermediateOutputPath)\nvslib.wxs" />
     <Compile Include="$(IntermediateOutputPath)\nvsdoc.wxs" />
-    <Compile Include="$(IntermediateOutputPath)\_progress.wxs" />
+    <Compile Include="$(IntermediateOutputPath)\nvsdeps.wxs" />
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixUIExtension">
@@ -68,7 +68,7 @@
     </ItemGroup>
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\lib" PreprocessorVariable="var.NvsLibDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsLibFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvslib.wxs" RunAsSeparateProcess="true" />
     <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\doc" PreprocessorVariable="var.NvsDocDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsDocFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvsdoc.wxs" RunAsSeparateProcess="true" />
-    <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\node_modules\progress" PreprocessorVariable="var.NMProgressDir" DirectoryRefId="NodeModulesDir" ComponentGroupName="NMProgressFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\_progress.wxs" RunAsSeparateProcess="true" />
+    <HeatDirectory ToolPath="$(WixToolPath)" Directory="..\deps" PreprocessorVariable="var.NvsDepsDir" DirectoryRefId="INSTALLDIR" ComponentGroupName="NvsDepsFiles" GenerateGuidsNow="true" SuppressFragments="false" OutputFile="$(IntermediateOutputPath)\nvsdeps.wxs" RunAsSeparateProcess="true" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

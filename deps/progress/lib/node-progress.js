@@ -21,6 +21,7 @@ exports = module.exports = ProgressBar;
  *   - `stream` the output stream defaulting to stderr
  *   - `complete` completion character defaulting to "="
  *   - `incomplete` incomplete character defaulting to "-"
+ *   - `renderThrottle` minimum time between updates in milliseconds defaulting to 16
  *   - `callback` optional function to call when the progress bar completes
  *   - `clear` will clear the progress bar upon termination
  *
@@ -32,6 +33,10 @@ exports = module.exports = ProgressBar;
  *   - `:elapsed` time elapsed in seconds
  *   - `:percent` completion percentage
  *   - `:eta` eta in seconds
+ *
+ * Tokens other than `:bar` may include a suffix to specify width, that is a minus
+ * (for left-padding) or plus (for right-padding) followed by an integer, for example
+ * `:percent-4`.
  *
  * @param {string} fmt
  * @param {object|number} options or total
@@ -60,7 +65,9 @@ function ProgressBar(fmt, options) {
     complete   : options.complete || '=',
     incomplete : options.incomplete || '-'
   };
+  this.renderThrottle = options.renderThrottle !== 0 ? (options.renderThrottle || 16) : 0;
   this.callback = options.callback || function () {};
+  this.tokens = {};
   this.lastDraw = '';
 }
 
@@ -78,15 +85,21 @@ ProgressBar.prototype.tick = function(len, tokens){
 
   // swap tokens
   if ('object' == typeof len) tokens = len, len = 1;
+  if (tokens) this.tokens = tokens;
 
   // start time for eta
   if (0 == this.curr) this.start = new Date;
 
   this.curr += len
-  this.render(tokens);
+
+  // schedule render
+  if (!this.renderThrottleTimeout) {
+    this.renderThrottleTimeout = setTimeout(this.render.bind(this), this.renderThrottle);
+  }
 
   // progress complete
-  if (this.curr >= this.total) {
+  if (!this.complete && this.curr >= this.total) {
+    if (this.renderThrottleTimeout) this.render();
     this.complete = true;
     this.terminate();
     this.callback(this);
@@ -103,6 +116,11 @@ ProgressBar.prototype.tick = function(len, tokens){
  */
 
 ProgressBar.prototype.render = function (tokens) {
+  clearTimeout(this.renderThrottleTimeout);
+  this.renderThrottleTimeout = null;
+
+  if (tokens) this.tokens = tokens;
+
   if (!this.stream.isTTY) return;
 
   var ratio = this.curr / this.total;
@@ -114,13 +132,14 @@ ProgressBar.prototype.render = function (tokens) {
   var eta = (percent == 100) ? 0 : elapsed * (this.total / this.curr - 1);
 
   /* populate the bar template with percentages and timestamps */
-  var str = this.fmt
-    .replace(':current', this.curr)
-    .replace(':total', this.total)
-    .replace(':elapsed', isNaN(elapsed) ? '0.0' : (elapsed / 1000).toFixed(1))
-    .replace(':eta', (isNaN(eta) || !isFinite(eta)) ? '0.0' : (eta / 1000)
-      .toFixed(1))
-    .replace(':percent', percent.toFixed(0) + '%');
+  var str = this.fmt;
+  str = replaceToken(str, 'current', this.curr);
+  str = replaceToken(str, 'total', this.total);
+  str = replaceToken(str, 'elapsed', isNaN(elapsed) ? '0.0'
+    : elapsed >= 10000 ? Math.round(elapsed / 1000) : (elapsed / 1000).toFixed(1));
+  str = replaceToken(str, 'eta', (isNaN(eta) || !isFinite(eta)) ? '0.0'
+    : eta >= 10000 ? Math.round(eta / 1000) : (eta / 1000).toFixed(1));
+  str = replaceToken(str, 'percent', percent.toFixed(0) + '%');
 
   /* compute the available space (non-zero) for the bar */
   var availableSpace = Math.max(0, this.stream.columns - str.replace(':bar', '').length);
@@ -135,15 +154,53 @@ ProgressBar.prototype.render = function (tokens) {
   str = str.replace(':bar', complete + incomplete);
 
   /* replace the extra tokens */
-  if (tokens) for (var key in tokens) str = str.replace(':' + key, tokens[key]);
+  if (this.tokens) for (var key in this.tokens) str = replaceToken(str, key, this.tokens[key]);
 
   if (this.lastDraw !== str) {
-    this.stream.clearLine();
     this.stream.cursorTo(0);
     this.stream.write(str);
+    if (str.length < this.lastDraw.length) {
+      // Reduce flicker - don't clear unless the new line is shorter.
+      this.stream.clearLine(1);
+    }
     this.lastDraw = str;
   }
 };
+
+/**
+ * Replace a token in a string, using optional width specifiers after the token.
+ * @param str {string} The string that may contain the token to be replaced.
+ * @param token {string} Token to replace, not including the ':' prefix or width suffix.
+ * @param value {string} The replacement value.
+ * @return The resulting string after replacement.
+ */
+function replaceToken(str, token, value) {
+  token = ':' + token;
+  var tokenIndex = str.indexOf(token);
+  if (tokenIndex < 0) {
+    return str;
+  }
+
+  value = (value ? value.toString() : '');
+
+  function repeat(s, n) { return n <= 0 ? '' : Array(n + 1).join(s); };
+
+  if (str[tokenIndex + token.length] === '-') {
+    width = parseInt(str.substr(tokenIndex + token.length + 1));
+    if (width) {
+      token = token + '-' + width;
+      value = repeat(' ', width - value.length) + value;
+    }
+  } else if (str[tokenIndex + token.length] === '+') {
+    width = parseInt(str.substr(tokenIndex + token.length + 1));
+    if (width) {
+      token = token + '+' + width;
+      value = value + repeat(' ', width - value.length);
+    }
+  }
+
+  return str.replace(token, value);
+}
 
 /**
  * "update" the progress bar to represent an exact percentage.
@@ -176,5 +233,5 @@ ProgressBar.prototype.terminate = function () {
   if (this.clear) {
     this.stream.clearLine();
     this.stream.cursorTo(0);
-  } else console.log();
+  } else this.stream.write('\n');
 };

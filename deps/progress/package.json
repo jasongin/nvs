@@ -1,0 +1,44 @@
+{
+  "name": "progress",
+  "version": "1.2.0",
+  "description": "Flexible ascii progress bar",
+  "keywords": [
+    "cli",
+    "progress"
+  ],
+  "author": {
+    "name": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca"
+  },
+  "contributors": [
+    {
+      "name": "Christoffer Hallas",
+      "email": "christoffer.hallas@gmail.com"
+    },
+    {
+      "name": "Jordan Scales",
+      "email": "scalesjordan@gmail.com"
+    }
+  ],
+  "dependencies": {},
+  "main": "index",
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/visionmedia/node-progress.git"
+  },
+  "license": "MIT",
+  "gitHead": "4a6c2fdc782cff6c9f8933339e7aae0b38d682d4",
+  "readme": "Flexible ascii progress bar.\r\n\r\n## Installation\r\n\r\n```bash\r\n$ npm install progress\r\n```\r\n\r\n## Usage\r\n\r\nFirst we create a `ProgressBar`, giving it a format string\r\nas well as the `total`, telling the progress bar when it will\r\nbe considered complete. After that all we need to do is `tick()` appropriately.\r\n\r\n```javascript\r\nvar ProgressBar = require('progress');\r\n\r\nvar bar = new ProgressBar(':bar', { total: 10 });\r\nvar timer = setInterval(function () {\r\n  bar.tick();\r\n  if (bar.complete) {\r\n    console.log('\\ncomplete\\n');\r\n    clearInterval(timer);\r\n  }\r\n}, 100);\r\n```\r\n\r\n### Options\r\n\r\nThese are keys in the options object you can pass to the progress bar along with\r\n`total` as seen in the example above.\r\n\r\n- `total` total number of ticks to complete\r\n- `width` the displayed width of the progress bar defaulting to total\r\n- `stream` the output stream defaulting to stderr\r\n- `complete` completion character defaulting to \"=\"\r\n- `incomplete` incomplete character defaulting to \"-\"\r\n- `renderThrottle` minimum time between updates in milliseconds defaulting to 16\r\n- `clear` option to clear the bar on completion defaulting to false\r\n- `callback` optional function to call when the progress bar completes\r\n\r\n### Tokens\r\n\r\nThese are tokens you can use in the format of your progress bar.\r\n\r\n- `:bar` the progress bar itself\r\n- `:current` current tick number\r\n- `:total` total ticks\r\n- `:elapsed` time elapsed in seconds\r\n- `:percent` completion percentage\r\n- `:eta` estimated completion time in seconds\r\n\r\nTokens other than `:bar` may include a suffix to specify width, that is a minus\r\n(for left-padding) or plus (for right-padding) followed by an integer, for example\r\n`:percent-4`.\r\n\r\n### Custom Tokens\r\n\r\nYou can define custom tokens by adding a `{'name': value}` object parameter to your method (`tick()`, `update()`, etc.) calls.\r\n\r\n```javascript\r\nvar bar = new ProgressBar(':current: :token1 :token2', { total: 3 })\r\nbar.tick({\r\n  'token1': \"Hello\",\r\n  'token2': \"World!\\n\"\r\n})\r\nbar.tick(2, {\r\n  'token1': \"Goodbye\",\r\n  'token2': \"World!\"\r\n})\r\n```\r\nThe above example would result in the output below.\r\n\r\n```\r\n1: Hello World!\r\n3: Goodbye World!\r\n```\r\n\r\n## Examples\r\n\r\n### Download\r\n\r\nIn our download example each tick has a variable influence, so we pass the chunk\r\nlength which adjusts the progress bar appropriately relative to the total\r\nlength.\r\n\r\n```javascript\r\nvar ProgressBar = require('../');\r\nvar https = require('https');\r\n\r\nvar req = https.request({\r\n  host: 'download.github.com',\r\n  port: 443,\r\n  path: '/visionmedia-node-jscoverage-0d4608a.zip'\r\n});\r\n\r\nreq.on('response', function(res){\r\n  var len = parseInt(res.headers['content-length'], 10);\r\n\r\n  console.log();\r\n  var bar = new ProgressBar('  downloading [:bar] :percent-4 :eta-3s', {\r\n    complete: '=',\r\n    incomplete: ' ',\r\n    width: 20,\r\n    total: len\r\n  });\r\n\r\n  res.on('data', function (chunk) {\r\n    bar.tick(chunk.length);\r\n  });\r\n\r\n  res.on('end', function () {\r\n    console.log('\\n');\r\n  });\r\n});\r\n\r\nreq.end();\r\n```\r\n\r\nThe above example result in a progress bar like the one below.\r\n\r\n```\r\ndownloading [=====             ]  29% 3.7s\r\n```\r\n\r\nYou can see more examples in the `examples` folder.\r\n\r\n## License\r\n\r\nMIT\r\n",
+  "readmeFilename": "Readme.md",
+  "bugs": {
+    "url": "https://github.com/visionmedia/node-progress/issues"
+  },
+  "homepage": "https://github.com/visionmedia/node-progress#readme",
+  "_id": "progress@1.2.0",
+  "_shasum": "e9185384798a6911b3c37945b4dcf3ad28c13e46",
+  "_from": "git://github.com/jasongin/node-progress.git",
+  "_resolved": "git://github.com/jasongin/node-progress.git#4a6c2fdc782cff6c9f8933339e7aae0b38d682d4"
+}

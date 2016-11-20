@@ -12,17 +12,14 @@
 
 # Main code, tests, and docs
 !/lib/
+!/deps/
 !/test/
 !/doc/
 !/tools/
 !/setup/
 
-# Exclude most packages under node_modules because they are dev dependencies
-!/node_modules/
-/node_modules/*/
-
-# This one is actually a runtime dependency
-!/node_modules/progress/
+# Exclude packages under node_modules because they are dev dependencies
+/node_modules/
 
 # Default version link
 /default

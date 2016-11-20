@@ -35,6 +35,7 @@ These are keys in the options object you can pass to the progress bar along with
 - `stream` the output stream defaulting to stderr
 - `complete` completion character defaulting to "="
 - `incomplete` incomplete character defaulting to "-"
+- `renderThrottle` minimum time between updates in milliseconds defaulting to 16
 - `clear` option to clear the bar on completion defaulting to false
 - `callback` optional function to call when the progress bar completes
 
@@ -48,6 +49,32 @@ These are tokens you can use in the format of your progress bar.
 - `:elapsed` time elapsed in seconds
 - `:percent` completion percentage
 - `:eta` estimated completion time in seconds
+
+Tokens other than `:bar` may include a suffix to specify width, that is a minus
+(for left-padding) or plus (for right-padding) followed by an integer, for example
+`:percent-4`.
+
+### Custom Tokens
+
+You can define custom tokens by adding a `{'name': value}` object parameter to your method (`tick()`, `update()`, etc.) calls.
+
+```javascript
+var bar = new ProgressBar(':current: :token1 :token2', { total: 3 })
+bar.tick({
+  'token1': "Hello",
+  'token2': "World!\n"
+})
+bar.tick(2, {
+  'token1': "Goodbye",
+  'token2': "World!"
+})
+```
+The above example would result in the output below.
+
+```
+1: Hello World!
+3: Goodbye World!
+```
 
 ## Examples
 
@@ -71,7 +98,7 @@ req.on('response', function(res){
   var len = parseInt(res.headers['content-length'], 10);
 
   console.log();
-  var bar = new ProgressBar('  downloading [:bar] :percent :etas', {
+  var bar = new ProgressBar('  downloading [:bar] :percent-4 :eta-3s', {
     complete: '=',
     incomplete: ' ',
     width: 20,
@@ -93,7 +120,7 @@ req.end();
 The above example result in a progress bar like the one below.
 
 ```
-downloading [=====             ] 29% 3.7s
+downloading [=====             ]  29% 3.7s
 ```
 
 You can see more examples in the `examples` folder.
