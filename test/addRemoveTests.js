@@ -33,6 +33,8 @@ const nvsDownload = rewire('../lib/download');
 const nvsExtract = rewire('../lib/extract');
 const nvsList = rewire('../lib/list');
 
+const plat = (nvsUse.isWindows ? 'win' : process.platform);
+
 nvsUse.__set__('fs', mockFs);
 nvsLink.__set__('fs', mockFs);
 nvsLink.__set__('nvsUse', nvsUse);
@@ -41,17 +43,11 @@ nvsAddRemove.__set__('nvsUse', nvsUse);
 nvsAddRemove.__set__('nvsLink', nvsLink);
 nvsAddRemove.__set__('nvsDownload', nvsDownload);
 nvsAddRemove.__set__('nvsExtract', nvsExtract);
-nvsAddRemove.__set__('nvsList', nvsList);
 nvsAddRemove.__set__('fs', mockFs);
 nvsDownload.__set__('http', mockHttp);
 nvsDownload.__set__('https', mockHttp);
 nvsDownload.__set__('fs', mockFs);
 nvsExtract.__set__('childProcess', mockChildProc);
-nvsList.__set__('fs', mockFs);
-nvsList.__set__('http', mockHttp);
-nvsList.__set__('https', mockHttp);
-nvsList.__set__('nvsUse', nvsUse);
-nvsList.__set__('nvsLink', nvsLink);
 
 let mockWindowsEnv = {
     getEnvironmentVariable() {
@@ -62,9 +58,38 @@ let mockWindowsEnv = {
 };
 nvsLink.__set__('nvsWindowsEnv', mockWindowsEnv);
 
+let mockNvsList = {
+    mockReleasePackage(remoteUri, version, os, arch) {
+        let f = new NodeVersion('test1', version, arch);
+        f.os = os;
+        f.uri = remoteUri + 'v' + version +
+            '/node-v' + version + '-' + plat + '-' + arch + '.tar.gz';
+        f.shasumUri = remoteUri + 'v' + version  + '/SHASUMS256.txt';
+        return f;
+    },
+
+    mockRelease(remoteUri, version) {
+        let v = new NodeVersion('test1', version);
+        v.packages = [
+            mockNvsList.mockReleasePackage(remoteUri, version, NodeVersion.defaultOs, 'x86'),
+            mockNvsList.mockReleasePackage(remoteUri, version, NodeVersion.defaultOs, 'x64'),
+        ];
+        return v;
+    },
+
+    getRemoteVersionsAsync() {
+        return Promise.resolve([
+            mockNvsList.mockRelease('http://example.com/test1/', '7.8.9'),
+            mockNvsList.mockRelease('http://example.com/test1/', '5.6.7'),
+        ]);
+    },
+
+    find: require('../lib/list').find,
+};
+nvsAddRemove.__set__('nvsList', mockNvsList);
+
 const bin = (nvsUse.isWindows ? '' : 'bin');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
-const plat = (nvsUse.isWindows ? 'win' : process.platform);
 const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
 
 function setPath(pathEntries) {
@@ -94,8 +119,6 @@ test.beforeEach(t => {
     mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x86', bin, exe));
     mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x64', bin, exe));
     mockFs.mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
-    mockHttp.resourceMap['http://example.com/test1/index.json'] =
-        '[{"version":"v7.8.9"},{"version":"v5.6.7"}]';
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-win-x64.7z'] = 'test';
     mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' +
         plat + '-x64.tar.gz'] = 'test';

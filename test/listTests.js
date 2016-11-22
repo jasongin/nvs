@@ -110,6 +110,9 @@ test('List - marks', t => {
     t.true(resultLines.indexOf('#test2/6.7.8/x64') >= 0);
 });
 
-test.todo('List remote - single remote');
-test.todo('List remote - all remotes');
-test.todo('List remote - index not found');
+test.todo('List - aliased directories');
+test.todo('List remote - node releases');
+test.todo('List remote - node releases index not found');
+test.todo('List remote - github releases');
+test.todo('List remote - github releases index not found');
+test.todo('List remote - network path');

@@ -189,7 +189,7 @@ test('Use - re-use current version', t => {
     ]);
 
     let result = nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
-    t.is(result.length, 0);
+    t.deepEqual(result, []);
 
     let newPath = getPath();
     t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
@@ -288,3 +288,6 @@ test('Run - not found', t => {
         return error.code === 'ENOENT';
     });
 });
+
+test.todo('Exec');
+test.todo('Exec - not found');
