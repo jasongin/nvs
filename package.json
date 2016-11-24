@@ -5,6 +5,7 @@
   "main": "lib/main.js",
   "scripts": {
     "test": "ava --verbose",
+    "coverage": "nyc ava",
     "lint": "eslint lib"
   },
   "author": "",
@@ -19,10 +20,20 @@
     "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^2.0.1",
     "eslint-plugin-standard": "^2.0.1",
+    "nyc": "^10.0.0",
     "rewire": "^2.5.2"
   },
   "ava": {
     "files": "test/*Tests.js"
+  },
+  "nyc": {
+    "include": [
+      "lib/**"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ]
   },
   "eslintConfig": {
     "env": {
