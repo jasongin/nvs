@@ -1,0 +1,140 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "follow-redirects",
+        "scope": null,
+        "escapedName": "follow-redirects",
+        "name": "follow-redirects",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\temp\\nvs1"
+    ]
+  ],
+  "_from": "follow-redirects@latest",
+  "_id": "follow-redirects@1.1.0",
+  "_inCache": true,
+  "_location": "/follow-redirects",
+  "_nodeVersion": "6.7.0",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/follow-redirects-1.1.0.tgz_1478450677901_0.6304203481413424"
+  },
+  "_npmUser": {
+    "name": "rubenverborgh",
+    "email": "ruben.verborgh@gmail.com"
+  },
+  "_npmVersion": "3.10.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "follow-redirects",
+    "scope": null,
+    "escapedName": "follow-redirects",
+    "name": "follow-redirects",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.1.0.tgz",
+  "_shasum": "f0a07e20b96396f096873f16ea2b9638a79e7b0c",
+  "_shrinkwrap": null,
+  "_spec": "follow-redirects",
+  "_where": "C:\\temp\\nvs1",
+  "author": {
+    "name": "Olivier Lalonde",
+    "email": "olalonde@gmail.com",
+    "url": "http://www.syskall.com"
+  },
+  "bugs": {
+    "url": "https://github.com/olalonde/follow-redirects/issues"
+  },
+  "contributors": [
+    {
+      "name": "James Talmage",
+      "email": "james@talmage.io"
+    },
+    {
+      "name": "Ruben Verborgh",
+      "email": "ruben@verborgh.org",
+      "url": "https://ruben.verborgh.org/"
+    }
+  ],
+  "dependencies": {
+    "debug": "^2.2.0"
+  },
+  "description": "HTTP and HTTPS modules that follow redirects.",
+  "devDependencies": {
+    "bluebird": "^3.4.0",
+    "concat-stream": "^1.5.0",
+    "coveralls": "^2.11.2",
+    "express": "^4.13.0",
+    "mocha": "^3.1.2",
+    "nyc": "^8.3.1",
+    "xo": "^0.17.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "f0a07e20b96396f096873f16ea2b9638a79e7b0c",
+    "tarball": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.1.0.tgz"
+  },
+  "files": [
+    "index.js",
+    "create.js",
+    "http.js",
+    "https.js"
+  ],
+  "gitHead": "6626d432f0e6a9919dab492bce484e3d9f4657e4",
+  "homepage": "https://github.com/olalonde/follow-redirects",
+  "keywords": [
+    "http",
+    "https",
+    "url",
+    "redirect",
+    "client",
+    "location",
+    "utility"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "jamestalmage",
+      "email": "james@talmage.io"
+    },
+    {
+      "name": "olalonde",
+      "email": "olalonde@gmail.com"
+    },
+    {
+      "name": "rubenverborgh",
+      "email": "ruben.verborgh@gmail.com"
+    }
+  ],
+  "name": "follow-redirects",
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
+  },
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/olalonde/follow-redirects.git"
+  },
+  "scripts": {
+    "test": "xo && BLUEBIRD_DEBUG=1 nyc mocha"
+  },
+  "version": "1.1.0",
+  "xo": {
+    "envs": [
+      "mocha"
+    ]
+  }
+}
