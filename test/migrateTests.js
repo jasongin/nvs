@@ -34,6 +34,16 @@ nvsMigrate.__set__('childProcess', mockChildProc);
 nvsUse.__set__('fs', mockFs);
 nvsMigrate.__set__('fs', mockFs);
 
+let mockNvsList = {
+    getVersions() {
+        return [];
+    },
+    find(version, versions) {
+        return version;
+    },
+};
+nvsMigrate.__set__('nvsList', mockNvsList);
+
 let installPackageCalls = [];
 function mockInstallPackage(targetDir, packageName, version) {
     installPackageCalls.push({ targetDir, packageName, version });
