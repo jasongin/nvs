@@ -65,7 +65,7 @@ test.beforeEach(t => {
     mockFs.mockDir(path.join(testHome, 'test2', '5.6.7', 'x64'), []);
 });
 
-test('Get version from PATH - current', t => {
+test('Get current version', t => {
     setPath([
         testHome + 'test/5.6.7/x64' + bin,
         '/bin',
@@ -88,6 +88,8 @@ test('Get version from PATH - current', t => {
     t.is(v.semanticVersion, '5.6.7');
     t.is(v.arch, 'x64');
 });
+
+test.todo('Get current version - aliased directory');
 
 test('Use - full version', t => {
     let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);

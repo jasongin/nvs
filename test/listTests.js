@@ -10,6 +10,7 @@ global.settings = {
     cache: path.join(testHome, 'cache'),
     aliases: {},
     remotes: {
+        'default': 'test1',
         'test1': 'http://example.com/test1',
         'test2': 'http://example.com/test2',
     },
@@ -21,38 +22,60 @@ global.settings = {
 const linkPath = testHome + 'default';
 
 const mockFs = require('./mockFs');
-const mockChildProc = require('./mockChildProc');
+const mockHttp = require('./mockHttp');
 
 const NodeVersion = require('../lib/version');
-const nvsUse = rewire('../lib/use');
-const nvsLink = rewire('../lib/link');
 const nvsList = rewire('../lib/list');
+const getNodejsRemoteVersionsAsync = nvsList.getNodejsRemoteVersionsAsync;
+const getGithubRemoteVersionsAsync = nvsList.getGithubRemoteVersionsAsync;
+const getNetworkRemoteVersionsAsync = nvsList.getNetworkRemoteVersionsAsync;
 
-nvsUse.__set__('fs', mockFs);
-nvsLink.__set__('fs', mockFs);
-nvsLink.__set__('nvsUse', nvsUse);
-nvsUse.__set__('nvsLink', nvsLink);
 nvsList.__set__('fs', mockFs);
-nvsList.__set__('nvsUse', nvsUse);
-nvsList.__set__('nvsLink', nvsLink);
+nvsList.__set__('http', mockHttp);
+nvsList.__set__('https', mockHttp);
 
-const bin = (nvsUse.isWindows ? '' : 'bin');
-const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
+const bin = (process.platform === 'win32' ? '' : 'bin');
+const exe = (process.platform === 'win32' ? 'node.exe' : 'node');
 
-function setPath(pathEntries) {
-    process.env['PATH'] = pathEntries
-        .map(entry => Array.isArray(entry) ? path.join(...entry) : entry)
-        .map(mockFs.fixSep)
-        .join(path.delimiter);
-}
+let mockNvsUse = {
+    currentVersion: null,
+    getCurrentVersion() {
+        return this.currentVersion;
+    },
+    getVersionDir: require('../lib/use').getVersionDir,
+    getVersionBinary(version) {
+        return path.join(this.getVersionDir(version), bin, exe);
+    }
+};
+nvsList.__set__('nvsUse', mockNvsUse);
 
-function getPath() {
-    return process.env['PATH'].split(path.delimiter);
-}
+let mockNvsLink = {
+    linkedVersion: null,
+    getLinkedVersion() {
+        return this.linkedVersion;
+    }
+};
+nvsList.__set__('nvsLink', mockNvsLink);
+
+nvsList.__set__('getNodejsRemoteVersionsAsync', remoteName => {
+    let v5 = new NodeVersion('test1', '5.6.7');
+    let v6 = new NodeVersion('test1', '6.7.8');
+    let v710 = new NodeVersion('test1', '7.1.0');
+    v710.label = 'Test';
+    let v711 = new NodeVersion('test1', '7.1.1');
+    v711.label = 'Test';
+    let v72 = new NodeVersion('test1', '7.2.1');
+    return Promise.resolve([
+        v5,
+        v6,
+        v710,
+        v711,
+        v72,
+    ]);
+});
 
 test.beforeEach(t => {
     mockFs.reset();
-    mockChildProc.reset();
 
     mockFs.mockDir(testHome, ['test1', 'test2']);
     mockFs.mockDir(path.join(testHome, 'test1'), ['5.6.7']);
@@ -65,6 +88,36 @@ test.beforeEach(t => {
     mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x86', bin, exe));
     mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x64', bin, exe));
     mockFs.mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
+
+    mockNvsUse.currentVersion = null;
+    mockNvsLink.linkedVersion = null;
+
+    mockHttp.resourceMap['http://example.com/test1/index.json'] = JSON.stringify([
+        { version: 'v7.8.9', files: ['osx-x86', 'osx-x64', 'win-x86', 'win-x64'] },
+        { version: 'v5.6.7', files: ['osx-x86', 'osx-x64', 'win-x86', 'win-x64'] },
+    ]);
+
+    let downloadUrl = 'https://github.com/nodejs/node/releases/download/';
+    mockHttp.resourceMap['https://api.github.com/repos/nodejs/node/releases'] = JSON.stringify([
+        {
+            tag_name: 'v7.8.9',
+            assets: [
+                { browser_download_url: downloadUrl + 'v7.8.9/node-v7.8.9-osx-x64.tar.xz' },
+                { browser_download_url: downloadUrl + 'v7.8.9/node-v7.8.9-osx-x86.tar.xz' },
+                { browser_download_url: downloadUrl + 'v7.8.9/node-v7.8.9-win-x64.7z' },
+                { browser_download_url: downloadUrl + 'v7.8.9/node-v7.8.9-win-x86.7z' },
+            ],
+        },
+        {
+            tag_name: 'v5.6.7',
+            assets: [
+                { browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-osx-x64.tar.xz' },
+                { browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-osx-x86.tar.xz' },
+                { browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-win-x64.7z' },
+                { browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-win-x86.7z' },
+            ],
+        },
+    ]);
 });
 
 test('List - all', t => {
@@ -91,28 +144,131 @@ test('List - filter', t => {
 });
 
 test('List - marks', t => {
-    setPath([
-        [testHome, 'test1/5.6.7/x64', bin],
-        '/bin',
-    ]);
-    if (nvsUse.isWindows) {
-        mockFs.mockLink(linkPath, path.join(testHome, 'test2/6.7.8/x64'));
-    } else {
-        mockFs.mockLink(linkPath, 'test2/6.7.8/x64');
-    }
+    mockNvsUse.currentVersion = new NodeVersion('test1', '5.6.7', 'x64');
+    mockNvsLink.linkedVersion = new NodeVersion('test2', '6.7.8', 'x64');
 
     let result = nvsList.list();
     t.truthy(result);
     let resultLines = result.map(line => line.trim());
-    t.is(resultLines.length, 3);
-    t.true(resultLines.indexOf('test1/5.6.7/x86') >= 0);
-    t.true(resultLines.indexOf('>test1/5.6.7/x64') >= 0);
-    t.true(resultLines.indexOf('#test2/6.7.8/x64') >= 0);
+    t.deepEqual(resultLines, [
+        '>test1/5.6.7/x64',
+        'test1/5.6.7/x86',
+        '#test2/6.7.8/x64',
+    ]);
 });
 
-test.todo('List - aliased directories');
-test.todo('List remote - node releases');
-test.todo('List remote - node releases index not found');
-test.todo('List remote - github releases');
-test.todo('List remote - github releases index not found');
-test.todo('List remote - network path');
+test('List - aliased directories', t => {
+    const testAlias = 'test-alias';
+    const testAliasDir = '/test/alias/dir';
+    global.settings.aliases[testAlias] = testAliasDir;
+    mockNvsUse.currentVersion = new NodeVersion();
+    mockNvsUse.currentVersion.label = testAlias;
+    mockNvsUse.currentVersion.path = testAliasDir;
+    mockNvsLink.linkedVersion = mockNvsUse.currentVersion;
+
+    let result = nvsList.list();
+    t.truthy(result);
+    let resultLines = result.map(line => line.trim());
+    t.deepEqual(resultLines, [
+        'test1/5.6.7/x64',
+        'test1/5.6.7/x86',
+        'test2/6.7.8/x64',
+        '>#' + testAliasDir + ' (' + testAlias + ')',
+    ]);
+});
+
+test('List remote - lts filter', t => {
+    return nvsList.listRemoteAsync(NodeVersion.parse('lts')).then(result => {
+        t.truthy(result);
+        let resultLines = result.map(line => line.trim());
+        t.deepEqual(resultLines, [
+            'test1/7.1.1 (Test)',
+            'test1/7.1.0 (Test)',
+        ]);
+    });
+});
+
+test('List remote - partial version filter', t => {
+    return nvsList.listRemoteAsync(NodeVersion.parse('test1/5')).then(result => {
+        t.truthy(result);
+        let resultLines = result.map(line => line.trim());
+        t.deepEqual(resultLines, [
+            '*test1/5.6.7',
+        ]);
+    });
+});
+
+test('List remote - added mark', t => {
+    return nvsList.listRemoteAsync().then(result => {
+        t.truthy(result);
+        let resultLines = result.map(line => line.trim());
+        t.deepEqual(resultLines, [
+            'test1/7.2.1',
+            'test1/7.1.1 (Test)',
+            'test1/7.1.0 (Test)',
+            'test1/6.7.8',
+            '*test1/5.6.7',
+        ]);
+    });
+});
+
+test('List remote - linked mark', t => {
+    mockNvsLink.linkedVersion = new NodeVersion('test1', '5.6.7', 'x64');
+
+    return nvsList.listRemoteAsync().then(result => {
+        t.truthy(result);
+        let resultLines = result.map(line => line.trim());
+        t.deepEqual(resultLines, [
+            'test1/7.2.1',
+            'test1/7.1.1 (Test)',
+            'test1/7.1.0 (Test)',
+            'test1/6.7.8',
+            '#test1/5.6.7',
+        ]);
+    });
+});
+
+test('Get remote versions - nodejs', t => {
+    return getNodejsRemoteVersionsAsync('test1', 'http://example.com/test1/').then(result => {
+        t.truthy(result);
+        t.is(result.length, 2);
+        t.is(result[0].semanticVersion, '7.8.9');
+        t.is(result[1].semanticVersion, '5.6.7');
+    });
+});
+
+test('Get remote versions - nodejs index not found', t => {
+    delete mockHttp.resourceMap['http://example.com/test1/index.json'];
+    return getNodejsRemoteVersionsAsync('test1', 'http://example.com/test1/').then(result => {
+        t.fail();
+    }).catch(e => {
+        t.truthy(e);
+        t.truthy(e.cause);
+        t.true(e.cause.message.indexOf('404') >= 0);
+    });
+});
+
+test('Get remote versions - github releases', t => {
+    let testReleasesUri = 'https://github.com/nodejs/node/releases/';
+    return getGithubRemoteVersionsAsync('test1', testReleasesUri).then(result => {
+        t.truthy(result);
+        t.is(result.length, 2);
+        t.is(result[0].semanticVersion, '7.8.9');
+        t.is(result[1].semanticVersion, '5.6.7');
+    });
+});
+
+test('Get remote versions - github releases index not found', t => {
+    delete mockHttp.resourceMap['https://api.github.com/repos/nodejs/node/releases'];
+    let testReleasesUri = 'https://github.com/nodejs/node/releases/';
+    return getGithubRemoteVersionsAsync('test1', testReleasesUri).then(result => {
+        t.fail();
+    }).catch(e => {
+        t.truthy(e);
+        t.truthy(e.cause);
+        t.true(e.cause.message.indexOf('404') >= 0);
+    });
+});
+
+test.todo('Get remote versions - network path');
+test.todo('Get remote versions - network path not found');
