@@ -89,5 +89,20 @@ test('Parse remote, version label and arch', t => {
     t.is(v.arch, 'x86');
 });
 
+test('Parse other architectures', t => {
+    let v = NodeVersion.parse('test/latest/x64');
+    t.is(v.arch, 'x64');
+    v = NodeVersion.parse('test/latest/32');
+    t.is(v.arch, 'x86');
+    v = NodeVersion.parse('test/latest/64');
+    t.is(v.arch, 'x64');
+    v = NodeVersion.parse('test/latest/arm');
+    t.is(v.arch, 'arm');
+    v = NodeVersion.parse('test/latest/arm64');
+    t.is(v.arch, 'arm64');
+    v = NodeVersion.parse('test/latest/ppc64');
+    t.is(v.arch, 'ppc64');
+});
+
 test.todo('Compare');
 test.todo('Match');
