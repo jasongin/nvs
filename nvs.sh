@@ -28,9 +28,9 @@ nvs() {
 
         # Parse the bootstrap parameters from defaults.json. This isn't real JSON parsing so
         # its extremely limited, but defaults.json should not be edited by the user anyway.
-        local BOOTSTRAP_NODE_VERSION="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/",* *//' -e 's/.*\///')"
-        local BOOTSTRAP_NODE_REMOTE="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/",* *//' -e 's/\/.*//')"
-        local BOOTSTRAP_NODE_BASE_URI="$(grep "\"${BOOTSTRAP_NODE_REMOTE}\" *:" "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/",* *//')"
+        local BOOTSTRAP_NODE_VERSION="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/.*\///')"
+        local BOOTSTRAP_NODE_REMOTE="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/\/.*//')"
+        local BOOTSTRAP_NODE_BASE_URI="$(grep "\"${BOOTSTRAP_NODE_REMOTE}\" *:" "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//')"
 
         # Parse the OS name and architecture from `uname`.
         local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
@@ -38,7 +38,7 @@ nvs() {
 
         local BOOTSTRAP_ARCHIVE_EXT=".tar.gz"
         local TAR_FLAGS="-zxvf"
-        if [ "${NVS_USE_XZ}" -eq "1" ]; then
+        if [[ "${NVS_USE_XZ}" == "1" ]]; then
             BOOTSTRAP_ARCHIVE_EXT=".tar.xz"
             TAR_FLAGS="-Jxvf"
         fi
@@ -110,18 +110,22 @@ nvsudo() {
 
 # Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
 if [ -z "${NVS_USE_XZ}" ]; then
-    export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p")"
+    export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
     if [ -n "${LIBARCHIVE_VER}" ]; then
         LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
         if [ $LIBARCHIVE_VER -ge 002008000 ]; then
             export NVS_USE_XZ=1
+        else
+            export NVS_USE_XZ=0
         fi
     else
-        LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p")"
+        LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
         if [ -n "${LIBARCHIVE_VER}" ]; then
             LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
             if [ $LIBARCHIVE_VER -ge 001022000 ]; then
                 export NVS_USE_XZ=1
+            else
+                export NVS_USE_XZ=0
             fi
         fi
     fi
