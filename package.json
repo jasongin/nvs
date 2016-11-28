@@ -5,7 +5,7 @@
   "main": "lib/main.js",
   "scripts": {
     "test": "ava --verbose",
-    "coverage": "nyc ava",
+    "coverage": "nyc --all ava",
     "lint": "eslint lib"
   },
   "author": "",
