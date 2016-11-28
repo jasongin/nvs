@@ -22,22 +22,30 @@ global.settings = {
 const linkPath = testHome + 'default';
 
 const nvsUse = rewire('../lib/use');
-const nvsLink = rewire('../lib/link');
-const nvsList = rewire('../lib/list');
+nvsUse.__set__('fs', mockFs);
+
 const bin = (nvsUse.isWindows ? '' : '/bin');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
-
-nvsUse.__set__('nvsList', nvsList);
-nvsUse.__set__('nvsLink', nvsLink);
-nvsList.__set__('nvsUse', nvsUse);
-nvsList.__set__('nvsLink', nvsLink);
 
 const mockChildProc = require('./mockChildProc');
 nvsUse.__set__('childProcess', mockChildProc);
 
-nvsUse.__set__('fs', mockFs);
-nvsLink.__set__('fs', mockFs);
-nvsList.__set__('fs', mockFs);
+
+let mockNvsList = {
+    findVersion: null,
+    find(version, versions) {
+        return this.findVersion;
+    },
+};
+nvsUse.__set__('nvsList', mockNvsList);
+
+let mockNvsLink = {
+    linkedVersion: null,
+    getLinkedVersion() {
+        return this.linkedVersion;
+    },
+};
+nvsUse.__set__('nvsLink', mockNvsLink);
 
 function setPath(pathEntries) {
     process.env['PATH'] = pathEntries
@@ -53,6 +61,8 @@ function getPath() {
 test.beforeEach(t => {
     mockFs.reset();
     mockChildProc.reset();
+    mockNvsList.findVersion = null;
+    mockNvsLink.linkedVersion = null;
 
     mockFs.mockDir(testHome, ['test', 'test2']);
     mockFs.mockDir(path.join(testHome, 'test'), ['5.6.7']);
@@ -89,7 +99,20 @@ test('Get current version', t => {
     t.is(v.arch, 'x64');
 });
 
-test.todo('Get current version - aliased directory');
+test('Get current version - linked', t => {
+    setPath([
+        linkPath + bin,
+        '/bin',
+    ]);
+
+    mockNvsLink.linkedVersion = new NodeVersion('test2', '6.7.8', 'x86');
+    let v = nvsUse.getCurrentVersion();
+    t.truthy(v);
+    t.is(v.remoteName, 'test2');
+    t.is(v.semanticVersion, '6.7.8');
+    t.is(v.arch, 'x86');
+
+});
 
 test('Use - full version', t => {
     let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
@@ -97,6 +120,7 @@ test('Use - full version', t => {
     setPath([
         '/bin',
     ]);
+    mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
     nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
     let newPath = getPath();
     t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
@@ -108,6 +132,7 @@ test('Use - no arch', t => {
     setPath([
         '/bin',
     ]);
+    mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
     nvsUse.use(new NodeVersion('test', '5.6.7'));
     let newPath = getPath();
     t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
@@ -119,6 +144,7 @@ test('Use - partial version', t => {
     setPath([
         '/bin',
     ]);
+    mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
     nvsUse.use(new NodeVersion('test', '5'));
     let newPath = getPath();
     t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
@@ -133,6 +159,7 @@ test('Use - overwrite', t => {
         binDir,
         '/bin',
     ]);
+    mockNvsList.findVersion = new NodeVersion('test2', '5.6.7', 'x64');
     nvsUse.use(new NodeVersion('test2', '5.6.7', 'x64'));
     let newPath = getPath();
     t.deepEqual(newPath, [binDir2, mockFs.fixSep('/bin')]);
@@ -153,22 +180,15 @@ test('Use - none', t => {
 });
 
 test('Use - use default version', t => {
-    let binDir = mockFs.fixSep(testHome + 'test/5.6.7/x64' + bin);
-    mockFs.mockFile(binDir + '/' + exe);
     let binDir2 = mockFs.fixSep(testHome + 'test/6.7.8/x64' + bin);
     mockFs.mockFile(binDir2 + '/' + exe);
-
-    if (nvsUse.isWindows) {
-        mockFs.mockLink(linkPath, path.join(testHome, 'test/5.6.7/x64'));
-    } else {
-        mockFs.mockLink(linkPath, 'test/5.6.7/x64');
-    }
 
     setPath([
         binDir2,
         mockFs.fixSep('/bin'),
     ]);
 
+    mockNvsLink.linkedVersion = new NodeVersion('test', '6.7.8', 'x64');
     nvsUse.use('default');
 
     let newPath = getPath();
@@ -190,6 +210,7 @@ test('Use - re-use current version', t => {
         '/bin',
     ]);
 
+    mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
     let result = nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
     t.deepEqual(result, []);
 
@@ -219,6 +240,7 @@ test('Use - re-use default version', t => {
     let newPath = getPath();
     t.deepEqual(newPath, [linkPath + bin, mockFs.fixSep('/bin')]);
 
+    mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
     nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
 
     newPath = getPath();
@@ -269,6 +291,7 @@ test('Run', t => {
 
     mockChildProc.mockActions.push({ status: 99, error: null });
 
+    mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
     nvsUse.run(
         new NodeVersion('test', '5.6.7', 'x64'),
         ['test.js', '1', '2']);

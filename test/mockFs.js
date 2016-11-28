@@ -75,6 +75,11 @@ const mockFs = {
         throw e;
     },
 
+    readdir(path, cb) {
+        try { cb(null, this.readdirSync(path)); }
+        catch (e) { cb(e); }
+    },
+
     readlinkSync(path) {
         path = this.fixSep(path);
         if (this.trace) console.log('readlinkSync(' + path + ')');
@@ -92,6 +97,16 @@ const mockFs = {
         this.statSync(path);
     },
 
+    access(path, mode, cb) {
+        if (typeof mode === 'function') {
+            cb = mode;
+            mode = undefined;
+        }
+
+        try { cb(null, this.accessSync(path, mode)); }
+        catch (e) { cb(e); }
+    },
+
     statSync(path) {
         path = this.fixSep(path);
         if (this.trace) console.log('statSync(' + path + ')');
@@ -103,6 +118,11 @@ const mockFs = {
         let e = new Error('Path not found: ' + path);
         e.code = 'ENOENT';
         throw e;
+    },
+
+    stat(path, cb) {
+        try { cb(null, this.statSync(path)); }
+        catch (e) { cb(e); }
     },
 
     lstatSync(path) {

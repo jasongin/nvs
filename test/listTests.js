@@ -1,6 +1,7 @@
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
+const Error = require('../lib/error');
 
 test.before(require('./checkNodeVersion'));
 
@@ -249,7 +250,7 @@ test('Get remote versions - nodejs index not found', t => {
 });
 
 test('Get remote versions - github releases', t => {
-    let testReleasesUri = 'https://github.com/nodejs/node/releases/';
+    const testReleasesUri = 'https://github.com/nodejs/node/releases/';
     return getGithubRemoteVersionsAsync('test1', testReleasesUri).then(result => {
         t.truthy(result);
         t.is(result.length, 2);
@@ -260,7 +261,7 @@ test('Get remote versions - github releases', t => {
 
 test('Get remote versions - github releases index not found', t => {
     delete mockHttp.resourceMap['https://api.github.com/repos/nodejs/node/releases'];
-    let testReleasesUri = 'https://github.com/nodejs/node/releases/';
+    const testReleasesUri = 'https://github.com/nodejs/node/releases/';
     return getGithubRemoteVersionsAsync('test1', testReleasesUri).then(result => {
         t.fail();
     }).catch(e => {
@@ -270,5 +271,31 @@ test('Get remote versions - github releases index not found', t => {
     });
 });
 
-test.todo('Get remote versions - network path');
-test.todo('Get remote versions - network path not found');
+test('Get remote versions - network path', t => {
+    const testNetworkPath = '\\\\server\\share\\path\\';
+    mockFs.mockDir(testNetworkPath, ['5.6.7','7.8.9']);
+    mockFs.mockDir(testNetworkPath + '5.6.7', ['x86.msi', 'x64.msi']);
+    mockFs.mockDir(testNetworkPath + '7.8.9', ['x64.msi']);
+    mockFs.mockFile(testNetworkPath + '5.6.7\\x86.msi', '');
+    mockFs.mockFile(testNetworkPath + '5.6.7\\x64.msi', '');
+    mockFs.mockFile(testNetworkPath + '7.8.9\\x64.msi', '');
+
+    return getNetworkRemoteVersionsAsync('test1',
+        testNetworkPath + '{version}\\{arch}.msi').then(result => {
+        t.truthy(result);
+        t.is(result.length, 2);
+        t.is(result[0].semanticVersion, '5.6.7');
+        t.is(result[1].semanticVersion, '7.8.9');
+    });
+});
+
+test('Get remote versions - network path not found', t => {
+    const testNetworkPath = '\\\\server\\share\\path\\{version}\\{arch}.msi';
+    return getNetworkRemoteVersionsAsync('test1', testNetworkPath).then(result => {
+        t.fail();
+    }).catch(e => {
+        t.truthy(e);
+        t.truthy(e.cause);
+        t.is(e.cause.code, Error.ENOENT);
+    });
+});
