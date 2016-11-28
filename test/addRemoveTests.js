@@ -60,12 +60,13 @@ nvsLink.__set__('nvsWindowsEnv', mockWindowsEnv);
 
 let mockNvsList = {
     mockReleasePackage(remoteUri, version, os, arch) {
-        let f = new NodeVersion('test1', version, arch);
-        f.os = os;
-        f.uri = remoteUri + 'v' + version +
+        let p = new NodeVersion('test1', version, arch);
+        p.os = os;
+        p.uri = remoteUri + 'v' + version +
             '/node-v' + version + '-' + plat + '-' + arch + '.tar.gz';
-        f.shasumUri = remoteUri + 'v' + version  + '/SHASUMS256.txt';
-        return f;
+        p.ext = (NodeVersion.defaultOs === 'win' ? '.zip' : '.tar.gz');
+        p.shasumUri = remoteUri + 'v' + version  + '/SHASUMS256.txt';
+        return p;
     },
 
     mockRelease(remoteUri, version) {

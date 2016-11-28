@@ -121,6 +121,218 @@ test.beforeEach(t => {
     ]);
 });
 
+test('List - find latest for default remote', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    let result = nvsList.find(NodeVersion.parse('latest'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vA.remoteName);
+    t.is(result.semanticVersion, vA.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find latest with arch', t => {
+    let vA = new NodeVersion('test1', '5.6.7', 'x64');
+    let vB = new NodeVersion('test1', '5.6.7', 'x86');
+    let vC = new NodeVersion('test2', '6.7.8', 'x64');
+    let vD = new NodeVersion('test2', '6.6.7', 'x86');
+    let result = nvsList.find(NodeVersion.parse('latest/x86'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vB.remoteName);
+    t.is(result.semanticVersion, vB.semanticVersion);
+    t.is(result.arch, vB.arch);
+    result = nvsList.find(NodeVersion.parse('latest/x64'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vA.remoteName);
+    t.is(result.semanticVersion, vA.semanticVersion);
+    t.is(result.arch, vA.arch);
+});
+
+test('List - find latest for remote', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    let result = nvsList.find(NodeVersion.parse('test1/latest'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vA.remoteName);
+    t.is(result.semanticVersion, vA.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+    result = nvsList.find(NodeVersion.parse('test2/latest'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vC.remoteName);
+    t.is(result.semanticVersion, vC.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find lts for default remote', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    vB.label = 'testlts';
+    let vC = new NodeVersion('test1', '6.7.8');
+    let vD = new NodeVersion('test1', '6.6.7');
+    vD.label = 'testlts';
+    let result = nvsList.find(NodeVersion.parse('lts'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vD.remoteName);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find lts for remote', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    vB.label = 'testlts';
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    vD.label = 'testlts';
+    let result = nvsList.find(NodeVersion.parse('test1/lts'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vB.remoteName);
+    t.is(result.semanticVersion, vB.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+    result = nvsList.find(NodeVersion.parse('test2/lts'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vD.remoteName);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find current', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    vB.current = true;
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    let result = nvsList.find(NodeVersion.parse('current'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vB.remoteName);
+    t.is(result.semanticVersion, vB.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+
+    vB.current = false;
+    vD.current = true;
+    result = nvsList.find(NodeVersion.parse('current'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vD.remoteName);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find current for remote', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    vD.current = true;
+    let result = nvsList.find(NodeVersion.parse('test1/current'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.falsy(result);
+    result = nvsList.find(NodeVersion.parse('test2/current'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vD.remoteName);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find default', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    vB.default = true;
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    let result = nvsList.find(NodeVersion.parse('default'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vB.remoteName);
+    t.is(result.semanticVersion, vB.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+
+    vB.default = false;
+    vD.default = true;
+    result = nvsList.find(NodeVersion.parse('default'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vD.remoteName);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find default for remote', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    let vC = new NodeVersion('test2', '6.7.8');
+    let vD = new NodeVersion('test2', '6.6.7');
+    vD.default = true;
+    let result = nvsList.find(NodeVersion.parse('test1/default'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.falsy(result);
+    result = nvsList.find(NodeVersion.parse('test2/default'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.remoteName, vD.remoteName);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, NodeVersion.defaultArch);
+});
+
+test('List - find specific arch', t => {
+    let vA = new NodeVersion('test1', '5.6.7', 'x86');
+    let vB = new NodeVersion('test1', '5.5.6', 'x64');
+    let vC = new NodeVersion('test1', '6.7.8', 'x86');
+    let vD = new NodeVersion('test1', '6.6.7', 'x64');
+    let result = nvsList.find(NodeVersion.parse('5/x64'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.semanticVersion, vB.semanticVersion);
+    t.is(result.arch, vB.arch);
+    result = nvsList.find(NodeVersion.parse('5/x86'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.semanticVersion, vA.semanticVersion);
+    t.is(result.arch, vA.arch);
+    result = nvsList.find(NodeVersion.parse('6/x64'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.semanticVersion, vD.semanticVersion);
+    t.is(result.arch, vD.arch);
+    result = nvsList.find(NodeVersion.parse('6/x86'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.semanticVersion, vC.semanticVersion);
+    t.is(result.arch, vC.arch);
+});
+
+test('List - fill in arch', t => {
+    let vA = new NodeVersion('test1', '5.6.7');
+    let vB = new NodeVersion('test1', '5.5.6');
+    let vC = new NodeVersion('test1', '6.7.8');
+    let vD = new NodeVersion('test1', '6.6.7');
+    let result = nvsList.find(NodeVersion.parse('5/x64'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.semanticVersion, vA.semanticVersion);
+    t.is(result.arch, 'x64')
+
+    result = nvsList.find(NodeVersion.parse('5/x86'),
+        [vA, vB, vC, vD].sort(NodeVersion.compare));
+    t.truthy(result);
+    t.is(result.semanticVersion, vA.semanticVersion);
+    t.is(result.arch, 'x86')
+});
+
 test('List - all', t => {
     let result = nvsList.list();
     t.truthy(result);

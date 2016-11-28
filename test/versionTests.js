@@ -104,5 +104,19 @@ test('Parse other architectures', t => {
     t.is(v.arch, 'ppc64');
 });
 
-test.todo('Compare');
+test('Compare', t => {
+    let vA = new NodeVersion('test1', '5.6.7', 'x64');
+    let vB = new NodeVersion('test1', '5.6.7', 'x86');
+    let vC = new NodeVersion('test1', '5.5.6', 'x64');
+    let vD = new NodeVersion('test1', '5.5.6', 'x86');
+    let vE = new NodeVersion('test2', '6.7.8', 'x64');
+    let vF = new NodeVersion('test2', '6.7.8', 'x86');
+    let vG = new NodeVersion('test2', '6.6.7', 'x64');
+    let vH = new NodeVersion('test2', '6.6.7', 'x86');
+
+    let unsorted = [vE, vG, vB, vA, vD, vH, vF, vC];
+    let sorted = unsorted.sort(NodeVersion.compare);
+    t.deepEqual(sorted, [vA, vB, vC, vD, vE, vF, vG, vH]);
+});
+
 test.todo('Match');
