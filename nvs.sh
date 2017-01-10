@@ -10,140 +10,140 @@
 export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
 
 nvs() {
-    # The NVS_HOME path may be overridden in the environment.
-    if [ -z "${NVS_HOME}" ]; then
-        export NVS_HOME="${NVS_ROOT}"
-    fi
+	# The NVS_HOME path may be overridden in the environment.
+	if [ -z "${NVS_HOME}" ]; then
+		export NVS_HOME="${NVS_ROOT}"
+	fi
 
-    # Generate 32 bits of randomness, to avoid clashing with concurrent executions.
-    export NVS_POSTSCRIPT="${NVS_HOME}/nvs_tmp_$(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ").sh"
+	# Generate 32 bits of randomness, to avoid clashing with concurrent executions.
+	export NVS_POSTSCRIPT="${NVS_HOME}/nvs_tmp_$(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ").sh"
 
-    local BOOTSTRAP_NODE_PATH="${NVS_HOME}/cache/node"
-    if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
-        # Download a node binary to use to bootstrap the NVS script.
+	local BOOTSTRAP_NODE_PATH="${NVS_HOME}/cache/node"
+	if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
+		# Download a node binary to use to bootstrap the NVS script.
 
-        if [ ! -d "${NVS_HOME}/cache" ]; then
-            command mkdir -p "${NVS_HOME}/cache"
-        fi
+		if [ ! -d "${NVS_HOME}/cache" ]; then
+			command mkdir -p "${NVS_HOME}/cache"
+		fi
 
-        # Parse the bootstrap parameters from defaults.json. This isn't real JSON parsing so
-        # its extremely limited, but defaults.json should not be edited by the user anyway.
-        local BOOTSTRAP_NODE_VERSION="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/.*\///')"
-        local BOOTSTRAP_NODE_REMOTE="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/\/.*//')"
-        local BOOTSTRAP_NODE_BASE_URI="$(grep "\"${BOOTSTRAP_NODE_REMOTE}\" *:" "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//')"
+		# Parse the bootstrap parameters from defaults.json. This isn't real JSON parsing so
+		# its extremely limited, but defaults.json should not be edited by the user anyway.
+		local BOOTSTRAP_NODE_VERSION="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/.*\///')"
+		local BOOTSTRAP_NODE_REMOTE="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/\/.*//')"
+		local BOOTSTRAP_NODE_BASE_URI="$(grep "\"${BOOTSTRAP_NODE_REMOTE}\" *:" "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//')"
 
-        # Parse the OS name and architecture from `uname`.
-        local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
-        local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
+		# Parse the OS name and architecture from `uname`.
+		local BOOTSTRAP_NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
+		local BOOTSTRAP_NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
 
-        local BOOTSTRAP_ARCHIVE_EXT=".tar.gz"
-        local TAR_FLAGS="-zxvf"
-        if [[ "${NVS_USE_XZ}" == "1" ]]; then
-            BOOTSTRAP_ARCHIVE_EXT=".tar.xz"
-            TAR_FLAGS="-Jxvf"
-        fi
+		local BOOTSTRAP_ARCHIVE_EXT=".tar.gz"
+		local TAR_FLAGS="-zxvf"
+		if [[ "${NVS_USE_XZ}" == "1" ]]; then
+			BOOTSTRAP_ARCHIVE_EXT=".tar.xz"
+			TAR_FLAGS="-Jxvf"
+		fi
 
-        local BOOTSTRAP_NODE_FULLNAME="node-v${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
-        local BOOTSTRAP_NODE_URI="${BOOTSTRAP_NODE_BASE_URI}v${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
-        local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
+		local BOOTSTRAP_NODE_FULLNAME="node-v${BOOTSTRAP_NODE_VERSION}-${BOOTSTRAP_NODE_OS}-${BOOTSTRAP_NODE_ARCH}"
+		local BOOTSTRAP_NODE_URI="${BOOTSTRAP_NODE_BASE_URI}v${BOOTSTRAP_NODE_VERSION}/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
+		local BOOTSTRAP_NODE_ARCHIVE="${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}${BOOTSTRAP_ARCHIVE_EXT}"
 
-        echo "Downloading bootstrap node from ${BOOTSTRAP_NODE_URI}"
-        curl -L -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
+		echo "Downloading bootstrap node from ${BOOTSTRAP_NODE_URI}"
+		curl -L -# "${BOOTSTRAP_NODE_URI}" -o "${BOOTSTRAP_NODE_ARCHIVE}"
 
-        tar $TAR_FLAGS "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
-        mv "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/cache/node"
-        rm -r "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}"
+		tar $TAR_FLAGS "${BOOTSTRAP_NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${BOOTSTRAP_NODE_FULLNAME}/bin/node" > /dev/null 2>&1
+		mv "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}/bin/node" "${NVS_HOME}/cache/node"
+		rm -r "${NVS_HOME}/cache/${BOOTSTRAP_NODE_FULLNAME}"
 
-        if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
-            echo "Failed to download boostrap node binary."
-            return 1
-        fi
-        echo ""
-    fi
+		if [ ! -f "${BOOTSTRAP_NODE_PATH}" ]; then
+			echo "Failed to download boostrap node binary."
+			return 1
+		fi
+		echo ""
+	fi
 
-    local EXIT_CODE
+	local EXIT_CODE
 
-    # Check if invoked as a CD function that enables auto-switching.
-    if [[ "$@" == "cd" ]]; then
-        # Find the nearest .node-version file in current or parent directories
-        local DIR=$PWD
-        while [[ "$DIR" != "" && ! -e "$DIR/.node-version" ]]; do
-            if [[ "$DIR" == "/" ]]; then
-                DIR=
-            else
-                DIR=$(dirname "$DIR")
-            fi
-        done
+	# Check if invoked as a CD function that enables auto-switching.
+	if [[ "$@" == "cd" ]]; then
+		# Find the nearest .node-version file in current or parent directories
+		local DIR=$PWD
+		while [[ "$DIR" != "" && ! -e "$DIR/.node-version" ]]; do
+			if [[ "$DIR" == "/" ]]; then
+				DIR=
+			else
+				DIR=$(dirname "$DIR")
+			fi
+		done
 
-        # If it's different from the last auto-switched directory, then switch.
-        if [[ "$DIR" != "$NVS_AUTO_DIRECTORY" ]]; then
-            command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" auto
-            EXIT_CODE=$?
-        fi
+		# If it's different from the last auto-switched directory, then switch.
+		if [[ "$DIR" != "$NVS_AUTO_DIRECTORY" ]]; then
+			command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" auto
+			EXIT_CODE=$?
+		fi
 
-        export NVS_AUTO_DIRECTORY=$DIR
-    else
-        # Forward args to the main JavaScript file.
-        command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
-        EXIT_CODE=$?
-    fi
+		export NVS_AUTO_DIRECTORY=$DIR
+	else
+		# Forward args to the main JavaScript file.
+		command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
+		EXIT_CODE=$?
+	fi
 
-    # Call the post-invocation script if it is present, then delete it.
-    # This allows the invocation to potentially modify the caller's environment (e.g. PATH)
-    if [ -f "${NVS_POSTSCRIPT}" ]; then
-        source "${NVS_POSTSCRIPT}"
-        rm "${NVS_POSTSCRIPT}"
-        unset NVS_POSTSCRIPT
-    fi
+	# Call the post-invocation script if it is present, then delete it.
+	# This allows the invocation to potentially modify the caller's environment (e.g. PATH)
+	if [ -f "${NVS_POSTSCRIPT}" ]; then
+		source "${NVS_POSTSCRIPT}"
+		rm "${NVS_POSTSCRIPT}"
+		unset NVS_POSTSCRIPT
+	fi
 
-    return $EXIT_CODE
+	return $EXIT_CODE
 }
 
 nvsudo() {
-    # Forward the current version path to the sudo environment.
-    local NVS_CURRENT=`nvs which`
-    if [ -n "${NVS_CURRENT}" ]; then
-        NVS_CURRENT=`dirname "${NVS_CURRENT}"`
-    fi
-    sudo "NVS_CURRENT=${NVS_CURRENT}" "${NVS_ROOT}/nvs" $*
+	# Forward the current version path to the sudo environment.
+	local NVS_CURRENT=`nvs which`
+	if [ -n "${NVS_CURRENT}" ]; then
+		NVS_CURRENT=`dirname "${NVS_CURRENT}"`
+	fi
+	sudo "NVS_CURRENT=${NVS_CURRENT}" "${NVS_ROOT}/nvs" $*
 }
 
 # Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
 if [ -z "${NVS_USE_XZ}" ]; then
-    export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
-    if [ -n "${LIBARCHIVE_VER}" ]; then
-        LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
-        if [ $LIBARCHIVE_VER -ge 002008000 ]; then
-            export NVS_USE_XZ=1
-        else
-            export NVS_USE_XZ=0
-        fi
-    else
-        LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
-        if [ -n "${LIBARCHIVE_VER}" ]; then
-            LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
-            if [ $LIBARCHIVE_VER -ge 001022000 ]; then
-                export NVS_USE_XZ=1
-            else
-                export NVS_USE_XZ=0
-            fi
-        fi
-    fi
-    unset LIBARCHIVE_VER
+	export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
+	if [ -n "${LIBARCHIVE_VER}" ]; then
+		LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
+		if [ $LIBARCHIVE_VER -ge 002008000 ]; then
+			export NVS_USE_XZ=1
+		else
+			export NVS_USE_XZ=0
+		fi
+	else
+		LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
+		if [ -n "${LIBARCHIVE_VER}" ]; then
+			LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
+			if [ $LIBARCHIVE_VER -ge 001022000 ]; then
+				export NVS_USE_XZ=1
+			else
+				export NVS_USE_XZ=0
+			fi
+		fi
+	fi
+	unset LIBARCHIVE_VER
 fi
 
 # If some version is linked as the default, begin by using that version.
 if [ -d "${NVS_HOME}/default" ]; then
-    if [ -f "${NVS_HOME}/default/bin/node" ]; then
-        export PATH="${NVS_HOME}/default/bin:${PATH}"
-        unset NPM_CONFIG_PREFIX
-    elif [ -f "${NVS_HOME}/default/node" ]; then
-        export PATH="${NVS_HOME}/default:${PATH}"
-        unset NPM_CONFIG_PREFIX
-    fi
+	if [ -f "${NVS_HOME}/default/bin/node" ]; then
+		export PATH="${NVS_HOME}/default/bin:${PATH}"
+		unset NPM_CONFIG_PREFIX
+	elif [ -f "${NVS_HOME}/default/node" ]; then
+		export PATH="${NVS_HOME}/default:${PATH}"
+		unset NPM_CONFIG_PREFIX
+	fi
 fi
 
 # If sourced with parameters, invoke the function now with those parameters.
 if [ -n "$*" -a -z "${NVS_EXECUTE}" ]; then
-    nvs $*
+	nvs $*
 fi

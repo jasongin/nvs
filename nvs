@@ -8,7 +8,7 @@
 
 # Enable the nvsudo() shell function to modify the PATH of the sudo environment.
 if [ -n "${NVS_CURRENT}" ]; then
-    export PATH="${NVS_CURRENT}:$PATH"
+	export PATH="${NVS_CURRENT}:$PATH"
 fi
 
 export NVS_EXECUTE=1

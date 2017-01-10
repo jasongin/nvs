@@ -1,76 +1,77 @@
 {
-  "name": "nvs",
-  "version": "0.8.4",
-  "description": "Node Version Switcher",
-  "main": "lib/main.js",
-  "scripts": {
-    "test": "ava --verbose",
-    "coverage": "nyc --all ava",
-    "lint": "eslint lib"
-  },
-  "author": "",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jasongin/nvs"
-  },
-  "devDependencies": {
-    "ava": "^0.16.0",
-    "eslint": "^3.7.1",
-    "eslint-config-standard": "^6.2.0",
-    "eslint-plugin-promise": "^2.0.1",
-    "eslint-plugin-standard": "^2.0.1",
-    "nyc": "^10.0.0",
-    "rewire": "^2.5.2"
-  },
-  "ava": {
-    "files": "test/*Tests.js"
-  },
-  "nyc": {
-    "include": [
-      "lib/**"
-    ],
-    "reporter": [
-      "text",
-      "html"
-    ]
-  },
-  "eslintConfig": {
-    "env": {
-      "node": true,
-      "es6": true
-    },
-    "extends": "standard",
-    "plugins": [
-      "standard",
-      "promise"
-    ],
-    "rules": {
-      "indent": [
-        "error",
-        4,
-        {
-          "SwitchCase": 1
-        }
-      ],
-      "semi": [
-        "error",
-        "always"
-      ],
-      "space-before-function-paren": [
-        "error",
-        {
-          "anonymous": "always",
-          "named": "never"
-        }
-      ],
-      "comma-dangle": [
-        "error",
-        "always-multiline"
-      ],
-      "no-var": "error"
-    }
-  },
-  "dependencies": {
-  }
+	"name": "nvs",
+	"version": "0.8.4",
+	"description": "Node Version Switcher",
+	"main": "lib/main.js",
+	"scripts": {
+		"test": "ava --verbose",
+		"coverage": "nyc --all ava",
+		"lint": "eslint lib"
+	},
+	"author": "",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jasongin/nvs"
+	},
+	"devDependencies": {
+		"ava": "^0.16.0",
+		"eslint": "^3.7.1",
+		"eslint-config-standard": "^6.2.0",
+		"eslint-plugin-promise": "^2.0.1",
+		"eslint-plugin-standard": "^2.0.1",
+		"nyc": "^10.0.0",
+		"rewire": "^2.5.2"
+	},
+	"ava": {
+		"files": "test/*Tests.js"
+	},
+	"nyc": {
+		"include": [
+			"lib/**"
+		],
+		"reporter": [
+			"text",
+			"html"
+		]
+	},
+	"eslintConfig": {
+		"env": {
+			"node": true,
+			"es6": true
+		},
+		"extends": "standard",
+		"plugins": [
+			"standard",
+			"promise"
+		],
+		"rules": {
+			"no-tabs": "off",
+			"indent": [
+				"error",
+				"tab",
+				{
+					"SwitchCase": 1
+				}
+			],
+			"semi": [
+				"error",
+				"always"
+			],
+			"space-before-function-paren": [
+				"error",
+				{
+					"anonymous": "always",
+					"named": "never"
+				}
+			],
+			"comma-dangle": [
+				"error",
+				"always-multiline"
+			],
+			"no-var": "error"
+		}
+	},
+	"dependencies": {
+	}
 }
