@@ -7,7 +7,14 @@
 # This shell script merely bootstraps node.exe if necessary, then forwards
 # arguments to the main nvs.js script.
 
-export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
+# Try to locate the NVS_ROOT path, where the nvs scripts are installed.
+if [ -z ${NVS_ROOT} ]; then
+	if [ -n "${BASH_SOURCE}" ]; then
+		export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
+	elif [ -n "${NVS_HOME}" ]; then
+		export NVS_ROOT="${NVS_HOME}"
+	fi
+fi
 
 nvs() {
 	# The NVS_HOME path may be overridden in the environment.
@@ -38,7 +45,7 @@ nvs() {
 
 		local BOOTSTRAP_ARCHIVE_EXT=".tar.gz"
 		local TAR_FLAGS="-zxvf"
-		if [[ "${NVS_USE_XZ}" == "1" ]]; then
+		if [ "${NVS_USE_XZ}" == "1" ]; then
 			BOOTSTRAP_ARCHIVE_EXT=".tar.xz"
 			TAR_FLAGS="-Jxvf"
 		fi
@@ -64,34 +71,37 @@ nvs() {
 	local EXIT_CODE
 
 	# Check if invoked as a CD function that enables auto-switching.
-	if [[ "$@" == "cd" ]]; then
-		# Find the nearest .node-version file in current or parent directories
-		local DIR=$PWD
-		while [[ "$DIR" != "" && ! -e "$DIR/.node-version" ]]; do
-			if [[ "$DIR" == "/" ]]; then
-				DIR=
-			else
-				DIR=$(dirname "$DIR")
+	case "$@" in
+		"cd")
+			# Find the nearest .node-version file in current or parent directories
+			local DIR=$PWD
+			while [ "$DIR" != "" -a ! -e "$DIR/.node-version" ]; do
+				if [ "$DIR" == "/" ]; then
+					DIR=
+				else
+					DIR=$(dirname "$DIR")
+				fi
+			done
+
+			# If it's different from the last auto-switched directory, then switch.
+			if [ "$DIR" != "$NVS_AUTO_DIRECTORY" ]; then
+				command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" auto
+				EXIT_CODE=$?
 			fi
-		done
 
-		# If it's different from the last auto-switched directory, then switch.
-		if [[ "$DIR" != "$NVS_AUTO_DIRECTORY" ]]; then
-			command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" auto
+			export NVS_AUTO_DIRECTORY=$DIR
+			;;
+		*)
+			# Forward args to the main JavaScript file.
+			command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
 			EXIT_CODE=$?
-		fi
-
-		export NVS_AUTO_DIRECTORY=$DIR
-	else
-		# Forward args to the main JavaScript file.
-		command "${BOOTSTRAP_NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
-		EXIT_CODE=$?
-	fi
+			;;
+	esac
 
 	# Call the post-invocation script if it is present, then delete it.
 	# This allows the invocation to potentially modify the caller's environment (e.g. PATH)
 	if [ -f "${NVS_POSTSCRIPT}" ]; then
-		source "${NVS_POSTSCRIPT}"
+		. "${NVS_POSTSCRIPT}"
 		rm "${NVS_POSTSCRIPT}"
 		unset NVS_POSTSCRIPT
 	fi
