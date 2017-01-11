@@ -8,12 +8,10 @@
 # arguments to the main nvs.js script.
 
 # Try to locate the NVS_ROOT path, where the nvs scripts are installed.
-if [ -z ${NVS_ROOT} ]; then
-	if [ -n "${BASH_SOURCE}" ]; then
-		export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
-	elif [ -n "${NVS_HOME}" ]; then
-		export NVS_ROOT="${NVS_HOME}"
-	fi
+if [ -n "${BASH_SOURCE}" ]; then
+	export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
+elif [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
+	export NVS_ROOT="${NVS_HOME}"
 fi
 
 nvs() {
