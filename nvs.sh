@@ -43,7 +43,7 @@ nvs() {
 
 		local BOOTSTRAP_ARCHIVE_EXT=".tar.gz"
 		local TAR_FLAGS="-zxvf"
-		if [ "${NVS_USE_XZ}" == "1" ]; then
+		if [ "${NVS_USE_XZ}" = "1" ]; then
 			BOOTSTRAP_ARCHIVE_EXT=".tar.xz"
 			TAR_FLAGS="-Jxvf"
 		fi
@@ -74,7 +74,7 @@ nvs() {
 			# Find the nearest .node-version file in current or parent directories
 			local DIR=$PWD
 			while [ "$DIR" != "" -a ! -e "$DIR/.node-version" ]; do
-				if [ "$DIR" == "/" ]; then
+				if [ "$DIR" = "/" ]; then
 					DIR=
 				else
 					DIR=$(dirname "$DIR")
