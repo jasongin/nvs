@@ -4,7 +4,7 @@ nvs auto
 nvs auto on
 nvs auto off
 ```
-When invoked with no parameters, `nvs auto` searches for the nearest `.node-version` file in the current directory or parent directories. If found, the version specified in the file is then added (if necessary) and used. If no `.node-version` file is found, then the default (linked) version, if any, is used.
+When invoked with no parameters, `nvs auto` searches for the nearest `.node-version` file in the current directory or parent directories. If found, the version specified in the file is then downloaded (if necessary) and used. If no `.node-version` file is found, then the default (linked) version, if any, is used.
 
 The `nvs auto on` command enables automatic switching as needed whenever the current shell's working directory changes; `nvs auto off` disables automatic switching in the current shell. (This feature is not supported in Windows Command Prompt.)
 

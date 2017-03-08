@@ -12,5 +12,5 @@ if [ -n "${NVS_CURRENT}" ]; then
 fi
 
 export NVS_EXECUTE=1
-source ./nvs.sh
+source "`dirname $0`/nvs.sh"
 nvs $*

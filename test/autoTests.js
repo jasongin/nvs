@@ -47,10 +47,17 @@ const mockNvsList = {
 	}
 };
 
+const mockNvsLink = {
+	getLinkedVersion() {
+		return true;
+	}
+};
+
 nvsAuto.__set__('fs', mockFs);
 nvsAuto.__set__('nvsUse', mockNvsUse);
 nvsAuto.__set__('nvsAddRemove', mockNvsAddRemove);
 nvsAuto.__set__('nvsList', mockNvsList);
+nvsAuto.__set__('nvsLink', mockNvsLink);
 
 test.beforeEach(t => {
 	mockFs.reset();
