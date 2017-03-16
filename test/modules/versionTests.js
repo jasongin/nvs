@@ -8,6 +8,7 @@ global.settings = {
 		'default': 'test',
 		'test': 'http://example.com/test',
 		'test2': 'http://example.com/test2',
+		'chakracore-nightly': 'https://nodejs.org/download/chakracore-nightly/',
 	},
 };
 
@@ -155,6 +156,38 @@ test('GetBinaryNameFromVersion', t => {
 	t.is(NodeVersion.getBinaryNameFromVersion('5.6'), 'node');
 	t.is(NodeVersion.getBinaryNameFromVersion('6.8'), 'node');
 	t.is(NodeVersion.getBinaryNameFromVersion('7.8'), 'node');
+});
+
+test('FuzzyNodeVersion', t => {
+	const vA = new NodeVersion('test', '5.6.7', 'x64');
+	const vB = new NodeVersion('chakracore-nightly', '8.0.0-nightly123455', 'x64');
+	const vBr = new NodeVersion('chakracore-nightly', '8.0.0', 'x64');
+	const vC = new NodeVersion('node', '5.5.6', 'x64');
+
+	const fvA = NodeVersion.parse('node');
+	t.truthy(fvA.fuzzy);
+	t.falsy(fvA.match(vA));
+	t.falsy(fvA.match(vB));
+	t.truthy(fvA.match(vC));
+
+	const fvB = NodeVersion.parse('chakra');
+	t.truthy(fvB.fuzzy);
+	t.falsy(fvB.match(vA));
+	t.truthy(fvB.match(vB));
+	t.falsy(fvB.match(vC));
+
+	const fvC = NodeVersion.parse('5');
+	t.falsy(fvC.fuzzy);
+	t.truthy(fvC.match(vA));
+	t.falsy(fvC.match(vB));
+	t.falsy(fvC.match(vC));
+
+	const fvD = NodeVersion.parse('8');
+	t.falsy(fvD.fuzzy);
+	t.falsy(fvD.match(vA));
+	t.falsy(fvD.match(vB));
+	t.falsy(fvD.match(vBr));
+	t.falsy(fvD.match(vC));
 });
 
 test.todo('Match');
