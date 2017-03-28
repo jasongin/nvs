@@ -51,7 +51,7 @@ if (-not (Test-Path $bootstrapNodePath)) {
 	powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodeArchivePath' "
 
 	# Extract node.exe from the archive using 7zr.exe.
-	. "$env:NVS_HOME\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" -y "$bootstrapNodeArchivePath" "node-v$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
+	. "$scriptDir\tools\7-Zip\7zr.exe" e "-o$(Split-Path $bootstrapNodePath)" -y "$bootstrapNodeArchivePath" "node-v$bootstrapNodeVersion-win-$bootstrapNodeArch\node.exe" > $null
 
 	Write-Output ""
 
