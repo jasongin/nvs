@@ -113,10 +113,13 @@ test('Compare', t => {
 	let vF = new NodeVersion('test2', '6.7.8', 'x86');
 	let vG = new NodeVersion('test2', '6.6.7', 'x64');
 	let vH = new NodeVersion('test2', '6.6.7', 'x86');
+	let vI = new NodeVersion('test2', '5.0.0', 'x64');
+	let vJ = new NodeVersion('test2', '5.0.0-B', 'x64');
+	let vK = new NodeVersion('test2', '5.0.0-A', 'x64');
 
-	let unsorted = [vE, vG, vB, vA, vD, vH, vF, vC];
+	let unsorted = [vE, vG, vK, vB, vA, vI, vD, vJ, vH, vF, vC];
 	let sorted = unsorted.sort(NodeVersion.compare);
-	t.deepEqual(sorted, [vA, vB, vC, vD, vE, vF, vG, vH]);
+	t.deepEqual(sorted, [vA, vB, vC, vD, vE, vF, vG, vH, vI, vJ, vK]);
 });
 
 test.todo('Match');
