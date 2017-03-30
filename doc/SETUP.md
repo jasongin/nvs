@@ -28,9 +28,14 @@ git clone https://github.com/jasongin/nvs "%NVS_HOME"
 ```
 
 ### Manual setup - PowerShell
-1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
+1. Specify the installation path using **_one_** of the following two commands:
+
+ - For a current-user installation (recommended):
 ```powershell
 $env:NVS_HOME="$env:LOCALAPPDATA\nvs"
+```
+ - Or for a system installation:
+```powershell
 $env:NVS_HOME="$env:ProgramData\nvs"
 ```
 2. Clone this repo:
@@ -44,14 +49,40 @@ git clone https://github.com/jasongin/nvs "$env:NVS_HOME"
 
 After installation, running just `nvs` from the current shell or any new Command Prompt or PowerShell then invokes either the `nvs.cmd` or `nvs.ps1` script accordingly.
 
-### Bash on Windows
+### Git Bash on Windows
+NVS can work in Git Bash on Windows (the bash tools installed by [Git](https://git-scm.com/) for Windows), though it requires some manual configuration:
 
-NVS can also work in [Unbutu Bash on Windows 10](https://msdn.microsoft.com/en-us/commandline/wsl/about) using the following installation instructions. Of course then that instance of NVS and any Node.js versions it installs in that environment are only available to the Ubuntu subsystem.
+1. Install NVS using the either the Windows MSI, Command Prompt, or PowerShell instructions above.
+
+2. Ensure there is a `.bash_profile` file in your home (`%USERPROFILE%`) directory that calls `.bashrc`. Create the file if it doesn't exist. It should include at least the following line:
+```sh
+if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
+```
+
+3. Ensure there is a `.bashrc` file in your home directory. Create the file if it doesn't exist. Add the following lines to `.bashrc`:
+```sh
+export NVS_HOME=$HOME/AppData/Local/nvs
+. $NVS_HOME/nvs.sh
+```
+
+In some older versions of Git bash, the `HOME` environment variable might not be initialized automatically, so you may need to insert a line at the top of `.bashrc`:
+```sh
+export HOME=/c/Users/$USERNAME
+```
+
+### Ubuntu Bash on Windows 10
+
+NVS can also work in [Unbutu Bash on Windows 10](https://msdn.microsoft.com/en-us/commandline/wsl/about) using the following installation instructions for Linux. But be aware that instance of NVS and any Node.js versions it installs in that environment are only available to the Ubuntu subsystem. It actually downloads and runs the Node.js Linux platform binaries.
 
 ## Mac, Linux
-1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
+1. Specify the installation path using **_one_** of the following two commands:
+
+ - For a current-user installation (recommended):
 ```sh
 export NVS_HOME="$HOME/.nvs"
+```
+ - Or for a system installation:
+```sh
 export NVS_HOME="/usr/local/nvs"
 ```
 2. Clone this repo:
