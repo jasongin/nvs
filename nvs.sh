@@ -14,6 +14,14 @@ elif [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
 	export NVS_ROOT="${NVS_HOME}"
 fi
 
+# Parse the OS name and architecture from `uname`.
+export NVS_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
+
+# When running inside Git bash on Windows, `uname` reports "MINGW64_NT".
+case $NVS_OS in mingw64_nt*)
+	export NVS_OS="win"
+esac
+
 nvs() {
 	# The NVS_HOME path may be overridden in the environment.
 	if [ -z "${NVS_HOME}" ]; then
@@ -23,17 +31,10 @@ nvs() {
 	# Generate 32 bits of randomness, to avoid clashing with concurrent executions.
 	export NVS_POSTSCRIPT="${NVS_HOME}/nvs_tmp_$(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ").sh"
 
-	# Parse the OS name and architecture from `uname`.
-	local NODE_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
 	local NODE_EXE="node"
-	local NODE_ARCHIVE_EXT=".tar.gz"
-
-	# When running inside Git bash on Windows, `uname` reports "MINGW64_NT".
-	case $NODE_OS in mingw64_nt*)
-		NODE_OS="win"
+	if [ "${NVS_OS}" = "win" ]; then
 		NODE_EXE="node.exe"
-		NODE_ARCHIVE_EXT=".7z"
-	esac
+	fi
 
 	local NODE_PATH="${NVS_HOME}/cache/${NODE_EXE}"
 	if [ ! -f "${NODE_PATH}" ]; then
@@ -43,9 +44,18 @@ nvs() {
 		local NODE_REMOTE="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//' -e 's/\/.*//')"
 		local NODE_BASE_URI="$(grep "\"${NODE_REMOTE}\" *:" "${NVS_ROOT}/defaults.json" | sed -e 's/.*: *"//' -e 's/"[^\n]*//')"
 
+		local NODE_ARCHIVE_EXT=".tar.gz"
+		local TAR_FLAGS="-zxvf"
+		if [ "${NVS_OS}" = "win" ]; then
+			NODE_ARCHIVE_EXT=".7z"
+		elif [ "${NVS_USE_XZ}" = "1" ]; then
+			NODE_ARCHIVE_EXT=".tar.xz"
+			TAR_FLAGS="-Jxvf"
+		fi
+
 		# Download a node binary to use to bootstrap the NVS script.
 		local NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
-		local NODE_FULLNAME="node-v${NODE_VERSION}-${NODE_OS}-${NODE_ARCH}"
+		local NODE_FULLNAME="node-v${NODE_VERSION}-${NVS_OS}-${NODE_ARCH}"
 		local NODE_URI="${NODE_BASE_URI}v${NODE_VERSION}/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 		local NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 
@@ -60,18 +70,12 @@ nvs() {
 			curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
 		fi
 
-		if [ "${NODE_OS}" = "win" ]; then
+		if [ "${NVS_OS}" = "win" ]; then
 			"${NVS_ROOT}/tools/7-Zip/7zr.exe" e "-o${NVS_HOME}/cache" -y "${NODE_ARCHIVE}" "${NODE_FULLNAME}/${NODE_EXE}" > /dev/null 2>&1
 		else
-			local TAR_FLAGS="-zxvf"
-			if [ "${NVS_USE_XZ}" = "1" ]; then
-				NODE_ARCHIVE_EXT=".tar.xz"
-				TAR_FLAGS="-Jxvf"
-			fi
-
 			tar $TAR_FLAGS "${NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
-			mv "${NVS_HOME}/cache/${NODE_FULLNAME}/bin/${NODE_EXE}" "${NVS_HOME}/cache/${NODE_EXE}"
-			rm -r "${NVS_HOME}/cache/${NODE_FULLNAME}"
+			mv "${NVS_HOME}/cache/${NODE_FULLNAME}/bin/${NODE_EXE}" "${NVS_HOME}/cache/${NODE_EXE}" > /dev/null 2>& 1
+			rm -r "${NVS_HOME}/cache/${NODE_FULLNAME}" > /dev/null 2>& 1
 		fi
 
 		if [ ! -f "${NODE_PATH}" ]; then
@@ -131,28 +135,30 @@ nvsudo() {
 	sudo "NVS_CURRENT=${NVS_CURRENT}" "${NVS_ROOT}/nvs" $*
 }
 
-# Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
-if [ -z "${NVS_USE_XZ}" ]; then
-	export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
-	if [ -n "${LIBARCHIVE_VER}" ]; then
-		LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
-		if [ $LIBARCHIVE_VER -ge 002008000 ]; then
-			export NVS_USE_XZ=1
-		else
-			export NVS_USE_XZ=0
-		fi
-	else
-		LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
+if [ ! "${NVS_OS}" = "win" ]; then
+	# Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
+	if [ -z "${NVS_USE_XZ}" ]; then
+		export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
 		if [ -n "${LIBARCHIVE_VER}" ]; then
 			LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
-			if [ $LIBARCHIVE_VER -ge 001022000 ]; then
+			if [ $LIBARCHIVE_VER -ge 002008000 ]; then
 				export NVS_USE_XZ=1
 			else
 				export NVS_USE_XZ=0
 			fi
+		else
+			LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
+			if [ -n "${LIBARCHIVE_VER}" ]; then
+				LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
+				if [ $LIBARCHIVE_VER -ge 001022000 ]; then
+					export NVS_USE_XZ=1
+				else
+					export NVS_USE_XZ=0
+				fi
+			fi
 		fi
+		unset LIBARCHIVE_VER
 	fi
-	unset LIBARCHIVE_VER
 fi
 
 # If some version is linked as the default, begin by using that version.
