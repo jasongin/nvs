@@ -132,7 +132,7 @@ test('Use - no arch', t => {
 	setPath([
 		'/bin',
 	]);
-	mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
+	mockNvsList.findVersion = new NodeVersion('test', '5.6.7', NodeVersion.defaultArch);
 	nvsUse.use(new NodeVersion('test', '5.6.7'));
 	let newPath = getPath();
 	t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
@@ -144,7 +144,7 @@ test('Use - partial version', t => {
 	setPath([
 		'/bin',
 	]);
-	mockNvsList.findVersion = new NodeVersion('test', '5.6.7', 'x64');
+	mockNvsList.findVersion = new NodeVersion('test', '5.6.7', NodeVersion.defaultArch);
 	nvsUse.use(new NodeVersion('test', '5'));
 	let newPath = getPath();
 	t.deepEqual(newPath, [binDir, mockFs.fixSep('/bin')]);
