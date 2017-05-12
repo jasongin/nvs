@@ -1,6 +1,6 @@
 const test = require('ava').test;
 
-test.before(require('./checkNodeVersion'));
+test.before(require('../checkNodeVersion'));
 
 global.settings = {
 	aliases: {},
@@ -11,7 +11,7 @@ global.settings = {
 	},
 };
 
-const NodeVersion = require('../lib/version');
+const NodeVersion = require('../../lib/version');
 
 test('Parse semantic version', t => {
 	let v = NodeVersion.parse('5.6.7');

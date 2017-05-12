@@ -1,9 +1,9 @@
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
-const Error = require('../lib/error');
+const Error = require('../../lib/error');
 
-test.before(require('./checkNodeVersion'));
+test.before(require('../checkNodeVersion'));
 
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
 global.settings = {
@@ -21,17 +21,17 @@ global.settings = {
 
 const linkPath = testHome + 'default';
 
-const mockFs = require('./mockFs');
-const mockChildProc = require('./mockChildProc');
-const mockHttp = require('./mockHttp');
+const mockFs = require('../mocks/fs');
+const mockChildProc = require('../mocks/child_process');
+const mockHttp = require('../mocks/http');
 
-const NodeVersion = require('../lib/version');
-const nvsUse = rewire('../lib/use');
-const nvsLink = rewire('../lib/link');
-const nvsAddRemove = rewire('../lib/addRemove');
-const nvsDownload = rewire('../lib/download');
-const nvsExtract = rewire('../lib/extract');
-const nvsList = rewire('../lib/list');
+const NodeVersion = require('../../lib/version');
+const nvsUse = rewire('../../lib/use');
+const nvsLink = rewire('../../lib/link');
+const nvsAddRemove = rewire('../../lib/addRemove');
+const nvsDownload = rewire('../../lib/download');
+const nvsExtract = rewire('../../lib/extract');
+const nvsList = rewire('../../lib/list');
 
 const plat = (nvsUse.isWindows ? 'win' : process.platform);
 
@@ -85,7 +85,7 @@ let mockNvsList = {
 		]);
 	},
 
-	find: require('../lib/list').find,
+	find: require('../../lib/list').find,
 };
 nvsAddRemove.__set__('nvsList', mockNvsList);
 

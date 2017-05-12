@@ -2,9 +2,9 @@ const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
 
-test.before(require('./checkNodeVersion'));
+test.before(require('../checkNodeVersion'));
 
-const mockFs = require('./mockFs');
+const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
 global.settings = {
@@ -19,7 +19,7 @@ global.settings = {
 	quiet: true,
 };
 
-const nvsAuto = rewire('../lib/auto');
+const nvsAuto = rewire('../../lib/auto');
 
 const mockNvsUse = {
 	usedVersions: [],

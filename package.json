@@ -4,8 +4,8 @@
 	"description": "Node Version Switcher",
 	"main": "lib/main.js",
 	"scripts": {
-		"test": "ava --verbose",
-		"coverage": "nyc --all ava",
+		"test": "ava --verbose test/modules test/cli",
+		"coverage": "nyc --all ava test/modules",
 		"lint": "eslint lib"
 	},
 	"author": "",

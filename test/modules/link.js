@@ -2,9 +2,9 @@ const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
 
-test.before(require('./checkNodeVersion'));
+test.before(require('../checkNodeVersion'));
 
-const mockFs = require('./mockFs');
+const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
 global.settings = {
@@ -19,8 +19,8 @@ global.settings = {
 
 const linkPath = testHome + 'default';
 
-const NodeVersion = require('../lib/version');
-const nvsLink = rewire('../lib/link');
+const NodeVersion = require('../../lib/version');
+const nvsLink = rewire('../../lib/link');
 nvsLink.__set__('fs', mockFs);
 
 let mockNvsList = {
@@ -39,17 +39,17 @@ let mockNvsInstall = {
 nvsLink.__set__('nvsInstall', mockNvsInstall);
 
 let mockNvsUse = {
-	isWindows: require('../lib/use').isWindows,
-	getLinkPath: require('../lib/use').getLinkPath,
+	isWindows: require('../../lib/use').isWindows,
+	getLinkPath: require('../../lib/use').getLinkPath,
 	getSystemLinkPath() {
-		return require('../lib/use').getSystemLinkPath() || '/Program Files/nodejs';
+		return require('../../lib/use').getSystemLinkPath() || '/Program Files/nodejs';
 	},
-	homePath: require('../lib/use').homePath,
+	homePath: require('../../lib/use').homePath,
 	currentVersion: null,
 	getCurrentVersion() {
 		return this.currentVersion;
 	},
-	getVersionDir: require('../lib/use').getVersionDir,
+	getVersionDir: require('../../lib/use').getVersionDir,
 };
 nvsLink.__set__('nvsUse', mockNvsUse);
 
@@ -85,7 +85,7 @@ function getPath() {
 
 test.beforeEach(t => {
 	settings.home = testHome;
-	mockNvsUse.isWindows = require('../lib/use').isWindows;
+	mockNvsUse.isWindows = require('../../lib/use').isWindows;
 	mockNvsUse.currentVersion = null;
 	mockNvsInstall.mockSystemInstall = false;
 	mockWindowsEnv.envMap = {};

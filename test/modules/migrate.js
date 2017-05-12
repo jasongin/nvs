@@ -1,11 +1,11 @@
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
-const Error = require('../lib/error');
+const Error = require('../../lib/error');
 
-test.before(require('./checkNodeVersion'));
+test.before(require('../checkNodeVersion'));
 
-const mockFs = require('./mockFs');
+const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
 global.settings = {
@@ -18,16 +18,16 @@ global.settings = {
 	quiet: true,
 };
 
-const NodeVersion = require('../lib/version');
-const nvsMigrate = rewire('../lib/migrate');
-const nvsUse = rewire('../lib/use');
+const NodeVersion = require('../../lib/version');
+const nvsMigrate = rewire('../../lib/migrate');
+const nvsUse = rewire('../../lib/use');
 const bin = (nvsUse.isWindows ? '' : '/bin');
 const lib = (nvsUse.isWindows ? '' : '/lib');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
 
 nvsMigrate.__set__('nvsUse', nvsUse);
 
-const mockChildProc = require('./mockChildProc');
+const mockChildProc = require('../mocks/child_process');
 nvsUse.__set__('childProcess', mockChildProc);
 nvsMigrate.__set__('childProcess', mockChildProc);
 

@@ -1,6 +1,8 @@
 # NVS (Node Version Switcher)
 
-NVS is a cross-platform for switching between different versions and forks of [**Node.js**](http://nodejs.org). NVS is itself written in node JavaScript.
+[![Build Status: Mac + Linux](https://travis-ci.org/jasongin/nvs.svg?branch=master)](https://travis-ci.org/jasongin/nvs) [![Build status: Windows](https://ci.appveyor.com/api/projects/status/p0mo0nobkf0ws7ie/branch/master?svg=true)](https://ci.appveyor.com/project/jasongin/nvs)
+
+NVS is a cross-platform utility for switching between different versions and forks of [**Node.js**](http://nodejs.org). NVS is itself written in node JavaScript.
 
 This tool is obviously inspired by other node version manager tools, especially [**nvm**](https://github.com/creationix/nvm), from which it borrows a lot of ideas and some command-line syntax.
 

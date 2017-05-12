@@ -1,9 +1,9 @@
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
-const Error = require('../lib/error');
+const Error = require('../../lib/error');
 
-test.before(require('./checkNodeVersion'));
+test.before(require('../checkNodeVersion'));
 
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
 global.settings = {
@@ -22,11 +22,11 @@ global.settings = {
 
 const linkPath = testHome + 'default';
 
-const mockFs = require('./mockFs');
-const mockHttp = require('./mockHttp');
+const mockFs = require('../mocks/fs');
+const mockHttp = require('../mocks/http');
 
-const NodeVersion = require('../lib/version');
-const nvsList = rewire('../lib/list');
+const NodeVersion = require('../../lib/version');
+const nvsList = rewire('../../lib/list');
 const getNodejsRemoteVersionsAsync = nvsList.getNodejsRemoteVersionsAsync;
 const getGithubRemoteVersionsAsync = nvsList.getGithubRemoteVersionsAsync;
 const getNetworkRemoteVersionsAsync = nvsList.getNetworkRemoteVersionsAsync;
@@ -43,7 +43,7 @@ let mockNvsUse = {
 	getCurrentVersion() {
 		return this.currentVersion;
 	},
-	getVersionDir: require('../lib/use').getVersionDir,
+	getVersionDir: require('../../lib/use').getVersionDir,
 	getVersionBinary(version) {
 		return path.join(this.getVersionDir(version), bin, exe);
 	}

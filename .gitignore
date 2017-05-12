@@ -18,6 +18,9 @@
 !/tools/
 !/setup/
 
+# Temporary files generated during testing
+/test/temp
+
 # Exclude packages under node_modules because they are dev dependencies
 /node_modules/
 
