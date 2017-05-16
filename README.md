@@ -7,7 +7,7 @@ NVS is a cross-platform utility for switching between different versions and for
 This tool is obviously inspired by other node version manager tools, especially [**nvm**](https://github.com/creationix/nvm), from which it borrows a lot of ideas and some command-line syntax.
 
 ## Setup
-Following are basic setup instructions. [For more details and options for setting up NVS, refer to the Setup page.](https://github.com/jasongin/nvs/blob/master/doc/SETUP.md)
+Following are basic setup instructions. [For more details and options for setting up NVS, refer to the Setup page.](doc/SETUP.md)
 
 ### Windows
 A Windows Installer (MSI) package is available from the [NVS releases page on GitHub](https://github.com/jasongin/nvs/releases).
@@ -21,6 +21,9 @@ git clone https://github.com/jasongin/nvs "$NVS_HOME"
 ```
 
 The `nvs.sh` script adds an `nvs` shell function to the environment. Afterward the tool should be invoked as just `nvs` without any path. The `install` command adds lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to source `nvs.sh`, so that the `nvs` function is available in future shells.
+
+### CI Environments
+[NVS can be used in a CI environment](doc/CI.md) such as AppVeyor or Travis CI, to test a Node.js app or library on any version of Node.js that NVS can install.
 
 ## Basic usage
 To add the latest version of node:
