@@ -14,7 +14,7 @@ function removeDirectoryIfEmpty(dir) {
 	try {
 		fs.rmdirSync(dir);
 	} catch (e) {
-		if (e.code !== 'ENOTEMPTY' && e.code !== 'ENOENT') {
+		if (e.code !== 'ENOTEMPTY' && e.code !== 'ENOENT' && e.code !== 'EBUSY') {
 			throw e;
 		}
 	}
