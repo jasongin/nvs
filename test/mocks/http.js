@@ -51,6 +51,10 @@ const mockHttp = {
 						mockResponse.emit('end');
 					});
 				});
+			} else {
+				setImmediate(() => {
+					mockResponse.emit('end');
+				});
 			}
 		});
 
