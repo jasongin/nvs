@@ -156,7 +156,7 @@ test('Add - download', t => {
 	}});
 
 	return nvsAddRemove.addAsync(version).then(message => {
-		t.regex(message, /^Added at/);
+		t.regex(message[0], /^Added at/);
 		t.truthy(nvsUse.getVersionBinary(version));
 	});
 });
@@ -176,7 +176,7 @@ test('Add - already there', t => {
 	let version = NodeVersion.parse('test1/5.6.7/x64');
 
 	return nvsAddRemove.addAsync(version).then(message => {
-		t.regex(message, /Already added at/);
+		t.regex(message[0], /Already added at/);
 	});
 });
 
