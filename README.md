@@ -47,6 +47,7 @@ Command | Description
 `nvs add <version>`              | Download and extract a node version
 `nvs rm <version>`               | Remove a node version
 `nvs migrate <fromver> [tover]`  | Migrate global modules
+`nvs upgrade [fromver]`          | Upgrade to latest patch of major version
 `nvs use [version]`              | Use a node version in the current shell
 `nvs auto [on/off]`              | Automatically switch based on cwd
 `nvs run <ver> <js> [args...]`   | Run a script using a node version
