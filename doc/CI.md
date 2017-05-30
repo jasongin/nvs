@@ -57,10 +57,12 @@ os:
 dist: trusty
 language: node_js
 env:
-- NVS_VERSION=1.2.0
-- NODEJS_VERSION=node/6
-- NODEJS_VERSION=nightly/latest
-- NODEJS_VERSION=chakracore/latest
+  global:
+  - NVS_VERSION=1.2.0
+  matrix:
+  - NODEJS_VERSION=node/6
+  - NODEJS_VERSION=nightly/latest
+  - NODEJS_VERSION=chakracore/latest
 before_install:
 # Install NVS.
 - git clone --branch v$NVS_VERSION --depth 1 https://github.com/jasongin/nvs ~/.nvs
