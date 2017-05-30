@@ -29,7 +29,7 @@ environment:
   - NODEJS_VERSION: chakracore/latest
 install:
 # Install NVS.
-- git clone --branch v$NVS_VERSION --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
+- git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
 - set PATH=%LOCALAPPDATA%\nvs;%PATH%
 - nvs --version
 # Install the selected version of Node.js using NVS.
