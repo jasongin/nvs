@@ -10,8 +10,13 @@
 # Try to locate the NVS_ROOT path, where the nvs scripts are installed.
 if [ -n "${BASH_SOURCE}" ]; then
 	export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
-elif [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
-	export NVS_ROOT="${NVS_HOME}"
+else
+	if [ -n "${(%):-%x}" ]; then # zsh script source
+		export NVS_ROOT="$(cd "$(dirname "${(%):-%x}")" > /dev/null && \pwd)"
+	fi 2>/dev/null
+	if [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
+		export NVS_ROOT="${NVS_HOME}"
+	fi
 fi
 
 # Parse the OS name and architecture from `uname`.
@@ -62,6 +67,19 @@ nvs() {
 		if [ ! -d "${NVS_HOME}/cache" ]; then
 			command mkdir -p "${NVS_HOME}/cache"
 		fi
+
+echo "NVS_ROOT=${NVS_ROOT}"
+
+local NVS_DEFAULTS="$(cat "${NVS_ROOT}/defaults.json")"
+echo "NVS_DEFAULTS=${NVS_DEFAULTS}"
+
+local NVS_BOOTSTRAP="$(grep '"bootstrap" *:' "${NVS_ROOT}/defaults.json")"
+echo "NVS_BOOTSTRAP=${NVS_DEFAULTS}"
+
+echo "NVS_ROOT=${NVS_ROOT}"
+echo "NODE_VERSION=${NODE_VERSION}"
+echo "NODE_FULLNAME=${NODE_FULLNAME}"
+echo "NODE_BASE_URI=${NODE_BASE_URI}"
 
 		echo "Downloading bootstrap node from ${NODE_URI}"
 		if type noglob > /dev/null 2>&1; then

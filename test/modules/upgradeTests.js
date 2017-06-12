@@ -93,7 +93,6 @@ nvsUpgrade.__set__('nvsLink', mockNvsLink);
 let mockNvsMigrate = {
 	migrateCalls: [],
 	migrateGlobalModules(from, to) {
-		console.log('migrate(' + from + ', ' + to + ')');
 		this.migrateCalls.push([from, to]);
 	},
 };

@@ -4,7 +4,7 @@ let test = require('ava').test;
 
 const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
-const testDir = path.join(testParentDir, 'git-bash');
+const testDir = path.join(testParentDir, 'zsh');
 
 const testNodeVersion = "6.10.3";
 
