@@ -10,8 +10,13 @@
 # Try to locate the NVS_ROOT path, where the nvs scripts are installed.
 if [ -n "${BASH_SOURCE}" ]; then
 	export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
-elif [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
-	export NVS_ROOT="${NVS_HOME}"
+else
+	if [ -n "${(%):-%x}" ]; then # zsh script source
+		export NVS_ROOT="$(cd "$(dirname "${(%):-%x}")" > /dev/null && \pwd)"
+	fi 2>/dev/null
+	if [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
+		export NVS_ROOT="${NVS_HOME}"
+	fi
 fi
 
 # Parse the OS name and architecture from `uname`.
