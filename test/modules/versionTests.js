@@ -45,6 +45,14 @@ test('Parse remote, semantic version, and arch', t => {
 	t.is(v.arch, 'x86');
 });
 
+test('Parse support v8-canary version', t => {
+	let v = NodeVersion.parse('test2/9.0.0-v8-canary20170612bda40dd6fd/x64');
+	t.truthy(v);
+	t.is(v.semanticVersion, '9.0.0-v8-canary20170612bda40dd6fd');
+	t.is(v.remoteName, 'test2');
+	t.is(v.arch, 'x64');
+});
+
 test('Parse semantic version and arch', t => {
 	let v = NodeVersion.parse('5.6.7/x86');
 	t.truthy(v);
