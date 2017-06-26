@@ -4,6 +4,7 @@
 	"remotes": {
 	"default": "node",
 		"node": "https://nodejs.org/dist/",
+		"iojs": "https://iojs.org/dist/",
 		"nightly": "https://nodejs.org/download/nightly/",
 		"chakracore": "https://github.com/nodejs/node-chakracore/releases/",
 		"chakracore-nightly": "https://nodejs.org/download/chakracore-nightly/"
