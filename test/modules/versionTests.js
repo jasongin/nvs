@@ -130,4 +130,15 @@ test('Compare', t => {
 	t.deepEqual(sorted, [vA, vB, vC, vD, vE, vF, vG, vH, vI, vJ, vK]);
 });
 
+test('GetBinaryNameFromVersion', t => {
+	t.is(NodeVersion.getBinaryNameFromVersion('0.12'), 'node');
+	t.is(NodeVersion.getBinaryNameFromVersion('1.8'), 'iojs');
+	t.is(NodeVersion.getBinaryNameFromVersion('2.0'), 'iojs');
+	t.is(NodeVersion.getBinaryNameFromVersion('3.2'), 'iojs');
+	t.is(NodeVersion.getBinaryNameFromVersion('4.3'), 'node');
+	t.is(NodeVersion.getBinaryNameFromVersion('5.6'), 'node');
+	t.is(NodeVersion.getBinaryNameFromVersion('6.8'), 'node');
+	t.is(NodeVersion.getBinaryNameFromVersion('7.8'), 'node');
+});
+
 test.todo('Match');
