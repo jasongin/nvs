@@ -93,3 +93,12 @@ To resolve the issue:
  **Do not put the token directly into a `.yml` configuration file.**
 
 NVS automatically uses the value from the `NVS_GITHUB_TOKEN` environment variable to authenticate GitHub API requests.
+
+## GitHub API Proxy
+Some hosted CI solutions like Travis CI and AppVeyor do not allow encrypted variables to be read from forks. In this case an encrypted `NVS_GITHUB_TOKEN` will not be available when building a pull request which can lead to instability in CI. An alternative approach is to host a GitHub API proxy which injects a Personal Access Token into the `Authorization` header.
+
+To configure NVS to use a GitHub API proxy
+ 1. In the CI job settings web page, define an environment variable named `NVS_GITHUB_API_HOSTNAME` and paste in your proxy hostname without the scheme i.e. `api.my-proxy.com`.
+ **The proxy must be https enabled.**
+
+NVS automatically uses the value from the `NVS_GITHUB_API_HOSTNAME` environment variable when making GitHub API requests.
