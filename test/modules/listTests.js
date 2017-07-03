@@ -483,6 +483,21 @@ test('Get remote versions - github releases index not found', t => {
 	});
 });
 
+test('Get remote versions - custom github releases index not found', t => {
+	process.env['NVS_GITHUB_API_HOSTNAME'] = 'api.not-github.com';
+	delete mockHttp.resourceMap['https://api.not-github.com/repos/nodejs/node/releases'];
+	const testReleasesUri = 'https://github.com/nodejs/node/releases/';
+	return getGithubRemoteVersionsAsync('test1', testReleasesUri).then(result => {
+		t.fail();
+		delete process.env['NVS_GITHUB_API_HOSTNAME'];
+	}).catch(e => {
+		t.truthy(e);
+		t.truthy(e.cause);
+		t.true(e.cause.message.indexOf('404') >= 0);
+		delete process.env['NVS_GITHUB_API_HOSTNAME'];
+	});
+});
+
 test('Get remote versions - network path', t => {
 	const testNetworkPath = '\\\\server\\share\\path\\';
 	mockFs.mockDir(testNetworkPath, ['5.6.7','7.8.9']);
