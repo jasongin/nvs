@@ -13,11 +13,11 @@ SETLOCAL ENABLEEXTENSIONS
 
 :: Check if the bootstrap node.exe is present.
 SET NVS_BOOTSTRAP_NODE_PATH=%NVS_HOME%\cache\node.exe
-IF EXIST %NVS_BOOTSTRAP_NODE_PATH% GOTO :RUN
+IF EXIST "%NVS_BOOTSTRAP_NODE_PATH%" GOTO :RUN
 
 :BOOTSTRAP
 :: Call the PowerShell flavor of this script to download the bootstrap node.exe.
-powershell.exe -NoProfile -ExecutionPolicy Unrestricted -Command "%~dp0nvs.ps1 bootstrap"
+powershell.exe -NoProfile -ExecutionPolicy Unrestricted -Command ". '%~dp0nvs.ps1' bootstrap"
 SET NVS_EXITCODE=%ERRORLEVEL%
 IF %NVS_EXITCODE% NEQ 0 GOTO :CLEANUP
 
@@ -32,9 +32,9 @@ SET NVS_EXITCODE=%ERRORLEVEL%
 :POSTSCRIPT
 :: Call the post-invocation script if it is present, then delete it.
 :: This allows the invocation to potentially modify the caller's environment (e.g. PATH).
-IF NOT EXIST %NVS_POSTSCRIPT% GOTO :CLEANUP
-CALL %NVS_POSTSCRIPT%
-DEL %NVS_POSTSCRIPT%
+IF NOT EXIST "%NVS_POSTSCRIPT%" GOTO :CLEANUP
+CALL "%NVS_POSTSCRIPT%"
+DEL "%NVS_POSTSCRIPT%"
 
 :CLEANUP
 SET NVS_POSTSCRIPT=
