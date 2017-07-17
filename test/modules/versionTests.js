@@ -13,6 +13,22 @@ global.settings = {
 
 const NodeVersion = require('../../lib/version');
 
+test('Format version', t => {
+	t.is(NodeVersion.parse('test').toString(), 'test');
+	t.is(NodeVersion.parse('test/5').toString(), 'test/5');
+	t.is(NodeVersion.parse('test/5.6').toString(), 'test/5.6');
+	t.is(NodeVersion.parse('test/5.6.7').toString(), 'test/5.6.7');
+	t.is(NodeVersion.parse('test/5.6.7/x86').toString(), 'test/5.6.7/x86');
+	t.is(NodeVersion.parse('test/latest').toString(), 'test/latest');
+	t.is(NodeVersion.parse('test/latest/x86').toString(), 'test/latest/x86');
+	t.is(NodeVersion.parse('5').toString(), 'test/5');
+	t.is(NodeVersion.parse('5.6').toString(), 'test/5.6');
+	t.is(NodeVersion.parse('5.6.7').toString(), 'test/5.6.7');
+	t.is(NodeVersion.parse('5.6.7/x86').toString(), 'test/5.6.7/x86');
+	t.is(NodeVersion.parse('latest').toString(), 'test/latest');
+	t.is(NodeVersion.parse('latest/x86').toString(), 'test/latest/x86');
+});
+
 test('Parse semantic version', t => {
 	let v = NodeVersion.parse('5.6.7');
 	t.truthy(v);
