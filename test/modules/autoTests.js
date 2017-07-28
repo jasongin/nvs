@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
@@ -7,7 +9,7 @@ test.before(require('../checkNodeVersion'));
 const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
-global.settings = {
+require('../../lib/settings').settings = {
 	home: testHome,
 	cache: path.join(testHome, 'cache'),
 	aliases: {},
@@ -30,7 +32,7 @@ const mockNvsUse = {
 		return version && version.semanticVersion === '1.2.3'
 			? path.join(testHome, version.remoteName, version.semanticVersion, version.arch, 'node')
 			: null;
-	}
+	},
 };
 
 const mockNvsAddRemove = {
@@ -44,13 +46,13 @@ const mockNvsAddRemove = {
 const mockNvsList = {
 	find(version) {
 		return version.semanticVersion === '1.2.3' ? version : null;
-	}
+	},
 };
 
 const mockNvsLink = {
 	getLinkedVersion() {
 		return true;
-	}
+	},
 };
 
 nvsAuto.__set__('fs', mockFs);

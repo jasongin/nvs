@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
@@ -6,7 +8,7 @@ const Error = require('../../lib/error');
 test.before(require('../checkNodeVersion'));
 
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
-global.settings = {
+const settings = require('../../lib/settings').settings = {
 	home: testHome,
 	cache: path.join(testHome, 'cache'),
 	aliases: {},
@@ -19,8 +21,6 @@ global.settings = {
 	skipUpdateShellEnv: true,
 	linkToSystem: false,
 };
-
-const linkPath = testHome + 'default';
 
 const mockFs = require('../mocks/fs');
 const mockHttp = require('../mocks/http');
@@ -46,7 +46,7 @@ let mockNvsUse = {
 	getVersionDir: require('../../lib/use').getVersionDir,
 	getVersionBinary(version) {
 		return path.join(this.getVersionDir(version), bin, exe);
-	}
+	},
 };
 nvsList.__set__('nvsUse', mockNvsUse);
 
@@ -54,7 +54,7 @@ let mockNvsLink = {
 	linkedVersion: null,
 	getLinkedVersion() {
 		return this.linkedVersion;
-	}
+	},
 };
 nvsList.__set__('nvsLink', mockNvsLink);
 
@@ -324,13 +324,13 @@ test('List - fill in arch', t => {
 		[vA, vB, vC, vD].sort(NodeVersion.compare));
 	t.truthy(result);
 	t.is(result.semanticVersion, vA.semanticVersion);
-	t.is(result.arch, 'x64')
+	t.is(result.arch, 'x64');
 
 	result = nvsList.find(NodeVersion.parse('5/x86'),
 		[vA, vB, vC, vD].sort(NodeVersion.compare));
 	t.truthy(result);
 	t.is(result.semanticVersion, vA.semanticVersion);
-	t.is(result.arch, 'x86')
+	t.is(result.arch, 'x86');
 });
 
 test('List - all', t => {
@@ -373,7 +373,7 @@ test('List - marks', t => {
 test('List - aliased directories', t => {
 	const testAlias = 'test-alias';
 	const testAliasDir = '/test/alias/dir';
-	global.settings.aliases[testAlias] = testAliasDir;
+	settings.aliases[testAlias] = testAliasDir;
 	mockNvsUse.currentVersion = new NodeVersion();
 	mockNvsUse.currentVersion.label = testAlias;
 	mockNvsUse.currentVersion.path = testAliasDir;
@@ -485,7 +485,7 @@ test('Get remote versions - github releases index not found', t => {
 
 test('Get remote versions - network path', t => {
 	const testNetworkPath = '\\\\server\\share\\path\\';
-	mockFs.mockDir(testNetworkPath, ['5.6.7','7.8.9']);
+	mockFs.mockDir(testNetworkPath, ['5.6.7', '7.8.9']);
 	mockFs.mockDir(testNetworkPath + '5.6.7', ['x86.msi', 'x64.msi']);
 	mockFs.mockDir(testNetworkPath + '7.8.9', ['x64.msi']);
 	mockFs.mockFile(testNetworkPath + '5.6.7\\x86.msi', '');
@@ -494,11 +494,11 @@ test('Get remote versions - network path', t => {
 
 	return getNetworkRemoteVersionsAsync('test1',
 		testNetworkPath + '{version}\\{arch}.msi').then(result => {
-		t.truthy(result);
-		t.is(result.length, 2);
-		t.is(result[0].semanticVersion, '5.6.7');
-		t.is(result[1].semanticVersion, '7.8.9');
-	});
+			t.truthy(result);
+			t.is(result.length, 2);
+			t.is(result[0].semanticVersion, '5.6.7');
+			t.is(result[1].semanticVersion, '7.8.9');
+		});
 });
 
 test('Get remote versions - network path not found', t => {

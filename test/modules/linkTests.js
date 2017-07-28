@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
@@ -7,7 +9,7 @@ test.before(require('../checkNodeVersion'));
 const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
-global.settings = {
+const settings = require('../../lib/settings').settings = {
 	home: testHome,
 	aliases: {},
 	remotes: {
