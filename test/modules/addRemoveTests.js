@@ -8,7 +8,7 @@ const Error = require('../../lib/error');
 test.before(require('../checkNodeVersion'));
 
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
-global.settings = {
+require('../../lib/settings').settings = {
 	home: testHome,
 	cache: path.join(testHome, 'cache'),
 	aliases: {},
@@ -121,8 +121,10 @@ test.beforeEach(t => {
 	mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x64', bin, exe));
 	mockFs.mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
 	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-win-x64.7z'] = 'test';
-	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' + plat + '-x64.tar.gz'] = 'test';
-	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' + plat + '-x64.tar.xz'] = 'test';
+	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' + plat + '-x64.tar.gz'] =
+		'test';
+	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' + plat + '-x64.tar.xz'] =
+		'test';
 	mockHttp.resourceMap['http://example.com/test1/v7.8.9/SHASUMS256.txt'] =
 		'9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 ' +
 		'node-v7.8.9-' + plat + '-x64.7z\n' +

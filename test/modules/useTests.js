@@ -4,14 +4,12 @@ const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
 
-const NodeVersion = require('../../lib/version');
-
 test.before(require('../checkNodeVersion'));
 
 const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
-global.settings = {
+require('../../lib/settings').settings = {
 	home: testHome,
 	aliases: {},
 	remotes: {
@@ -20,6 +18,8 @@ global.settings = {
 	},
 	skipUpdateShellEnv: true,
 };
+
+const NodeVersion = require('../../lib/version');
 
 const linkPath = testHome + 'default';
 

@@ -10,7 +10,7 @@ test.before(require('../checkNodeVersion'));
 const mockFs = require('../mocks/fs');
 const testHome = mockFs.fixSep('/home/test/nvs/');
 
-global.settings = {
+require('../../lib/settings').settings = {
 	home: testHome,
 	aliases: {},
 	remotes: {

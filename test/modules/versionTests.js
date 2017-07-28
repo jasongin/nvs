@@ -4,7 +4,7 @@ const test = require('ava').test;
 
 test.before(require('../checkNodeVersion'));
 
-global.settings = {
+require('../../lib/settings').settings = {
 	aliases: {},
 	remotes: {
 		'default': 'test',

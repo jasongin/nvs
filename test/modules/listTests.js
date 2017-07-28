@@ -8,7 +8,7 @@ const Error = require('../../lib/error');
 test.before(require('../checkNodeVersion'));
 
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
-global.settings = {
+const settings = require('../../lib/settings').settings = {
 	home: testHome,
 	cache: path.join(testHome, 'cache'),
 	aliases: {},
@@ -373,7 +373,7 @@ test('List - marks', t => {
 test('List - aliased directories', t => {
 	const testAlias = 'test-alias';
 	const testAliasDir = '/test/alias/dir';
-	global.settings.aliases[testAlias] = testAliasDir;
+	settings.aliases[testAlias] = testAliasDir;
 	mockNvsUse.currentVersion = new NodeVersion();
 	mockNvsUse.currentVersion.label = testAlias;
 	mockNvsUse.currentVersion.path = testAliasDir;
