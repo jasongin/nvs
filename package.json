@@ -5,8 +5,11 @@
 	"main": "lib/main.js",
 	"scripts": {
 		"test": "ava --verbose test/modules test/cli",
+		"test-cli": "ava --verbose test/cli",
+		"test-modules": "ava --verbose test/modules",
 		"coverage": "nyc --all ava test/modules",
-		"lint": "eslint lib test"
+		"lint": "eslint lib test",
+		"ts-check": "tsc"
 	},
 	"author": "",
 	"license": "MIT",
@@ -15,6 +18,7 @@
 		"url": "https://github.com/jasongin/nvs"
 	},
 	"devDependencies": {
+		"@types/node": "^8.0.28",
 		"ava": "^0.19.1",
 		"eslint": "^3.19.0",
 		"eslint-config-standard": "^10.2.1",
@@ -23,7 +27,8 @@
 		"eslint-plugin-promise": "^3.5.0",
 		"eslint-plugin-standard": "^3.0.1",
 		"nyc": "^10.3.2",
-		"rewire": "^2.5.2"
+		"rewire": "^2.5.2",
+		"typescript": "^2.5.2"
 	},
 	"ava": {
 		"files": "test/*Tests.js"
