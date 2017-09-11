@@ -59,7 +59,7 @@ nvs() {
 		fi
 
 		# Download a node binary to use to bootstrap the NVS script.
-		local NODE_ARCH="$(uname -m | sed 's/x86_64/x64/')"
+		local NODE_ARCH="$(uname -m | sed 's/x86_64/x64/' | sed 's/i686/x86/')"
 		local NODE_FULLNAME="node-v${NODE_VERSION}-${NVS_OS}-${NODE_ARCH}"
 		local NODE_URI="${NODE_BASE_URI}v${NODE_VERSION}/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 		local NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
@@ -84,7 +84,7 @@ nvs() {
 		fi
 
 		if [ ! -f "${NODE_PATH}" ]; then
-			echo "Failed to download boostrap node binary."
+			echo "Failed to download bootstrap node binary."
 			return 1
 		fi
 		echo ""
