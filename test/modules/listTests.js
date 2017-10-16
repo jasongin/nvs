@@ -427,6 +427,7 @@ test('List remote - added mark', t => {
 
 test('List remote - linked mark', t => {
 	mockNvsLink.linkedVersion = new NodeVersion('test1', '5.6.7', 'x64');
+	nvsList.getRemoteVersionsAsync.cache.clear();
 
 	return nvsList.listRemoteAsync().then(result => {
 		t.truthy(result);
