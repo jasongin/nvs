@@ -71,6 +71,26 @@ export NVS_HOME=$LOCALAPPDATA/nvs
 
 NVS can also work in [Unbutu Bash on Windows 10](https://msdn.microsoft.com/en-us/commandline/wsl/about) using the following installation instructions for Linux. Be aware that instance of NVS and any Node.js versions it installs in that environment are only available to the Ubuntu subsystem. It actually downloads and runs the Node.js Linux binaries, _not_ the Windows binaries.
 
+### Windows cmder
+
+[Windows cmder](http://cmder.net/) is a nice open source Windows console emulator available at <http://cmder.net/>. It offers both a "mini" download and a full download with Git for Windows included. Installation with [Windows cmder](http://cmder.net/) works the same as installation on the standard Windows command prompt.
+
+1. Specify the installation path using *one* of the following commands, for either a single-user or system installation:
+```cmd
+set NVS_HOME=%LOCALAPPDATA%\nvs
+set NVS_HOME=%ProgramData%\nvs
+```
+2. Clone this repo:
+```cmd
+git clone https://github.com/jasongin/nvs "%NVS_HOME%"
+```
+3. Run the `install` command:
+```cmd
+"%NVS_HOME%\nvs.cmd" install
+```
+
+Then a simple test such as `nvs --version` or `nvs --help` should work on both standard Windows command prompt and [Windows cmder](http://cmder.net/).
+
 ## Mac, Linux
 1. Specify the installation path using **_one_** of the following two commands:
 
