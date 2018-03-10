@@ -34,10 +34,14 @@ Or to add the latest LTS version of node:
 ```
 $ nvs add lts
 ```
-Then run the `nvs use` command to add a version of node to your PATH:
+Then run the `nvs use` command to add a version of node to your PATH for the current shell:
 ```
 $ nvs use lts
 PATH += ~/.nvs/node/6.9.1/x64
+```
+To add it to PATH permanently, use `nvs link`:
+```
+$ nvs link lts
 ```
 
 ## Command reference
