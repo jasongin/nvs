@@ -24,7 +24,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
 
     <!-- == SOFTWARE SPECIFIC SECTION == -->
     <!-- This section is about the software itself -->
-    <title>nvs</title>
+    <title>NVS</title>
     <authors>jasongin</authors>
     <projectUrl>https://github.com/jasongin/nvs</projectUrl>
     <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/nvs.png</iconUrl>-->
@@ -37,8 +37,9 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <bugTrackerUrl>https://github.com/jasongin/nvs/issues</bugTrackerUrl>
     <tags>nvs nodejs node</tags>
     <summary>Node Version Switcher - A cross-platform tool for switching between versions and forks of Node.js </summary>
-    <description>NVS is a cross-platform utility for switching between different versions and forks of [Node.js](http://nodejs.org/). NVS is itself written in node JavaScript.
-This tool is obviously inspired by other node version manager tools, especially [nvm](https://github.com/creationix/nvm), from which it borrows a lot of ideas and some command-line syntax.</description>
+    <description>NVS is a cross-platform utility for switching between different versions and forks of [Node.js](http://nodejs.org/).
+    NVS will get installed in `%LOCALAPPDATA%\nvs\` and added to your `PATH`.
+	 For more information about the usage please visit [NVS's docs](https://github.com/jasongin/nvs/blob/master/README.md)</description>
   </metadata>
   <files>
     <!-- this section controls what actually gets packaged into the Chocolatey package -->

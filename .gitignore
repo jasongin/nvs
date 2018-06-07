@@ -31,5 +31,8 @@
 # Nuget packages
 packages/
 
+# Generated chocolatey package
+*.nupkg
+
 # Other excluded files
 *.suo
