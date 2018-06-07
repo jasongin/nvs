@@ -12,6 +12,11 @@ Following are basic setup instructions. [For more details and options for settin
 ### Windows
 A Windows Installer (MSI) package is available from the [NVS releases page on GitHub](https://github.com/jasongin/nvs/releases).
 
+You can also use [chocolatey](https://chocolatey.org) to install it:
+```
+choco install nvs
+```
+
 ### Mac, Linux
 Specify the installation path, clone the repo, and *source* the `install` command:
 ```

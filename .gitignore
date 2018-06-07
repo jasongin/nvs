@@ -17,6 +17,7 @@
 !/doc/
 !/tools/
 !/setup/
+!/chocolatey/
 
 # Temporary files generated during testing
 /test/temp
