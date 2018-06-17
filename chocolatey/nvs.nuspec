@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Read this before creating packages: https://chocolatey.org/docs/create-packages -->
+<!-- It is especially important to read the above link to understand additional requirements when publishing packages to the community feed aka dot org (https://chocolatey.org/packages). -->
+
+<!-- Test your packages in a test environment: https://github.com/chocolatey/chocolatey-test-environment -->
+
+<!--
+This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Reference. Chocolatey uses a special version of NuGet.Core that allows us to do more than was initially possible. As such there are certain things to be aware of:
+
+* the package xmlns schema url may cause issues with nuget.exe
+* Any of the following elements can ONLY be used by choco tools - projectSourceUrl, docsUrl, mailingListUrl, bugTrackerUrl, packageSourceUrl, provides, conflicts, replaces
+* nuget.exe can still install packages with those elements but they are ignored. Any authoring tools or commands will error on those elements
+-->
+
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <!-- == PACKAGE SPECIFIC SECTION == -->
+    <id>nvs</id>
+    <version>1.4.2</version>
+    <packageSourceUrl>https://github.com/jasongin/nvs</packageSourceUrl>
+    <owners>jasongin molant</owners>
+    <!-- ============================== -->
+
+    <!-- == SOFTWARE SPECIFIC SECTION == -->
+    <!-- This section is about the software itself -->
+    <title>NVS</title>
+    <authors>jasongin</authors>
+    <projectUrl>https://github.com/jasongin/nvs</projectUrl>
+    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/nvs.png</iconUrl>-->
+    <copyright>Microsoft 2018</copyright>
+    <!-- If there is a license Url available, it is required for the community feed -->
+    <licenseUrl>https://github.com/jasongin/nvs/blob/master/LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/jasongin/nvs</projectSourceUrl>
+    <docsUrl>https://github.com/jasongin/nvs/tree/master/doc</docsUrl>
+    <bugTrackerUrl>https://github.com/jasongin/nvs/issues</bugTrackerUrl>
+    <tags>nvs nodejs node</tags>
+    <summary>Node Version Switcher - A cross-platform tool for switching between versions and forks of Node.js </summary>
+    <description>NVS is a cross-platform utility for switching between different versions and forks of [Node.js](http://nodejs.org/).
+    NVS will get installed in `%LOCALAPPDATA%\nvs\` and added to your `PATH`.
+	 For more information about the usage please visit [NVS's docs](https://github.com/jasongin/nvs/blob/master/README.md)</description>
+  </metadata>
+  <files>
+    <!-- this section controls what actually gets packaged into the Chocolatey package -->
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

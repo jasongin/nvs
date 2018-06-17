@@ -17,6 +17,7 @@
 !/doc/
 !/tools/
 !/setup/
+!/chocolatey/
 
 # Temporary files generated during testing
 /test/temp
@@ -29,6 +30,9 @@
 
 # Nuget packages
 packages/
+
+# Generated chocolatey package
+*.nupkg
 
 # Other excluded files
 *.suo
