@@ -114,6 +114,7 @@ test('Parse remote, version label and arch', t => {
 });
 
 test('Parse other architectures', t => {
+	const os = require('os');
 	let v = NodeVersion.parse('test/latest/x64');
 	t.is(v.arch, 'x64');
 	v = NodeVersion.parse('test/latest/32');
@@ -125,7 +126,11 @@ test('Parse other architectures', t => {
 	v = NodeVersion.parse('test/latest/arm64');
 	t.is(v.arch, 'arm64');
 	v = NodeVersion.parse('test/latest/ppc64');
-	t.is(v.arch, 'ppc64');
+	if (os.endianness() == 'LE') {
+		t.is(v.arch, 'ppc64le');
+	} else {
+		t.is(v.arch, 'ppc64');
+	}
 });
 
 test('Compare', t => {
