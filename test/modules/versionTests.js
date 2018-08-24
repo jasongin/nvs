@@ -131,6 +131,8 @@ test('Parse other architectures', t => {
 	} else {
 		t.is(v.arch, 'ppc64');
 	}
+	v = NodeVersion.parse('test/latest/s390x');
+	t.is(v.arch, 's390x');
 });
 
 test('Compare', t => {
