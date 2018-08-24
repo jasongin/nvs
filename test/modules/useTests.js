@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
@@ -29,7 +31,6 @@ const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
 
 const mockChildProc = require('../mocks/child_process');
 nvsUse.__set__('childProcess', mockChildProc);
-
 
 let mockNvsList = {
 	findVersion: null,
@@ -111,7 +112,6 @@ test('Get current version - linked', t => {
 	t.is(v.remoteName, 'test2');
 	t.is(v.semanticVersion, '6.7.8');
 	t.is(v.arch, 'x86');
-
 });
 
 test('Use - full version', t => {

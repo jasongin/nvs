@@ -1,3 +1,6 @@
+/* global settings */
+'use strict';
+
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');

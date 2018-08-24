@@ -1,3 +1,5 @@
+'use strict';
+
 const EventEmitter = require('events');
 
 const mockHttp = {
@@ -11,7 +13,7 @@ const mockHttp = {
 	},
 
 	get(uri, cb) {
-		if (typeof uri === "object" && uri.hostname) {
+		if (typeof uri === 'object' && uri.hostname) {
 			uri = 'https://' + uri.hostname + (uri.path || '/');
 		}
 

@@ -1,4 +1,6 @@
-const child_process = require('child_process');
+'use strict';
+
+const childProcess = require('child_process');
 const path = require('path');
 let test = require('ava').test;
 
@@ -6,7 +8,7 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'bash');
 
-const testNodeVersion = "6.10.3";
+const testNodeVersion = '6.10.3';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
@@ -38,7 +40,7 @@ test('Bash CLI', t => {
 		commands.splice(i, 0, 'echo \\> ' + commands[i].replace('$', '\\$'));
 	}
 
-	const result = child_process.spawnSync(
+	const result = childProcess.spawnSync(
 		'bash',
 		[ '-c', commands.join('; ') ],
 		{
