@@ -1,3 +1,5 @@
+'use strict';
+
 const test = require('ava').test;
 
 test.before(require('../checkNodeVersion'));
@@ -126,7 +128,7 @@ test('Parse other architectures', t => {
 	v = NodeVersion.parse('test/latest/arm64');
 	t.is(v.arch, 'arm64');
 	v = NodeVersion.parse('test/latest/ppc64');
-	if (os.endianness() == 'LE') {
+	if (os.endianness() === 'LE') {
 		t.is(v.arch, 'ppc64le');
 	} else {
 		t.is(v.arch, 'ppc64');

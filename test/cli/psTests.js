@@ -1,4 +1,6 @@
-const child_process = require('child_process');
+'use strict';
+
+const childProcess = require('child_process');
 const path = require('path');
 let test = require('ava').test;
 
@@ -6,7 +8,7 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'ps');
 
-const testNodeVersion = "6.10.3";
+const testNodeVersion = '6.10.3';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
@@ -37,7 +39,7 @@ test('PowerShell CLI', t => {
 		commands.splice(i, 0, 'echo \'> ' + commands[i] + '\'');
 	}
 
-	const result = child_process.spawnSync(
+	const result = childProcess.spawnSync(
 		'cmd.exe',
 		[ '/c', 'powershell.exe', '-NoLogo', '-Command', '& {' + commands.join('; ') + '}' ],
 		{
@@ -45,7 +47,7 @@ test('PowerShell CLI', t => {
 				'NVS_HOME': testDir,
 				'NVS_LINK_TO_SYSTEM': '0',
 				'NVS_DEBUG': '1',
-				'ProgramFiles': process.env['ProgramFiles']
+				'ProgramFiles': process.env['ProgramFiles'],
 			},
 			cwd: nvsRootDir,
 		});

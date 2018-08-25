@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const test = require('ava').test;
 const rewire = require('rewire');
@@ -31,7 +33,6 @@ const nvsLink = rewire('../../lib/link');
 const nvsAddRemove = rewire('../../lib/addRemove');
 const nvsDownload = rewire('../../lib/download');
 const nvsExtract = rewire('../../lib/extract');
-const nvsList = rewire('../../lib/list');
 
 const plat = (nvsUse.isWindows ? 'win' : process.platform);
 
@@ -54,7 +55,7 @@ let mockWindowsEnv = {
 		return '';
 	},
 	setEnvironmentVariable() {
-	}
+	},
 };
 nvsLink.__set__('nvsWindowsEnv', mockWindowsEnv);
 
@@ -65,7 +66,7 @@ let mockNvsList = {
 		p.uri = remoteUri + 'v' + version +
 			'/node-v' + version + '-' + plat + '-' + arch + '.tar.gz';
 		p.ext = (NodeVersion.defaultOs === 'win' ? '.zip' : '.tar.gz');
-		p.shasumUri = remoteUri + 'v' + version  + '/SHASUMS256.txt';
+		p.shasumUri = remoteUri + 'v' + version + '/SHASUMS256.txt';
 		return p;
 	},
 
@@ -91,7 +92,6 @@ nvsAddRemove.__set__('nvsList', mockNvsList);
 
 const bin = (nvsUse.isWindows ? '' : 'bin');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
-const sepRegex = (path.sep === '\\' ? /\\/g : /\//g);
 
 function setPath(pathEntries) {
 	process.env['PATH'] = pathEntries
@@ -121,10 +121,8 @@ test.beforeEach(t => {
 	mockFs.mockFile(path.join(testHome, 'test1', '5.6.7', 'x64', bin, exe));
 	mockFs.mockFile(path.join(testHome, 'test2', '6.7.8', 'x64', bin, exe));
 	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-win-x64.7z'] = 'test';
-	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' +
-		plat + '-x64.tar.gz'] = 'test';
-	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' +
-		plat + '-x64.tar.xz'] = 'test';
+	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' + plat + '-x64.tar.gz'] = 'test';
+	mockHttp.resourceMap['http://example.com/test1/v7.8.9/node-v7.8.9-' + plat + '-x64.tar.xz'] = 'test';
 	mockHttp.resourceMap['http://example.com/test1/v7.8.9/SHASUMS256.txt'] =
 		'9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 ' +
 		'node-v7.8.9-' + plat + '-x64.7z\n' +

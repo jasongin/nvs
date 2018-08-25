@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
@@ -76,8 +78,7 @@ const mockFs = {
 	},
 
 	readdir(path, cb) {
-		try { cb(null, this.readdirSync(path)); }
-		catch (e) { cb(e); }
+		try { cb(null, this.readdirSync(path)); }		catch (e) { cb(e); }
 	},
 
 	readlinkSync(path) {
@@ -103,8 +104,7 @@ const mockFs = {
 			mode = undefined;
 		}
 
-		try { cb(null, this.accessSync(path, mode)); }
-		catch (e) { cb(e); }
+		try { cb(null, this.accessSync(path, mode)); }		catch (e) { cb(e); }
 	},
 
 	statSync(path) {
@@ -113,7 +113,7 @@ const mockFs = {
 		path = this.resolveLink(path);
 		let result = this.statMap[path];
 		if (result) return result;
-		else if (this.linkMap[path])  return { isSymbolicLink() { return true; } }
+		else if (this.linkMap[path]) return { isSymbolicLink() { return true; } };
 		if (this.trace) console.log('  => not found in stat map: ' + JSON.stringify(this.statMap));
 		let e = new Error('Path not found: ' + path);
 		e.code = 'ENOENT';
@@ -121,8 +121,7 @@ const mockFs = {
 	},
 
 	stat(path, cb) {
-		try { cb(null, this.statSync(path)); }
-		catch (e) { cb(e); }
+		try { cb(null, this.statSync(path)); }		catch (e) { cb(e); }
 	},
 
 	lstatSync(path) {
@@ -130,7 +129,7 @@ const mockFs = {
 		if (this.trace) console.log('statSync(' + path + ')');
 		let result = this.statMap[path];
 		if (result) return result;
-		else if (this.linkMap[path])  return { isSymbolicLink() { return true; } }
+		else if (this.linkMap[path]) return { isSymbolicLink() { return true; } };
 		if (this.trace) console.log('  => not found in stat map: ' + JSON.stringify(this.statMap));
 		let e = new Error('Path not found: ' + path);
 		e.code = 'ENOENT';
@@ -233,14 +232,13 @@ const mockFs = {
 		let data = this.dataMap[filePath];
 		if (data) {
 			if (this.trace) console.log('  => [' + data.length + ']');
-			var s = new stream.Readable();
+			let s = new stream.Readable();
 			s.push(data);
 			s.push(null);
 			return s;
 		}
 
-		if (this.trace)
-			console.log('  => not found in data map: ' + JSON.stringify(Object.keys(this.dataMap)));
+		if (this.trace)			{ console.log('  => not found in data map: ' + JSON.stringify(Object.keys(this.dataMap))); }
 		let e = new Error('Mock file data not found: ' + filePath);
 		e.code = 'ENOENT';
 		throw e;
@@ -256,8 +254,7 @@ const mockFs = {
 			return data;
 		}
 
-		if (this.trace)
-			console.log('  => not found in data map: ' + JSON.stringify(Object.keys(this.dataMap)));
+		if (this.trace)			{ console.log('  => not found in data map: ' + JSON.stringify(Object.keys(this.dataMap))); }
 		let e = new Error('Mock file data not found: ' + filePath);
 		e.code = 'ENOENT';
 		throw e;

@@ -1,4 +1,5 @@
-const path = require('path');
+'use strict';
+
 const test = require('ava').test;
 const rewire = require('rewire');
 const Error = require('../../lib/error');
@@ -22,8 +23,6 @@ const NodeVersion = require('../../lib/version');
 const nvsUpgrade = rewire('../../lib/upgrade');
 const nvsList = rewire('../../lib/list');
 const nvsUse = rewire('../../lib/use');
-const bin = (nvsUse.isWindows ? '' : '/bin');
-const lib = (nvsUse.isWindows ? '' : '/lib');
 const exe = (nvsUse.isWindows ? 'node.exe' : 'node');
 
 let mockNvsList = {
@@ -38,11 +37,11 @@ let mockNvsList = {
 	getRemoteVersionsAsync() {
 		return Promise.resolve(this.remoteVersions.map(v => {
 			v.packages = {
-				find() { return true; }
+				find() { return true; },
 			};
 			return v;
 		}));
-	}
+	},
 };
 nvsUpgrade.__set__('nvsList', mockNvsList);
 
@@ -56,7 +55,7 @@ let mockNvsAddRemove = {
 	remove(version) {
 		this.removeCalls.push(version);
 		return [ 'Mock removed: ' + version.toString() ];
-	}
+	},
 };
 nvsUpgrade.__set__('nvsAddRemove', mockNvsAddRemove);
 
@@ -86,7 +85,7 @@ let mockNvsLink = {
 		this.linkedVersion = version;
 		this.linkCalls.push(version);
 		return [ 'Mock linked: ' + version.toString() ];
-	}
+	},
 };
 nvsUpgrade.__set__('nvsLink', mockNvsLink);
 
@@ -100,8 +99,8 @@ nvsUpgrade.__set__('nvsMigrate', mockNvsMigrate);
 
 test.beforeEach(t => {
 	mockFs.reset();
-	mockNvsList.localVersions = [],
-	mockNvsList.remoteVersions = [],
+	mockNvsList.localVersions = [];
+	mockNvsList.remoteVersions = [];
 	mockNvsUse.currentVersion = null;
 	mockNvsUse.useCalls = [];
 	mockNvsAddRemove.addCalls = [];

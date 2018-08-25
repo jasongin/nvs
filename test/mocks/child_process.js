@@ -1,4 +1,5 @@
-const childProcess = require('child_process');
+'use strict';
+
 const EventEmitter = require('events').EventEmitter;
 
 const mockChildProc = {

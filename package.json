@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "ava --verbose test/modules test/cli",
 		"coverage": "nyc --all ava test/modules",
-		"lint": "eslint lib"
+		"lint": "eslint lib test"
 	},
 	"author": "",
 	"license": "MIT",
