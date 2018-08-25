@@ -75,10 +75,12 @@
 				"error",
 				"always-multiline"
 			],
-			"strict": ["error", "global"],
+			"strict": [
+				"error",
+				"global"
+			],
 			"no-var": "error"
 		}
 	},
-	"dependencies": {
-	}
+	"dependencies": {}
 }
