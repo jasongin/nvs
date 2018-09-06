@@ -11,7 +11,7 @@ if (-not $env:NVS_HOME) {
 
 if (-not ($args -eq "bootstrap")) {
 	# Generate 31 bits of randomness, to avoid clashing with concurrent executions.
-	$env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random) + ".ps1")
+	$env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random -SetSeed $PID) + ".ps1")
 }
 
 # Check if the bootstrap node.exe is present.
