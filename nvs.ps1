@@ -1,7 +1,7 @@
 # NVS (Node Version Switcher) PowerShell script
 # Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
 
-$scriptDir = Split-Path $MyInvocation.MyCommand.Path
+$scriptDir = $PSScriptRoot
 $mainScript = Join-Path $scriptDir "lib\main.js"
 
 # The NVS_HOME path may be overridden in the environment.
