@@ -27,6 +27,11 @@ case $NVS_OS in mingw64_nt*)
 	export NVS_OS="win"
 esac
 
+# another possibility
+case $NVS_OS in msys_nt*)
+	export NVS_OS="win"
+esac
+
 nvs() {
 	# The NVS_HOME path may be overridden in the environment.
 	if [ -z "${NVS_HOME}" ]; then
@@ -74,6 +79,11 @@ nvs() {
 		else
 			curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
 		fi
+		
+		if [ ! -f "${NODE_ARCHIVE}" ]; then
+			echo "Failed to download node binary."
+			return 1
+		fi
 
 		if [ "${NVS_OS}" = "win" ]; then
 			"${NVS_ROOT}/tools/7-Zip/7zr.exe" e "-o${NVS_HOME}/cache" -y "${NODE_ARCHIVE}" "${NODE_FULLNAME}/${NODE_EXE}" > /dev/null 2>&1
@@ -84,7 +94,7 @@ nvs() {
 		fi
 
 		if [ ! -f "${NODE_PATH}" ]; then
-			echo "Failed to download bootstrap node binary."
+			echo "Failed to setup node binary."
 			return 1
 		fi
 		echo ""
