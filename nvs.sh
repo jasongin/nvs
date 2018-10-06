@@ -23,12 +23,7 @@ fi
 export NVS_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
 
 # When running inside Git bash on Windows, `uname` reports "MINGW64_NT".
-case $NVS_OS in mingw64_nt*)
-	export NVS_OS="win"
-esac
-
-# another possibility
-case $NVS_OS in msys_nt*)
+case $NVS_OS in mingw64_nt* | msys_nt*)
 	export NVS_OS="win"
 esac
 
