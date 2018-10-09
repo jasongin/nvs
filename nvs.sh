@@ -23,7 +23,7 @@ fi
 export NVS_OS="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
 
 # When running inside Git bash on Windows, `uname` reports "MINGW64_NT".
-case $NVS_OS in mingw64_nt*)
+case $NVS_OS in mingw64_nt* | msys_nt*)
 	export NVS_OS="win"
 esac
 
@@ -74,6 +74,11 @@ nvs() {
 		else
 			curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
 		fi
+		
+		if [ ! -f "${NODE_ARCHIVE}" ]; then
+			echo "Failed to download node binary."
+			return 1
+		fi
 
 		if [ "${NVS_OS}" = "win" ]; then
 			"${NVS_ROOT}/tools/7-Zip/7zr.exe" e "-o${NVS_HOME}/cache" -y "${NODE_ARCHIVE}" "${NODE_FULLNAME}/${NODE_EXE}" > /dev/null 2>&1
@@ -84,7 +89,7 @@ nvs() {
 		fi
 
 		if [ ! -f "${NODE_PATH}" ]; then
-			echo "Failed to download bootstrap node binary."
+			echo "Failed to setup node binary."
 			return 1
 		fi
 		echo ""
