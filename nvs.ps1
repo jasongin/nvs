@@ -2,7 +2,7 @@
 # Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
 
 $scriptDir = $PSScriptRoot
-$mainScript = Join-Path $scriptDir "lib\main.js"
+$mainScript = Join-Path $scriptDir "lib\index.js"
 
 # The NVS_HOME path may be overridden in the environment.
 if (-not $env:NVS_HOME) {
@@ -100,9 +100,16 @@ else {
 	$exitCode = $LastExitCode
 }
 
+if ($exitCode -eq 2) {
+	# The bootstrap node version is wrong. Delete it and start over.
+	Remove-Item "$bootstrapNodePath"
+	. "$scriptDir\nvs.ps1" $args
+	$exitCode = $LastExitCode
+}
+
 # Call the post-invocation script if it is present, then delete it.
 # This allows the invocation to potentially modify the caller's environment (e.g. PATH).
-if (Test-Path $env:NVS_POSTSCRIPT) {
+if ($env:NVS_POSTSCRIPT -and (Test-Path $env:NVS_POSTSCRIPT)) {
 	. $env:NVS_POSTSCRIPT
 	Remove-Item -Force $env:NVS_POSTSCRIPT
 }

@@ -492,13 +492,15 @@ test('Get remote versions - network path', t => {
 	mockFs.mockFile(testNetworkPath + '5.6.7\\x64.msi', '');
 	mockFs.mockFile(testNetworkPath + '7.8.9\\x64.msi', '');
 
-	return getNetworkRemoteVersionsAsync('test1',
-		testNetworkPath + '{version}\\{arch}.msi').then(result => {
-			t.truthy(result);
-			t.is(result.length, 2);
-			t.is(result[0].semanticVersion, '5.6.7');
-			t.is(result[1].semanticVersion, '7.8.9');
-		});
+	return getNetworkRemoteVersionsAsync(
+		'test1',
+		testNetworkPath + '{version}\\{arch}.msi'
+	).then(result => {
+		t.truthy(result);
+		t.is(result.length, 2);
+		t.is(result[0].semanticVersion, '5.6.7');
+		t.is(result[1].semanticVersion, '7.8.9');
+	});
 });
 
 test('Get remote versions - network path not found', t => {

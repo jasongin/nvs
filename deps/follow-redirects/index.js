@@ -9,6 +9,8 @@ var debug = require('debug')('follow-redirects');
 var nativeProtocols = {'http:': http, 'https:': https};
 var schemes = {};
 var exports = module.exports = {
+	http,
+	https,
 	maxRedirects: 21
 };
 // RFC7231§4.2.1: Of the request methods defined by this specification,

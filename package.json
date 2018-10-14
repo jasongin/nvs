@@ -1,8 +1,8 @@
 {
 	"name": "nvs",
-	"version": "1.4.4",
+	"version": "1.5.0",
 	"description": "Node Version Switcher",
-	"main": "lib/main.js",
+	"main": "lib/index.js",
 	"scripts": {
 		"test": "ava --verbose test/modules test/cli",
 		"test-cli": "ava --verbose test/cli",
@@ -18,17 +18,17 @@
 		"url": "https://github.com/jasongin/nvs"
 	},
 	"devDependencies": {
-		"@types/node": "^8.0.28",
+		"@types/node": "^10.11.7",
 		"ava": "^0.19.1",
-		"eslint": "^3.19.0",
-		"eslint-config-standard": "^10.2.1",
-		"eslint-plugin-import": "^2.2.0",
-		"eslint-plugin-node": "^4.2.2",
-		"eslint-plugin-promise": "^3.5.0",
-		"eslint-plugin-standard": "^3.0.1",
+		"eslint": "^5.7.0",
+		"eslint-config-standard": "^12.0.0",
+		"eslint-plugin-import": "^2.14.0",
+		"eslint-plugin-node": "^7.0.1",
+		"eslint-plugin-promise": "^4.0.1",
+		"eslint-plugin-standard": "^4.0.0",
 		"nyc": "^10.3.2",
 		"rewire": "^2.5.2",
-		"typescript": "^2.5.2"
+		"typescript": "^3.1.3"
 	},
 	"ava": {
 		"files": "test/*Tests.js"
@@ -48,7 +48,7 @@
 			"es6": true
 		},
 		"parserOptions": {
-			"ecmaVersion": 6,
+			"ecmaVersion": 2017,
 			"sourceType": "script"
 		},
 		"extends": "standard",
@@ -58,6 +58,12 @@
 		],
 		"rules": {
 			"no-tabs": "off",
+			"no-multi-spaces": [
+				"error",
+				{
+					"ignoreEOLComments": true
+				}
+			],
 			"indent": [
 				"error",
 				"tab",

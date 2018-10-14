@@ -9,5 +9,5 @@
 		"chakracore": "https://nodejs.org/download/chakracore-release/",
 		"chakracore-nightly": "https://nodejs.org/download/chakracore-nightly/"
 	},
-	"bootstrap": "node/6.10.1"
+	"bootstrap": "node/10.12.0"
 }

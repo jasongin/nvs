@@ -23,7 +23,13 @@ IF %NVS_EXITCODE% NEQ 0 GOTO :CLEANUP
 
 :RUN
 :: Forward the args to the main JavaScript file.
-"%NVS_BOOTSTRAP_NODE_PATH%" "%~dp0lib\main.js" %*
+"%NVS_BOOTSTRAP_NODE_PATH%" "%~dp0lib\index.js" %*
+
+IF NOT "%ERRORLEVEL%"=="2" GOTO :AFTERRUN
+:: The bootstrap node version is wrong. Delete it and start over.
+DEL "%NVS_BOOTSTRAP_NODE_PATH%"
+GOTO :BOOTSTRAP
+:AFTERRUN
 
 ENDLOCAL
 

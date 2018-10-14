@@ -42,7 +42,7 @@ test('Bash CLI', t => {
 
 	const result = childProcess.spawnSync(
 		'bash',
-		[ '-c', commands.join('; ') ],
+		[ '--norc', '--noprofile', '-c', commands.join('; ') ],
 		{
 			env: {
 				'NVS_HOME': testDir,

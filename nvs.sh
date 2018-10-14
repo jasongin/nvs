@@ -74,7 +74,7 @@ nvs() {
 		else
 			curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
 		fi
-		
+
 		if [ ! -f "${NODE_ARCHIVE}" ]; then
 			echo "Failed to download node binary."
 			return 1
@@ -112,7 +112,7 @@ nvs() {
 
 			# If it's different from the last auto-switched directory, then switch.
 			if [ "$DIR" != "$NVS_AUTO_DIRECTORY" ]; then
-				command "${NODE_PATH}" "${NVS_ROOT}/lib/main.js" auto
+				command "${NODE_PATH}" "${NVS_ROOT}/lib/index.js" auto
 				EXIT_CODE=$?
 			fi
 
@@ -120,10 +120,16 @@ nvs() {
 			;;
 		*)
 			# Forward args to the main JavaScript file.
-			command "${NODE_PATH}" "${NVS_ROOT}/lib/main.js" "$@"
+			command "${NODE_PATH}" "${NVS_ROOT}/lib/index.js" "$@"
 			EXIT_CODE=$?
 			;;
 	esac
+
+	if [ ${EXIT_CODE} = 2 ]; then
+		# The bootstrap node version is wrong. Delete it and start over.
+		rm "${NODE_PATH}"
+		nvs $@
+	fi
 
 	# Call the post-invocation script if it is present, then delete it.
 	# This allows the invocation to potentially modify the caller's environment (e.g. PATH)

@@ -137,23 +137,25 @@ test.beforeEach(t => {
 test('Add - download', t => {
 	let version = NodeVersion.parse('test1/7.8.9/x64');
 
-	mockChildProc.mockActions.push({ cb: () => {
-		mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64'),
-			['node-v7.8.9-' + plat + '-x64']);
-		if (nvsUse.isWindows) {
-			mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
-				'node-v7.8.9-' + plat + '-x64'), [exe]);
-			mockFs.mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
-				'node-v7.8.9-' + plat + '-x64', exe));
-		} else {
-			mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
-				'node-v7.8.9-' + plat + '-x64'), [bin]);
-			mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
-				'node-v7.8.9-' + plat + '-x64', bin), [exe]);
-			mockFs.mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
-				'node-v7.8.9-' + plat + '-x64', bin, exe));
-		}
-	}});
+	mockChildProc.mockActions.push({
+		cb: () => {
+			mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64'),
+				['node-v7.8.9-' + plat + '-x64']);
+			if (nvsUse.isWindows) {
+				mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+					'node-v7.8.9-' + plat + '-x64'), [exe]);
+				mockFs.mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
+					'node-v7.8.9-' + plat + '-x64', exe));
+			} else {
+				mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+					'node-v7.8.9-' + plat + '-x64'), [bin]);
+				mockFs.mockDir(path.join(testHome, 'test1', '7.8.9', 'x64',
+					'node-v7.8.9-' + plat + '-x64', bin), [exe]);
+				mockFs.mockFile(path.join(testHome, 'test1', '7.8.9', 'x64',
+					'node-v7.8.9-' + plat + '-x64', bin, exe));
+			}
+		},
+	});
 
 	return nvsAddRemove.addAsync(version).then(message => {
 		t.regex(message[0], /^Added at/);
