@@ -166,4 +166,12 @@ test('GetBinaryNameFromVersion', t => {
 	t.is(NodeVersion.getBinaryNameFromVersion('7.8'), 'node');
 });
 
+test('LTS versions', t => {
+	t.is(NodeVersion.parse('lts').toString(), 'test/lts');
+	t.is(NodeVersion.parse('lts/*').toString(), 'test/lts');
+	t.is(NodeVersion.parse('lts/boron').toString(), 'test/boron');
+	t.throws(() => NodeVersion.parse('lts/6.7.8'),
+		(e) => e.message.indexOf('Remote name not found') >= 0);
+});
+
 test.todo('Match');
