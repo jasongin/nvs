@@ -8,7 +8,7 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'bash');
 
-const testNodeVersion = '6.10.3';
+const testNodeVersion = '8.5.0';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
@@ -26,7 +26,7 @@ test('Bash CLI', t => {
 	const commands = [
 		'echo $NVS_HOME',
 		'. ./nvs.sh',
-		'nvs lsr',
+		'nvs lsr 8',
 		'nvs add ' + testNodeVersion,
 		'nvs link ' + testNodeVersion,
 		'nvs use',

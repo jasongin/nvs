@@ -8,7 +8,8 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'git-bash');
 
-const testNodeVersion = '6.10.3';
+const testNodeVersion = '8.5.0';
+const testNpmVersion = '6.4.1';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
@@ -26,12 +27,17 @@ test('Git Bash CLI', t => {
 	const commands = [
 		'echo $NVS_HOME',
 		'. ./nvs.sh',
-		'nvs lsr',
+		'nvs lsr 8',
 		'nvs add ' + testNodeVersion,
 		'nvs link ' + testNodeVersion,
 		'nvs use',
 		'echo $PATH',
 		'node -v',
+		// `npm install -g npm` doesn't work in Git bash, because the `npm` script file
+		// (being executed) is locked while the npm install process tries to update it.
+		// The workaround is to run the command via cmd.exe outside of bash.
+		`cmd "/C npm install -g npm@${testNpmVersion}"`,
+		'npm -v',
 		'nvs unlink',
 		'rm -rf $NVS_HOME',
 	];
@@ -55,4 +61,5 @@ test('Git Bash CLI', t => {
 		});
 	const output = result.stdout.toString().trim().replace(/\r\n/g, '\n');
 	t.regex(output, new RegExp('\n> node -v *\nv' + testNodeVersion + ' *\n', 'm'));
+	t.regex(output, new RegExp('\n> npm -v *\n' + testNpmVersion + ' *\n', 'm'));
 });
