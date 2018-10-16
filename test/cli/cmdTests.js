@@ -8,7 +8,8 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'cmd');
 
-const testNodeVersion = '6.10.3';
+const testNodeVersion = '8.5.0';
+const testNpmVersion = '6.4.1';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
@@ -25,12 +26,14 @@ if (process.platform !== 'win32') {
 test('Command Prompt CLI', t => {
 	const commands = [
 		'echo %NVS_HOME%',
-		'.\\nvs.cmd lsr',
+		'.\\nvs.cmd lsr 8',
 		'.\\nvs.cmd add ' + testNodeVersion,
 		'.\\nvs.cmd link ' + testNodeVersion,
 		'.\\nvs.cmd use',
 		'echo !PATH!',
 		'node -v',
+		'npm install -g npm@' + testNpmVersion,
+		'npm -v',
 		'.\\nvs.cmd unlink',
 		'rd /q /s %NVS_HOME%',
 	];
@@ -56,4 +59,5 @@ test('Command Prompt CLI', t => {
 		});
 	const output = result.stdout.toString().trim().replace(/\r\n/g, '\n');
 	t.regex(output, new RegExp('\n> node -v *\nv' + testNodeVersion + ' *\n', 'm'));
+	t.regex(output, new RegExp('\n> npm -v *\n' + testNpmVersion + ' *\n', 'm'));
 });

@@ -1,6 +1,6 @@
 version: "{build}"
 environment:
-  nodejs_version: 6
+  nodejs_version: 10
   nodejs_arch: x64
 install:
 - ps: Install-Product node $env:nodejs_version $env:nodejs_arch

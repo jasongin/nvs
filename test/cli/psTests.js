@@ -8,7 +8,8 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'ps');
 
-const testNodeVersion = '6.10.3';
+const testNodeVersion = '8.5.0';
+const testNpmVersion = '6.4.1';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
@@ -25,12 +26,14 @@ if (process.platform !== 'win32') {
 test('PowerShell CLI', t => {
 	const commands = [
 		'echo $env:NVS_HOME',
-		'.\\nvs.ps1 lsr',
+		'.\\nvs.ps1 lsr 8',
 		'.\\nvs.ps1 add ' + testNodeVersion,
 		'.\\nvs.ps1 link ' + testNodeVersion,
 		'.\\nvs.ps1 use',
 		'echo $env:PATH',
 		'node -v',
+		'npm install -g npm@' + testNpmVersion,
+		'npm -v',
 		'.\\nvs.ps1 unlink',
 		'Remove-Item -Recurse -Force $env:NVS_HOME',
 	];
@@ -51,6 +54,8 @@ test('PowerShell CLI', t => {
 			},
 			cwd: nvsRootDir,
 		});
+
 	const output = result.stdout.toString().trim().replace(/\r\n/g, '\n');
 	t.regex(output, new RegExp('\n> node -v *\nv' + testNodeVersion + ' *\n', 'm'));
+	t.regex(output, new RegExp('\n> npm -v *\n' + testNpmVersion + ' *\n', 'm'));
 });
