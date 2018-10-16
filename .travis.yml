@@ -3,7 +3,7 @@ os:
 - osx
 language: node_js
 node_js:
-- "6"
+- "10"
 addons:
   apt:
     packages:
