@@ -17,7 +17,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
   <metadata>
     <!-- == PACKAGE SPECIFIC SECTION == -->
     <id>nvs</id>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <packageSourceUrl>https://github.com/jasongin/nvs</packageSourceUrl>
     <owners>jasongin molant</owners>
     <!-- ============================== -->
