@@ -125,7 +125,7 @@ nvs() {
 			;;
 	esac
 
-	if [ ${EXIT_CODE} = 2 ]; then
+	if [ "${EXIT_CODE}" = "2" ]; then
 		# The bootstrap node version is wrong. Delete it and start over.
 		rm "${NODE_PATH}"
 		nvs $@
