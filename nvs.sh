@@ -96,6 +96,7 @@ nvs() {
 	fi
 
 	local EXIT_CODE
+	EXIT_CODE=0
 
 	# Check if invoked as a CD function that enables auto-switching.
 	case "$@" in
@@ -125,7 +126,7 @@ nvs() {
 			;;
 	esac
 
-	if [ "${EXIT_CODE}" = "2" ]; then
+	if [ ${EXIT_CODE} = 2 ]; then
 		# The bootstrap node version is wrong. Delete it and start over.
 		rm "${NODE_PATH}"
 		nvs $@
