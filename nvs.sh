@@ -95,7 +95,7 @@ nvs() {
 		echo ""
 	fi
 
-	local EXIT_CODE
+	local EXIT_CODE=0
 
 	# Check if invoked as a CD function that enables auto-switching.
 	case "$@" in
