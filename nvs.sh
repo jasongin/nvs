@@ -59,7 +59,12 @@ nvs() {
 		fi
 
 		# Download a node binary to use to bootstrap the NVS script.
-		local NODE_ARCH="$(uname -m | sed 's/x86_64/x64/' | sed 's/i686/x86/' | sed 's/aarch64/arm64/' )"
+		# SmartOS (SunOS) reports `i86pc` which is synonymous with both x86 and x64.
+		local NODE_ARCH="$(uname -m | sed -e 's/x86_64/x64/;s/i86pc/x64/;s/i686/x86/;s/aarch64/arm64/')"
+		# On AIX `uname -m` reports the machine ID number of the hardware running the system.
+		if [ "${NVS_OS}" = "aix" ]; then
+			local NODE_ARCH="ppc64"
+		fi
 		local NODE_FULLNAME="node-v${NODE_VERSION}-${NVS_OS}-${NODE_ARCH}"
 		local NODE_URI="${NODE_BASE_URI}v${NODE_VERSION}/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 		local NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
@@ -83,7 +88,11 @@ nvs() {
 		if [ "${NVS_OS}" = "win" ]; then
 			"${NVS_ROOT}/tools/7-Zip/7zr.exe" e "-o${NVS_HOME}/cache" -y "${NODE_ARCHIVE}" "${NODE_FULLNAME}/${NODE_EXE}" > /dev/null 2>&1
 		else
-			tar $TAR_FLAGS "${NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
+			if [ "${NVS_OS}" = "aix" ]; then
+				gunzip "${NODE_ARCHIVE}" | tar -xvC "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
+			else
+				tar $TAR_FLAGS "${NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
+			fi
 			mv "${NVS_HOME}/cache/${NODE_FULLNAME}/bin/${NODE_EXE}" "${NVS_HOME}/cache/${NODE_EXE}" > /dev/null 2>& 1
 			rm -r "${NVS_HOME}/cache/${NODE_FULLNAME}" > /dev/null 2>& 1
 		fi
