@@ -80,6 +80,18 @@ nvs() {
 			curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
 		fi
 
+		if [ ! -f "${NODE_ARCHIVE}" ] && [ "${NODE_ARCHIVE_EXT}" = ".tar.xz" ]; then
+			NODE_ARCHIVE_EXT=".tar.xz"
+			TAR_FLAGS="-Jxvf"
+			NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
+			echo "Retry download bootstrap node from ${NODE_URI} in gz format"
+			if type noglob > /dev/null 2>&1; then
+				noglob curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
+			else
+				curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
+			fi
+		fi
+
 		if [ ! -f "${NODE_ARCHIVE}" ]; then
 			echo "Failed to download node binary."
 			return 1
@@ -171,7 +183,7 @@ case "$(ps -p $$)" in
 		;;
 esac
 
-if [ ! "${NVS_OS}" = "win" ]; then
+if [ ! "${NVS_OS}" = "win" ] && [ ! "${NVS_OS}" = "aix" ]; then
 	# Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
 	if [ -z "${NVS_USE_XZ}" ]; then
 		export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
