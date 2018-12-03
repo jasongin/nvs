@@ -135,7 +135,7 @@ $ nvs which myalias/32
 [An alias may also refer to a local directory](doc/ALIAS.md#aliasing-directories), enabling NVS to switch to a local private build of node.
 
 ## Automatic switching per directory
-In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenver you `cd` or `pushd` under a directory containing a `.node-version` file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` file anywhere above it, then the default (linked) version is restored, if any.
+In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenever you `cd` or `pushd` under a directory containing a `.node-version` file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` file anywhere above it, then the default (linked) version is restored, if any.
 ```
 ~$ nvs link 6.9.1
 ~/.nvs/default -> ~/.nvs/node/6.9.1/x64
