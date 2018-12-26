@@ -12,6 +12,7 @@ const mockFs = {
 	statMap: {},
 	dataMap: {},
 	unlinkPaths: [],
+	nextRenameError: null,
 
 	reset() {
 		this.trace = false;
@@ -182,6 +183,12 @@ const mockFs = {
 		oldPath = this.fixSep(oldPath);
 		newPath = this.fixSep(newPath);
 		if (this.trace) console.log('renameSync(' + oldPath, newPath + ')');
+
+		if (this.nextRenameError) {
+			const e = this.nextRenameError;
+			this.nextRenameError = null;
+			throw e;
+		}
 
 		if (this.dirMap[oldPath]) {
 			// Support for renaming directories is limited to a single level.

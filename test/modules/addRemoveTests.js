@@ -5,6 +5,8 @@ const test = require('ava').test;
 const rewire = require('rewire');
 const Error = require('../../lib/error');
 
+const isWindows = process.platform === 'win32';
+
 test.before(require('../checkNodeVersion'));
 
 const testHome = '/home/test/nvs/'.replace(/\//g, path.sep);
@@ -156,6 +158,11 @@ test('Add - download', t => {
 			}
 		},
 	});
+
+	if (isWindows) {
+		// Simulate occasional EPERM during rename, which should be handled by a retry.
+		mockFs.nextRenameError = new Error('Test rename error', 'EPERM');
+	}
 
 	return nvsAddRemove.addAsync(version).then(message => {
 		t.regex(message[0], /^Added at/);
