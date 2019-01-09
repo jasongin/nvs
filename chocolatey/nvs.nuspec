@@ -17,7 +17,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
   <metadata>
     <!-- == PACKAGE SPECIFIC SECTION == -->
     <id>nvs</id>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
     <packageSourceUrl>https://github.com/jasongin/nvs</packageSourceUrl>
     <owners>jasongin molant</owners>
     <!-- ============================== -->
@@ -28,7 +28,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <authors>jasongin</authors>
     <projectUrl>https://github.com/jasongin/nvs</projectUrl>
     <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/nvs.png</iconUrl>-->
-    <copyright>Microsoft 2018</copyright>
+    <copyright>Microsoft 2019</copyright>
     <!-- If there is a license Url available, it is required for the community feed -->
     <licenseUrl>https://github.com/jasongin/nvs/blob/master/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
