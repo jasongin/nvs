@@ -27,6 +27,8 @@ git clone https://github.com/jasongin/nvs "$NVS_HOME"
 
 The `nvs.sh` script adds an `nvs` shell function to the environment. Afterward the tool should be invoked as just `nvs` without any path. The `install` command adds lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to source `nvs.sh`, so that the `nvs` function is available in future shells.
 
+For ksh, the source `nvs.sh` needs to be in your `~/.kshrc` or wherever `$ENV` points.
+
 ### CI Environments
 [NVS can be used in a CI environment](doc/CI.md) such as AppVeyor or Travis CI, to test a Node.js app or library on any version of Node.js that NVS can install.
 
