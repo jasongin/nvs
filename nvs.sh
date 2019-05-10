@@ -151,6 +151,17 @@ nvsudo() {
 	sudo "NVS_CURRENT=${NVS_CURRENT}" "${NVS_ROOT}/nvs" $*
 }
 
+# export our functions so that subshells and scripts can use them
+case "$(ps -p $$ -ocomm=)" in
+	*bash*)
+		export -f nvs nvsudo
+		;;
+	*ksh*)
+		# NOTE: for exports to work in ksh, this script has to be sourced from $ENV (usually ~/.kshrc)
+		typeset -xf nvs nvsudo
+		;;
+esac
+
 if [ ! "${NVS_OS}" = "win" ]; then
 	# Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
 	if [ -z "${NVS_USE_XZ}" ]; then
