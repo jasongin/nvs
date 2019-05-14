@@ -2,7 +2,7 @@
 
 const childProcess = require('child_process');
 const path = require('path');
-let test = require('ava').test;
+let test = require('ava').default;
 
 const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');

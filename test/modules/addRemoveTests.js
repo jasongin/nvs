@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const test = require('ava').test;
+const test = require('ava').default;
 const rewire = require('rewire');
 const Error = require('../../lib/error');
 

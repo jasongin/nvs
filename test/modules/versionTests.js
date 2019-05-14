@@ -1,6 +1,6 @@
 'use strict';
 
-const test = require('ava').test;
+const test = require('ava').default;
 
 test.before(require('../checkNodeVersion'));
 
@@ -170,8 +170,9 @@ test('LTS versions', t => {
 	t.is(NodeVersion.parse('lts').toString(), 'test/lts');
 	t.is(NodeVersion.parse('lts/*').toString(), 'test/lts');
 	t.is(NodeVersion.parse('lts/boron').toString(), 'test/boron');
-	t.throws(() => NodeVersion.parse('lts/6.7.8'),
-		(e) => e.message.indexOf('Remote name not found') >= 0);
+	t.throws(
+		() => NodeVersion.parse('lts/6.7.8'),
+		{ message: /Remote name not found/ });
 });
 
 test.todo('Match');
