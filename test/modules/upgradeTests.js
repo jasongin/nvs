@@ -1,6 +1,6 @@
 'use strict';
 
-const test = require('ava').test;
+const test = require('ava').default;
 const rewire = require('rewire');
 const Error = require('../../lib/error');
 
@@ -200,13 +200,13 @@ test('Upgrade not available', t => {
 });
 
 test('Upgrade target not found', t => {
-	t.throws(() => {
-		return nvsUpgrade.upgradeAsync(NodeVersion.parse('3.4.5'));
-	}, (e) => e.code === Error.ENOENT);
+	t.throws(
+		() => nvsUpgrade.upgradeAsync(NodeVersion.parse('3.4.5')),
+		{ code: Error.ENOENT });
 });
 
 test('Upgrade no current version', t => {
-	t.throws(() => {
-		return nvsUpgrade.upgradeAsync(null);
-	}, /Specify a version/);
+	t.throws(
+		() => nvsUpgrade.upgradeAsync(null),
+		{ message: /Specify a version/ });
 });

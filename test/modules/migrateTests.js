@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const test = require('ava').test;
+const test = require('ava').default;
 const rewire = require('rewire');
 const Error = require('../../lib/error');
 
@@ -191,12 +191,10 @@ test('Migrate source version not found', t => {
 	let modulesPath2 = testHome + 'test/5.99.2/x64' + lib + '/node_modules';
 	mockFs.mockDir(modulesPath2, []);
 
-	t.throws(() => {
-		nvsMigrate.migrateGlobalModules(
-			NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
-	}, e => {
-		return e.code === Error.ENOENT;
-	});
+	t.throws(
+		() => nvsMigrate.migrateGlobalModules(
+			NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64')),
+		{ code: Error.ENOENT });
 });
 
 test('Migrate target version not found', t => {
@@ -204,10 +202,8 @@ test('Migrate target version not found', t => {
 	let modulesPath1 = testHome + 'test/5.99.1/x64' + lib + '/node_modules';
 	mockFs.mockDir(modulesPath1, ['test']);
 
-	t.throws(() => {
-		nvsMigrate.migrateGlobalModules(
-			NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64'));
-	}, e => {
-		return e.code === Error.ENOENT;
-	});
+	t.throws(
+		() => nvsMigrate.migrateGlobalModules(
+			NodeVersion.parse('5.99.1/x64'), NodeVersion.parse('5.99.2/x64')),
+		{ code: Error.ENOENT });
 });

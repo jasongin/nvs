@@ -1,8 +1,9 @@
 'use strict';
 
 const path = require('path');
-const test = require('ava').test;
+const test = require('ava').default;
 const rewire = require('rewire');
+const Error = require('../../lib/error');
 
 test.before(require('../checkNodeVersion'));
 
@@ -248,11 +249,9 @@ test('Use - re-use default version', t => {
 });
 
 test('Use - not found', t => {
-	t.throws(() => {
-		nvsUse.use(new NodeVersion('test', '5.6.7', 'x64'));
-	}, error => {
-		return error.code === 'ENOENT';
-	});
+	t.throws(
+		() => nvsUse.use(new NodeVersion('test', '5.6.7', 'x64')),
+		{ code: Error.ENOENT });
 });
 
 test('Get bin path - current version', t => {
@@ -305,13 +304,11 @@ test('Run', t => {
 });
 
 test('Run - not found', t => {
-	t.throws(() => {
-		nvsUse.run(
+	t.throws(
+		() => nvsUse.run(
 			new NodeVersion('test', '5.6.7', 'x64'),
-			['test.js', '1', '2']);
-	}, error => {
-		return error.code === 'ENOENT';
-	});
+			['test.js', '1', '2']),
+		{ code: Error.ENOENT });
 });
 
 test.todo('Exec');
