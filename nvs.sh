@@ -152,7 +152,7 @@ nvsudo() {
 }
 
 # export our functions so that subshells and scripts can use them
-case "$(ps -p $$ -ocomm=)" in
+case "$(ps -p $$)" in
 	*bash*)
 		export -f nvs nvsudo
 		;;
