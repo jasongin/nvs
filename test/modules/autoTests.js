@@ -84,6 +84,15 @@ test.serial('Auto switch based on current dir', t => {
 	});
 });
 
+test.serial('Auto switch based on current dir using nvmrc', t => {
+	mockFs.mockFile('/testA/testB/.nvmrc', '1.2.3');
+	return nvsAuto.autoSwitchAsync('/testA/testB').then(() => {
+		t.is(mockNvsUse.usedVersions.length, 1);
+		t.is(mockNvsUse.usedVersions[0].semanticVersion, '1.2.3');
+		t.deepEqual(mockNvsAddRemove.addedVersions, []);
+	});
+});
+
 test.serial('Auto switch based on parent dir', t => {
 	mockFs.mockFile('/testA/.node-version', '1.2.3');
 	return nvsAuto.autoSwitchAsync('/testA/testB').then(() => {
@@ -95,6 +104,16 @@ test.serial('Auto switch based on parent dir', t => {
 
 test.serial('Auto download and switch based on parent dir', t => {
 	mockFs.mockFile('/testA/.node-version', '2.3.4');
+	return nvsAuto.autoSwitchAsync('/testA/testB').then(() => {
+		t.is(mockNvsAddRemove.addedVersions.length, 1);
+		t.is(mockNvsAddRemove.addedVersions[0].semanticVersion, '2.3.4');
+		t.is(mockNvsUse.usedVersions.length, 1);
+		t.is(mockNvsUse.usedVersions[0].semanticVersion, '2.3.4');
+	});
+});
+
+test.serial('Auto download and switch based on parent dir using nvmrc', t => {
+	mockFs.mockFile('/testA/.nvmrc', '2.3.4');
 	return nvsAuto.autoSwitchAsync('/testA/testB').then(() => {
 		t.is(mockNvsAddRemove.addedVersions.length, 1);
 		t.is(mockNvsAddRemove.addedVersions[0].semanticVersion, '2.3.4');
