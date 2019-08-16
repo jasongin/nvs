@@ -58,7 +58,7 @@ Command | Description
 `nvs install`                    | Initialize your profile for using NVS
 `nvs uninstall`                  | Remove NVS from profile and environment
 `nvs --version`                  | Display the NVS tool version
-`nvs add <version>`              | Download and extract a node version
+`nvs add [version]`              | Download and extract a node version
 `nvs rm <version>`               | Remove a node version
 `nvs migrate <fromver> [tover]`  | Migrate global modules
 `nvs upgrade [fromver]`          | Upgrade to latest patch of major version
@@ -137,7 +137,7 @@ $ nvs which myalias/32
 [An alias may also refer to a local directory](doc/ALIAS.md#aliasing-directories), enabling NVS to switch to a local private build of node.
 
 ## Automatic switching per directory
-In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenever you `cd` or `pushd` under a directory containing a `.node-version` file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` file anywhere above it, then the default (linked) version is restored, if any.
+In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenever you `cd` or `pushd` under a directory containing a `.node-version` or an [`.nvmrc`](https://github.com/nvm-sh/nvm#nvmrc) file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` or `.nvmrc` file anywhere above it, then the default (linked) version is restored, if any.
 ```
 ~$ nvs link 6.9.1
 ~/.nvs/default -> ~/.nvs/node/6.9.1/x64
@@ -152,6 +152,19 @@ PATH -= ~/.nvs/node/4.6.1/x64/bin
 PATH += ~/.nvs/default/bin
 ```
 *This feature is not available in Windows Command Prompt. Use PowerShell instead.*
+
+## Manual switching using `.node-version`
+If your shell isn't compatible with automatic switching or you'd prefer to switch manually but still take advantage of any `.node-version` or `.nvmrc` files, you can run `nvs use` with the version `auto` or just run `nvs auto`.
+
+```
+$ nvs use auto
+```
+
+is equivalent to
+
+```
+$ nvs auto
+```
 
 # How it works
 
