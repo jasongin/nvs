@@ -72,7 +72,7 @@ elseif ($args -eq "prompt") {
 
 	# Find the nearest .node-version file in current or parent directories
 	for ($parentDir = $pwd.Path; $parentDir; $parentDir = Split-Path $parentDir) {
-		if (Test-Path (Join-Path $parentDir ".node-version") -PathType Leaf) { break }
+		if ((Test-Path (Join-Path $parentDir ".node-version") -PathType Leaf) -or (Test-Path (Join-Path $parentDir ".nvmrc") -PathType Leaf)) { break }
 	}
 
 	# If it's still the same as the last auto-switched directory, then there's nothing to do.
