@@ -2,12 +2,8 @@
 	"aliases": {
 	},
 	"remotes": {
-	"default": "node",
-		"node": "https://nodejs.org/dist/",
-		"iojs": "https://iojs.org/dist/",
-		"nightly": "https://nodejs.org/download/nightly/",
-		"chakracore": "https://nodejs.org/download/chakracore-release/",
-		"chakracore-nightly": "https://nodejs.org/download/chakracore-nightly/"
+		"default": "node",
+		"node": "https://nodejs.org/dist/"
 	},
 	"bootstrap": "node/10.12.0"
 }
