@@ -107,20 +107,27 @@ Example: Configure `launch.json` so VS Code uses NVS to launch node version 6.10
 Or, remove the version string from `"runtimeArgs"` to get the version from a `.node-version` file in the project directory. For more details, see the [NVS VS Code documentation](doc/VSCODE.md) or run `nvs help vscode`.
 
 ## Configurable remotes
-The `nvs remote` command allows configuration of multiple named download locations. NVS manages versions from different remote locations separately, so there is no risk of version collisions. By default there are remotes pointing to Node.js official releases and nightly builds:
+The `nvs remote` command allows configuration of multiple named download locations. NVS manages versions from different remote locations separately, so there is no risk of version collisions. By default there is a single remote pointing to Node.js official releases:
 ```
 $ nvs remote
 default  node
-nightly  https://nodejs.org/download/nightly/
 node     https://nodejs.org/dist/
 ```
-This makes it easy to get builds from other sources. The following command sequence lists nightly builds, and adds a build:
+This makes it possible to get builds from other sources. The following command sequence adds a remote entry for nightly builds, lists nightly builds, and adds a build:
 ```
-$ nvs lsr nightly/7
-7.0.1-nightly2016102527e1749dcb
+$ nvs remote add nightly https://nodejs.org/download/nightly/
+$ nvs lsr nightly/13
+nightly/13.1.1-nightly20191120c7c566023f
 ...
-$ nvs add nightly/7
+$ nvs add nightly/13
 ```
+
+Other remote sources are supported, for example:
+```
+nvs remote add iojs https://iojs.org/dist/
+nvs remote add chakracore https://nodejs.org/download/chakracore-release/
+```
+
 ## Aliases
 An alias refers to a combination of a remote name and a semantic version. (Processor architectures are not aliased.) When setting an alias, the remote name may be omitted, in which case the alias refers to the default remote. An alias may be used in place of a version string in any of the other commands.
 ```
