@@ -48,6 +48,8 @@
       <ComponentRef Id="NvsPackageJson"/>
       <ComponentRef Id="NvsCmdScript"/>
       <ComponentRef Id="NvsPSScript"/>
+      <ComponentRef Id="NvsBashScript"/>
+      <ComponentRef Id="NvsBashExeScript"/>
       <ComponentRef Id="NvsDefaults"/>
       <ComponentRef Id="SevenZipTool" />
       <ComponentGroupRef Id="NvsLibFiles"/>
@@ -103,6 +105,12 @@
       </Component>
       <Component Id="NvsPSScript">
         <File Id="nvs.ps1" KeyPath="yes" Source="$(var.SourceDir)\nvs.ps1"/>
+      </Component>
+      <Component Id="NvsBashScript">
+        <File Id="nvs.sh" KeyPath="yes" Source="$(var.SourceDir)\nvs.sh"/>
+      </Component>
+      <Component Id="NvsBashExeScript">
+        <File Id="nvs" KeyPath="yes" Source="$(var.SourceDir)\nvs"/>
       </Component>
       <Component Id="NvsDefaults">
         <File Id="defaults.json" KeyPath="yes" Source="$(var.SourceDir)\defaults.json"/>
