@@ -14,7 +14,7 @@ const mockHttp = {
 
 	get(uri, cb) {
 		if (typeof uri === 'object' && uri.hostname) {
-			uri = 'https://' + uri.hostname + (uri.path || '/');
+			uri = uri.protocol + '//' + uri.hostname + (uri.path || '/');
 		}
 
 		if (this.trace) console.log('GET ' + uri);
