@@ -120,7 +120,6 @@ test.beforeEach(t => {
 				{ browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-osx-x86.tar.xz' },
 				{ browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-win-x64.7z' },
 				{ browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-win-x86.7z' },
-
 			],
 		},
 	]);
