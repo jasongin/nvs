@@ -59,7 +59,12 @@ nvs() {
 		fi
 
 		# Download a node binary to use to bootstrap the NVS script.
-		local NODE_ARCH="$(uname -m | sed 's/x86_64/x64/' | sed 's/i686/x86/' | sed 's/aarch64/arm64/' )"
+		# SmartOS (SunOS) reports `i86pc` which is synonymous with both x86 and x64.
+		local NODE_ARCH="$(uname -m | sed -e 's/x86_64/x64/;s/i86pc/x64/;s/i686/x86/;s/aarch64/arm64/')"
+		# On AIX `uname -m` reports the machine ID number of the hardware running the system.
+		if [ "${NVS_OS}" = "aix" ]; then
+			NODE_ARCH="ppc64"
+		fi
 		local NODE_FULLNAME="node-v${NODE_VERSION}-${NVS_OS}-${NODE_ARCH}"
 		local NODE_URI="${NODE_BASE_URI}v${NODE_VERSION}/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 		local NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
@@ -75,6 +80,19 @@ nvs() {
 			curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
 		fi
 
+		if [ ! -f "${NODE_ARCHIVE}" ] && [ "${NODE_ARCHIVE_EXT}" = ".tar.xz" ]; then
+			# The .xz download was not found -- fallback to .gz
+			NODE_ARCHIVE_EXT=".tar.gz"
+			TAR_FLAGS="-zxvf"
+			NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
+			echo "Retry download bootstrap node from ${NODE_URI} in gz format"
+			if type noglob > /dev/null 2>&1; then
+				noglob curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
+			else
+				curl -L -# "${NODE_URI}" -o "${NODE_ARCHIVE}"
+			fi
+		fi
+
 		if [ ! -f "${NODE_ARCHIVE}" ]; then
 			echo "Failed to download node binary."
 			return 1
@@ -83,7 +101,11 @@ nvs() {
 		if [ "${NVS_OS}" = "win" ]; then
 			"${NVS_ROOT}/tools/7-Zip/7zr.exe" e "-o${NVS_HOME}/cache" -y "${NODE_ARCHIVE}" "${NODE_FULLNAME}/${NODE_EXE}" > /dev/null 2>&1
 		else
-			tar $TAR_FLAGS "${NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
+			if [ "${NVS_OS}" = "aix" ]; then
+				gunzip "${NODE_ARCHIVE}" | tar -xvC "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
+			else
+				tar $TAR_FLAGS "${NODE_ARCHIVE}" -C "${NVS_HOME}/cache" "${NODE_FULLNAME}/bin/${NODE_EXE}" > /dev/null 2>&1
+			fi
 			mv "${NVS_HOME}/cache/${NODE_FULLNAME}/bin/${NODE_EXE}" "${NVS_HOME}/cache/${NODE_EXE}" > /dev/null 2>& 1
 			rm -r "${NVS_HOME}/cache/${NODE_FULLNAME}" > /dev/null 2>& 1
 		fi
@@ -162,7 +184,7 @@ case "$(ps -p $$)" in
 		;;
 esac
 
-if [ ! "${NVS_OS}" = "win" ]; then
+if [ ! "${NVS_OS}" = "win" ] && [ ! "${NVS_OS}" = "aix" ]; then
 	# Check if `tar` has xz support. Look for a minimum libarchive or gnutar version.
 	if [ -z "${NVS_USE_XZ}" ]; then
 		export LIBARCHIVE_VER="$(tar --version | sed -n "s/.*libarchive \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
