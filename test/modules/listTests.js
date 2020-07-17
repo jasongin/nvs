@@ -59,7 +59,9 @@ let mockNvsLink = {
 nvsList.__set__('nvsLink', mockNvsLink);
 
 nvsList.__set__('getNodejsRemoteVersionsAsync', remoteName => {
-	let v5 = new NodeVersion('test1', '5.6.7');
+	let v567 = new NodeVersion('test1', '5.6.7');
+	let v569 = new NodeVersion('test1', '5.6.9');
+	let v599 = new NodeVersion('test1', '5.9.9');
 	let v6 = new NodeVersion('test1', '6.7.8');
 	let v710 = new NodeVersion('test1', '7.1.0');
 	v710.label = 'Test';
@@ -67,7 +69,9 @@ nvsList.__set__('getNodejsRemoteVersionsAsync', remoteName => {
 	v711.label = 'Test';
 	let v72 = new NodeVersion('test1', '7.2.1');
 	return Promise.resolve([
-		v5,
+		v567,
+		v569,
+		v599,
 		v6,
 		v710,
 		v711,
@@ -116,6 +120,7 @@ test.beforeEach(t => {
 				{ browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-osx-x86.tar.xz' },
 				{ browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-win-x64.7z' },
 				{ browser_download_url: downloadUrl + 'v5.6.7/node-v5.6.7-win-x86.7z' },
+
 			],
 		},
 	]);
@@ -370,6 +375,18 @@ test('List - marks', t => {
 	]);
 });
 
+test('List - outdated', t => {
+	return nvsList.listOutdatedAsync().then(result => {
+		t.truthy(result);
+		let resultLines = result.map(line => line.trim());
+		t.deepEqual(resultLines, [
+			'test1/5.6.7/x64 [~5.6.9] [^5.9.9]',
+			'test1/5.6.7/x86 [~5.6.9] [^5.9.9]',
+			'test2/6.7.8/x64',
+		]);
+	});
+});
+
 test('List - aliased directories', t => {
 	const testAlias = 'test-alias';
 	const testAliasDir = '/test/alias/dir';
@@ -406,6 +423,8 @@ test('List remote - partial version filter', t => {
 		t.truthy(result);
 		let resultLines = result.map(line => line.trim());
 		t.deepEqual(resultLines, [
+			'test1/5.9.9',
+			'test1/5.6.9',
 			'*test1/5.6.7',
 		]);
 	});
@@ -420,6 +439,8 @@ test('List remote - added mark', t => {
 			'test1/7.1.1 (Test)',
 			'test1/7.1.0 (Test)',
 			'test1/6.7.8',
+			'test1/5.9.9',
+			'test1/5.6.9',
 			'*test1/5.6.7',
 		]);
 	});
@@ -437,6 +458,8 @@ test('List remote - linked mark', t => {
 			'test1/7.1.1 (Test)',
 			'test1/7.1.0 (Test)',
 			'test1/6.7.8',
+			'test1/5.9.9',
+			'test1/5.6.9',
 			'#test1/5.6.7',
 		]);
 	});
