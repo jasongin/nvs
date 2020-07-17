@@ -63,7 +63,7 @@ nvs() {
 		local NODE_ARCH="$(uname -m | sed -e 's/x86_64/x64/;s/i86pc/x64/;s/i686/x86/;s/aarch64/arm64/')"
 		# On AIX `uname -m` reports the machine ID number of the hardware running the system.
 		if [ "${NVS_OS}" = "aix" ]; then
-			local NODE_ARCH="ppc64"
+			NODE_ARCH="ppc64"
 		fi
 		local NODE_FULLNAME="node-v${NODE_VERSION}-${NVS_OS}-${NODE_ARCH}"
 		local NODE_URI="${NODE_BASE_URI}v${NODE_VERSION}/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
@@ -81,8 +81,9 @@ nvs() {
 		fi
 
 		if [ ! -f "${NODE_ARCHIVE}" ] && [ "${NODE_ARCHIVE_EXT}" = ".tar.xz" ]; then
-			NODE_ARCHIVE_EXT=".tar.xz"
-			TAR_FLAGS="-Jxvf"
+			# The .xz download was not found -- fallback to .gz
+			NODE_ARCHIVE_EXT=".tar.gz"
+			TAR_FLAGS="-zxvf"
 			NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 			echo "Retry download bootstrap node from ${NODE_URI} in gz format"
 			if type noglob > /dev/null 2>&1; then
