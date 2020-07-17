@@ -170,6 +170,15 @@ if [ ! "${NVS_OS}" = "win" ]; then
 			LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
 			if [ $LIBARCHIVE_VER -ge 002008000 ]; then
 				export NVS_USE_XZ=1
+				if [ "${NVS_OS}" = "darwin" ]; then
+					export MACOS_VER="$(printf "%.3d%.3d%.3d" $(sw_vers -productVersion | sed "s/\\./ /g"))"
+					if [ $MACOS_VER -ge 010009000 ]; then
+						export NVS_USE_XZ=1
+					else
+						export NVS_USE_XZ=0
+					fi
+					unset MACOS_VER
+				fi
 			else
 				export NVS_USE_XZ=0
 			fi
@@ -178,7 +187,11 @@ if [ ! "${NVS_OS}" = "win" ]; then
 			if [ -n "${LIBARCHIVE_VER}" ]; then
 				LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
 				if [ $LIBARCHIVE_VER -ge 001022000 ]; then
-					export NVS_USE_XZ=1
+					if command -v xz &> /dev/null ; then
+						export NVS_USE_XZ=1
+					else
+						export NVS_USE_XZ=0
+					fi
 				else
 					export NVS_USE_XZ=0
 				fi
