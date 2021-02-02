@@ -157,7 +157,7 @@ nvs() {
 	# This allows the invocation to potentially modify the caller's environment (e.g. PATH)
 	if [ -f "${NVS_POSTSCRIPT}" ]; then
 		. "${NVS_POSTSCRIPT}"
-		rm "${NVS_POSTSCRIPT}"
+		rm -f "${NVS_POSTSCRIPT}"
 		unset NVS_POSTSCRIPT
 	fi
 
