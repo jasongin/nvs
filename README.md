@@ -86,7 +86,7 @@ When invoked with no parameters, `nvs` displays an interactive menu for switchin
 *NVS uses [**console-menu**](https://github.com/jasongin/console-menu), a module originally written for this project then published separately.*
 
 ## VS Code support
-Visual Studio Code can use NVS to select a node version to use when launching or debugging. In `launch.json`, add a `"runtimeArgs"` attribute with an NVS version string and a `"runtimeExecutable"` attribute that refers to `nvs.cmd` (Windows) or `nvs` (Mac, Linux). (You may need to specify an absolute path such as `"${env:HOME}/.nvs/nvs"` if NVS is not in VS Code's PATH.)
+Visual Studio Code can use NVS to select a node version to use when launching or debugging. In `launch.json` (in the folder `.vscode` located on the project's root folder), add a `"runtimeArgs"` attribute with an NVS version string and a `"runtimeExecutable"` attribute that refers to `nvs.cmd` (Windows) or `nvs` (Mac, Linux). (You may need to specify an absolute path such as `"${env:HOME}/.nvs/nvs"` if NVS is not in VS Code's PATH.)
 
 Example: Configure `launch.json` so VS Code uses NVS to launch node version 6.10:
 ```json
@@ -102,6 +102,7 @@ Example: Configure `launch.json` so VS Code uses NVS to launch node version 6.10
       "osx": { "runtimeExecutable": "nvs" },
       "linux": { "runtimeExecutable": "nvs" }
     },
+  ]
 ```
 
 Or, remove the version string from `"runtimeArgs"` to get the version from a `.node-version` file in the project directory. For more details, see the [NVS VS Code documentation](doc/VSCODE.md) or run `nvs help vscode`.
