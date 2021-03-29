@@ -226,10 +226,14 @@ fi
 # If some version is linked as the default, begin by using that version.
 if [ -d "${NVS_HOME}/default" ]; then
 	if [ -f "${NVS_HOME}/default/bin/node" ]; then
-		export PATH="${NVS_HOME}/default/bin:${PATH}"
+		if [[ ! "$PATH" == *"${NVS_HOME}/default/bin"* ]]; then
+			export PATH="${NVS_HOME}/default/bin:${PATH}"
+		fi
 		unset NPM_CONFIG_PREFIX
 	elif [ -f "${NVS_HOME}/default/node" ]; then
-		export PATH="${NVS_HOME}/default:${PATH}"
+		if [[ ! "$PATH" == *"${NVS_HOME}/default/bin"* ]]; then
+			export PATH="${NVS_HOME}/default:${PATH}"
+		fi
 		unset NPM_CONFIG_PREFIX
 	fi
 fi
