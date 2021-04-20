@@ -5,5 +5,5 @@
 		"default": "node",
 		"node": "https://nodejs.org/dist/"
 	},
-	"bootstrap": "node/12.21.0"
+	"bootstrap": "node/12.22.1"
 }
