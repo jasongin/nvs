@@ -63,6 +63,8 @@ if ((-not (Test-Path $bootstrapNodePath)) -and ($onWindows)) {
 	}
 } elseif ((-not (Test-Path $bootstrapNodePath)) -and (-not $onWindows)) {
 	& "$scriptDir/nvs" install
+	Write-Output "Add the following line to your PowerShell PROFILE to enable use in subsequent sessions."
+	Write-Output "    Set-Alias nvs $scriptDir/nvs.ps1"
 }
 
 if ($args -eq "bootstrap") {
