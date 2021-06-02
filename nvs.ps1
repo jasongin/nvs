@@ -70,12 +70,12 @@ if ((-not (Test-Path $bootstrapNodePath)) -and ($onWindows)) {
 			Write-Output "$PROFILE already contains 'nvs' alias."
 		}
 		else {
-			Add-Content -Path $PROFILE -Value $aliasText
+			Add-Content -Path $PROFILE -Value $aliasText -Force
 			Write-Output "Added 'nvs' alias to $PROFILE."
 		}
 	}
  else {
-		New-Item -Path $PROFILE -Value $aliasText
+		New-Item -Path $PROFILE -Value $aliasText -Force | Out-Null
 		Write-Output "Created $PROFILE and added 'nvs' alias in it."
 	}
 }
