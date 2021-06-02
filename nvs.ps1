@@ -1,8 +1,9 @@
 # NVS (Node Version Switcher) PowerShell script
-# Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
+# Bootstraps node binary if necessary, then forwards arguments to the main nvs.js script.
 
 $scriptDir = $PSScriptRoot
-$mainScript = Join-Path $scriptDir "lib\index.js"
+$mainScript = Join-Path $scriptDir "lib/index.js"
+$onWindows = $IsWindows -or $PSVersionTable.PSVersion.Major -le 5
 
 # The NVS_HOME path may be overridden in the environment.
 if (-not $env:NVS_HOME) {
@@ -14,10 +15,10 @@ if (-not ($args -eq "bootstrap")) {
 	$env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random -SetSeed $PID) + ".ps1")
 }
 
-# Check if the bootstrap node.exe is present.
+# Check if the bootstrap node binary is present.
 $cacheDir = Join-Path $env:NVS_HOME "cache"
-$bootstrapNodePath = Join-Path $cacheDir "node.exe"
-if (-not (Test-Path $bootstrapNodePath)) {
+$bootstrapNodePath = if($onWindows) { Join-Path $cacheDir "node.exe" } else { Join-Path $cacheDir "node" }
+if ((-not (Test-Path $bootstrapNodePath)) -and ($onWindows)) {
 	# Download a node.exe binary to use to bootstrap the NVS script.
 	try {
 		if (-not (Test-Path $cacheDir)) {
@@ -60,6 +61,8 @@ if (-not (Test-Path $bootstrapNodePath)) {
 		$env:NVS_POSTSCRIPT = $null
 		exit 1
 	}
+} elseif ((-not (Test-Path $bootstrapNodePath)) -and (-not $onWindows)) {
+	& "$scriptDir/nvs" install
 }
 
 if ($args -eq "bootstrap") {
@@ -103,7 +106,7 @@ else {
 if ($exitCode -eq 2) {
 	# The bootstrap node version is wrong. Delete it and start over.
 	Remove-Item "$bootstrapNodePath"
-	. "$scriptDir\nvs.ps1" $args
+	. "$scriptDir/nvs.ps1" $args
 	$exitCode = $LastExitCode
 }
 
