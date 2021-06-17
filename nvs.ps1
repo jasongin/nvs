@@ -1,8 +1,9 @@
 # NVS (Node Version Switcher) PowerShell script
-# Bootstraps node.exe if necessary, then forwards arguments to the main nvs.js script.
+# Bootstraps node binary if necessary, then forwards arguments to the main nvs.js script.
 
 $scriptDir = $PSScriptRoot
-$mainScript = Join-Path $scriptDir "lib\index.js"
+$mainScript = Join-Path $scriptDir "lib/index.js"
+$onWindows = $IsWindows -or $PSVersionTable.PSVersion.Major -le 5
 
 # The NVS_HOME path may be overridden in the environment.
 if (-not $env:NVS_HOME) {
@@ -14,10 +15,10 @@ if (-not ($args -eq "bootstrap")) {
 	$env:NVS_POSTSCRIPT = Join-Path $env:NVS_HOME ("nvs_tmp_" + (Get-Random -SetSeed $PID) + ".ps1")
 }
 
-# Check if the bootstrap node.exe is present.
+# Check if the bootstrap node binary is present.
 $cacheDir = Join-Path $env:NVS_HOME "cache"
-$bootstrapNodePath = Join-Path $cacheDir "node.exe"
-if (-not (Test-Path $bootstrapNodePath)) {
+$bootstrapNodePath = if ($onWindows) { Join-Path $cacheDir "node.exe" } else { Join-Path $cacheDir "node" }
+if ((-not (Test-Path $bootstrapNodePath)) -and ($onWindows)) {
 	# Download a node.exe binary to use to bootstrap the NVS script.
 	try {
 		if (-not (Test-Path $cacheDir)) {
@@ -32,9 +33,9 @@ if (-not (Test-Path $bootstrapNodePath)) {
 	}
 
 	# Parse the bootstrap parameters from defaults.json.
-	$bootstrapNodeVersion = ((Get-Content -Raw $scriptDir\defaults.json | ConvertFrom-Json |% "bootstrap") -replace ".*/")
-	$bootstrapNodeRemote = ((Get-Content -Raw $scriptDir\defaults.json | ConvertFrom-Json |% "bootstrap") -replace "/.*")
-	$bootstrapNodeBaseUri = (Get-Content -Raw $scriptDir\defaults.json | ConvertFrom-Json |% "remotes" |% $bootstrapNodeRemote)
+	$bootstrapNodeVersion = ((Get-Content -Raw $scriptDir\defaults.json | ConvertFrom-Json | ForEach-Object "bootstrap") -replace ".*/")
+	$bootstrapNodeRemote = ((Get-Content -Raw $scriptDir\defaults.json | ConvertFrom-Json | ForEach-Object "bootstrap") -replace "/.*")
+	$bootstrapNodeBaseUri = (Get-Content -Raw $scriptDir\defaults.json | ConvertFrom-Json | ForEach-Object "remotes" | ForEach-Object $bootstrapNodeRemote)
 
 	$bootstrapNodeArch = "x86"
 	if ($env:PROCESSOR_ARCHITECTURE -ieq "AMD64" -or $env:PROCESSOR_ARCHITEW6432 -ieq "AMD64") {
@@ -59,6 +60,23 @@ if (-not (Test-Path $bootstrapNodePath)) {
 		Write-Error "Failed to download bootstrap node binary."
 		$env:NVS_POSTSCRIPT = $null
 		exit 1
+	}
+} elseif ((-not (Test-Path $bootstrapNodePath)) -and (-not $onWindows)) {
+	& "$scriptDir/nvs" install
+	Set-Alias nvs "$scriptDir/nvs.ps1"
+	$aliasText = "Set-Alias nvs $scriptDir/nvs.ps1 # Node Version Switcher"
+	if (Test-Path -PathType Leaf $PROFILE) {
+		if (Get-Content $PROFILE | Select-String -SimpleMatch $aliasText) {
+			Write-Output "$PROFILE already contains 'nvs' alias."
+		}
+		else {
+			Add-Content -Path $PROFILE -Value $aliasText -Force
+			Write-Output "Added 'nvs' alias to $PROFILE."
+		}
+	}
+ else {
+		New-Item -Path $PROFILE -Value $aliasText -Force | Out-Null
+		Write-Output "Created $PROFILE and added 'nvs' alias in it."
 	}
 }
 
@@ -103,7 +121,7 @@ else {
 if ($exitCode -eq 2) {
 	# The bootstrap node version is wrong. Delete it and start over.
 	Remove-Item "$bootstrapNodePath"
-	. "$scriptDir\nvs.ps1" $args
+	. "$scriptDir/nvs.ps1" $args
 	$exitCode = $LastExitCode
 }
 
