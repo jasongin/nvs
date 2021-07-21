@@ -52,20 +52,17 @@ git clone https://github.com/jasongin/nvs "$env:NVS_HOME"
 After installation, running just `nvs` from the current shell or any new Command Prompt or PowerShell then invokes either the `nvs.cmd` or `nvs.ps1` script accordingly.
 
 ### Git Bash on Windows
-NVS can work in Git Bash on Windows (the bash tools installed by [Git](https://git-scm.com/) for Windows), though it requires some manual configuration:
+NVS can work in Git Bash on Windows (the bash tools installed by [Git](https://git-scm.com/) for Windows).
 
-1. Install NVS using the either the Windows MSI, Command Prompt, or PowerShell instructions above.
+1. Install NVS using Git Bash (see instructions: [Mac, Linux](#mac-linux) ).
 
-2. Ensure there is a `.bash_profile` file in your home (`%HOMEDRIVE%%HOMEPATH%`) directory that calls `.bashrc`. Create the file if it doesn't exist. It should include at least the following line:
+2. Ensure there is a `.bash_profile` file in your home (`$HOME`) directory that calls `.bashrc`. Create the file if it doesn't 
+	exist. It should include at least the following line:
 ```sh
 if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 ```
 
-3. Ensure there is a `.bashrc` file in the same directory. Create the file if it doesn't exist, and add the following lines. (If necessary, replace `$LOCALAPPDATA` with `$ProgramData` or other custom installation path.)
-```sh
-export NVS_HOME=$LOCALAPPDATA/nvs
-. $NVS_HOME/nvs.sh
-```
+`.bashrc` file is created by NVS if it does not exists.
 
 ### Ubuntu Bash on Windows 10
 
