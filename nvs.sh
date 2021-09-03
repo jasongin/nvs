@@ -10,6 +10,8 @@
 # Try to locate the NVS_ROOT path, where the nvs scripts are installed.
 if [ -n "${BASH_SOURCE}" ]; then
 	export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
+elif [ "$__PWSH_LOGIN_CHECKED" -eq 1 ]; then
+	export NVS_ROOT="$NVS_HOME"
 else
 	if [ -n "${(%):-%x}" ]; then # zsh script source
 		export NVS_ROOT="$(cd "$(dirname "${(%):-%x}")" > /dev/null && \pwd)"
@@ -212,7 +214,7 @@ if [ ! "${NVS_OS}" = "win" ] && [ ! "${NVS_OS}" = "aix" ]; then
 			LIBARCHIVE_VER="$(tar --version | sed -n "s/.*(GNU tar) \([0-9][0-9]*\(\.[0-9][0-9]*\)*\).*/\1/p")"
 			if [ -n "${LIBARCHIVE_VER}" ]; then
 				LIBARCHIVE_VER="$(printf "%.3d%.3d%.3d" $(echo "${LIBARCHIVE_VER}" | sed "s/\\./ /g"))"
-				if [ $LIBARCHIVE_VER -ge 001022000 ]; then
+				if [ $LIBARCHIVE_VER -ge 001022000 -a "$__PWSH_LOGIN_CHECKED" -eq 0 ]; then
 					if command -v xz &> /dev/null ; then
 						export NVS_USE_XZ=1
 					else
@@ -239,6 +241,6 @@ if [ -d "${NVS_HOME}/default" ]; then
 fi
 
 # If sourced with parameters, invoke the function now with those parameters.
-if [ -n "$*" -a -z "${NVS_EXECUTE}" ]; then
+if [ -n "$*" -a -z "${NVS_EXECUTE}" -a "$__PWSH_LOGIN_CHECKED" -eq 0 ]; then
 	nvs $*
 fi
