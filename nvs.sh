@@ -65,10 +65,7 @@ nvs() {
 		if [ "${NVS_OS}" = "aix" ]; then
 			NODE_ARCH="ppc64"
 		fi
-		# Automatically select x64 instead of arm64 when on macOS
-		if [ "${NVS_OS}" = "darwin" ] && [ "${NODE_ARCH}" = "arm64" ]; then
-			NODE_ARCH="x64"
-		fi
+
 		local NODE_FULLNAME="node-v${NODE_VERSION}-${NVS_OS}-${NODE_ARCH}"
 		local NODE_URI="${NODE_BASE_URI}v${NODE_VERSION}/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
 		local NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"
