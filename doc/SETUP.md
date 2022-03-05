@@ -66,7 +66,7 @@ if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 
 ### Ubuntu Bash on Windows 10
 
-NVS can also work in [Unbutu Bash on Windows 10](https://msdn.microsoft.com/en-us/commandline/wsl/about) using the following installation instructions for Linux. Be aware that instance of NVS and any Node.js versions it installs in that environment are only available to the Ubuntu subsystem. It actually downloads and runs the Node.js Linux binaries, _not_ the Windows binaries.
+NVS can also work in [Ubuntu Bash on Windows 10](https://msdn.microsoft.com/en-us/commandline/wsl/about) using the following installation instructions for Linux. Be aware that instance of NVS and any Node.js versions it installs in that environment are only available to the Ubuntu subsystem. It actually downloads and runs the Node.js Linux binaries, _not_ the Windows binaries.
 
 ## Mac, Linux
 1. Specify the installation path using **_one_** of the following two commands:
