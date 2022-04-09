@@ -18,6 +18,7 @@
 !/tools/
 !/setup/
 !/chocolatey/
+!/homebrew/
 
 # Temporary files generated during testing
 /test/temp
