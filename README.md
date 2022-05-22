@@ -12,6 +12,11 @@ Following are basic setup instructions. [For more details and options for settin
 ### Windows
 A Windows Installer (MSI) package is available from the [NVS releases page on GitHub](https://github.com/jasongin/nvs/releases).
 
+You can use [winget](https://apps.microsoft.com/store/detail/app-installer/9NBLGGH4NNS1?hl=en-us&gl=US) to install it (available by default in Windows 11):
+```sh
+winget install jasongin.nvs
+```
+
 You can also use [chocolatey](https://chocolatey.org) to install it:
 ```
 choco install nvs
