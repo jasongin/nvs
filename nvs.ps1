@@ -85,8 +85,7 @@ if ($args -eq "bootstrap") {
 	exit 0
 }
 elseif ($args -eq "prompt") {
-	# This script was invoked as a PS prompt function that enables auto-switching.
-	Invoke-Expression $env:NVS_ORIGINAL_PROMPT
+	# This script was invoked in a PS prompt function that enables auto-switching.
 
 	# Find the nearest .node-version file in current or parent directories
 	for ($parentDir = $pwd.Path; $parentDir; $parentDir = Split-Path $parentDir) {
@@ -109,7 +108,7 @@ elseif ($args -eq "prompt") {
 	while (($b = $proc.StandardOutput.Read()) -ne -1) {
 		Write-Host -NoNewline ([char]$b)
 	}
-	$proc.WaitForExit
+	$proc.WaitForExit()
 	$exitCode = $proc.ExitCode
 }
 else {
