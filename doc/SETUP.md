@@ -73,7 +73,7 @@ NVS can also work in [Ubuntu Bash on Windows 10](https://msdn.microsoft.com/en-u
 
  - For a current-user installation (recommended):
 ```sh
-export NVS_HOME="/usr/local/nvs"
+export NVS_HOME="$HOME/.nvs"
 ```
 2. Clone this repo:
 ```sh
