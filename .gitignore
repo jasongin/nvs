@@ -19,6 +19,7 @@
 !/setup/
 !/chocolatey/
 !/homebrew/
+!/.github
 
 # Temporary files generated during testing
 /test/temp

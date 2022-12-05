@@ -1,0 +1,36 @@
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: nvs test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        node-version: [ 14.x, 16.x, 18.x ]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install packages
+      run: npm install --no-optional
+
+    - name: Run tests
+      run: npm run test -- --tap
+
+    - name: Check style
+      run: npm run lint
+      if: ${{ always() }}
+
+    - name: Check types
+      run: npm run ts-check
+      if: ${{ always() }}
