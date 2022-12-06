@@ -75,10 +75,6 @@ NVS can also work in [Ubuntu Bash on Windows 10](https://msdn.microsoft.com/en-u
 ```sh
 export NVS_HOME="$HOME/.nvs"
 ```
- - Or for a system installation:
-```sh
-export NVS_HOME="/usr/local/nvs"
-```
 2. Clone this repo:
 ```sh
 git clone https://github.com/jasongin/nvs "$NVS_HOME"
@@ -86,6 +82,22 @@ git clone https://github.com/jasongin/nvs "$NVS_HOME"
 3. Source the `install` command:
 ```sh
 . "$NVS_HOME/nvs.sh" install
+```
+
+ - Or for a system installation:
+	
+	`NVS_HOME` must still be set to a user-writable directory, e.g. `~/.nvs`, not to the directory containing the nvs script files. `NVS_HOME` is where the user-specified node versions will be downloaded and cached, and also where the temporary `.sh` file can be written.
+
+```sh
+export NVS_HOME="$HOME/.nvs"
+```
+2. Clone this repo:
+```sh
+sudo git clone https://github.com/jasongin/nvs /opt/nvs
+```
+3. Run the `install` command:
+```sh
+/opt/nvs/nvs install
 ```
 
 The `nvs.sh` script adds an `nvs` shell function to the environment. Afterward the tool should be invoked as just `nvs` without any path. The `install` command also adds lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to source `nvs.sh`, so that the `nvs` function is available in future shells.
