@@ -12,16 +12,12 @@ const mockHttp = {
 		this.requests = [];
 	},
 
-	get(uri, cb) {
-		if (typeof uri === 'object' && uri.hostname) {
-			uri = (uri.protocol || 'https:') + '//' + uri.hostname + (uri.path || '/');
-		}
-
-		if (this.trace) console.log('GET ' + uri);
+	get(url, opt, cb) {
+		if (this.trace) console.log('GET ' + url);
 
 		let mockRequest = new EventEmitter();
 		let mockResponse = new EventEmitter();
-		let responseContent = this.resourceMap[uri];
+		let responseContent = this.resourceMap[url.toString()];
 		if (responseContent) {
 			mockResponse.statusCode = 200;
 			mockResponse.headers = {

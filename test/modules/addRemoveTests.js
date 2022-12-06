@@ -47,8 +47,7 @@ nvsAddRemove.__set__('nvsLink', nvsLink);
 nvsAddRemove.__set__('nvsDownload', nvsDownload);
 nvsAddRemove.__set__('nvsExtract', nvsExtract);
 nvsAddRemove.__set__('fs', mockFs);
-nvsDownload.__set__('http', mockHttp);
-nvsDownload.__set__('https', mockHttp);
+nvsDownload.__set__('httpGet', mockHttp.get.bind(mockHttp));
 nvsDownload.__set__('fs', mockFs);
 nvsExtract.__set__('childProcess', mockChildProc);
 
