@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: nvs test
+name: nvs
 
 on:
   push:
@@ -9,16 +9,21 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  test:
 
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
+      fail-fast: false  # Don't cancel other jobs when one job fails
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Install zsh
+      run: sudo apt install zsh
+      if: ${{ runner.os == 'Linux' }}
 
     - name: Use Node.js 18.x
       uses: actions/setup-node@v3
