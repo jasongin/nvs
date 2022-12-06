@@ -16,10 +16,14 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
-        node-version: [ 14.x, 16.x, 18.x ]
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
 
     - name: Install packages
       run: npm install --no-optional
