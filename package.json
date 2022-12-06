@@ -18,17 +18,16 @@
 		"url": "https://github.com/jasongin/nvs"
 	},
 	"devDependencies": {
-		"@types/node": "^13.11.0",
-		"ava": "^3.10.1",
-		"eslint": "^5.16.0",
-		"eslint-config-standard": "^12.0.0",
-		"eslint-plugin-import": "^2.14.0",
-		"eslint-plugin-node": "^7.0.1",
-		"eslint-plugin-promise": "^4.0.1",
-		"eslint-plugin-standard": "^4.0.0",
+		"@types/node": "^16.18.6",
+		"ava": "^5.1.0",
+		"eslint": "^8.29.0",
+		"eslint-config-standard": "^17.0.0",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-promise": "^6.1.1",
 		"nyc": "^15.1.0",
 		"rewire": "^2.5.2",
-		"typescript": "^3.7.2"
+		"typescript": "^4.9.3"
 	},
 	"ava": {
 		"files": [
@@ -56,7 +55,6 @@
 		},
 		"extends": "standard",
 		"plugins": [
-			"standard",
 			"promise"
 		],
 		"rules": {
@@ -93,8 +91,15 @@
 				"error",
 				"global"
 			],
-			"no-var": "error"
+			"no-var": "error",
+			"prefer-const": "off",
+			"quote-props": "off",
+			"array-bracket-spacing": "off",
+			"dot-notation": "off",
+			"no-case-declarations": "off",
+			"no-empty": "off",
+			"object-shorthand": "off",
+			"multiline-ternary": "off"
 		}
-	},
-	"dependencies": {}
+	}
 }
