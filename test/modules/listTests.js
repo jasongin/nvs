@@ -516,7 +516,7 @@ test('Get remote versions - network path', t => {
 
 	return getNetworkRemoteVersionsAsync(
 		'test1',
-		testNetworkPath + '{version}\\{arch}.msi'
+		testNetworkPath + '{version}\\{arch}.msi',
 	).then(result => {
 		t.truthy(result);
 		t.is(result.length, 2);
