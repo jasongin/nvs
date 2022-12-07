@@ -11,7 +11,7 @@
 if [ -n "${BASH_SOURCE}" ]; then
 	export NVS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && \pwd)"
 else
-	if [ -n "${(%):-%x}" ]; then # zsh script source
+	if [ -n "${ZSH_EVAL_CONTEXT}" ]; then
 		export NVS_ROOT="$(cd "$(dirname "${(%):-%x}")" > /dev/null && \pwd)"
 	fi 2>/dev/null
 	if [ -n "${NVS_HOME}" -a -z ${NVS_ROOT} ]; then
@@ -236,6 +236,7 @@ if [ -d "${NVS_HOME}/default" ]; then
 fi
 
 # If sourced with parameters, invoke the function now with those parameters.
-if [ -n "$*" -a -z "${NVS_EXECUTE}" ]; then
+# (But not if invoked during a PowerShell login.)
+if [ -n "$*" -a -z "${NVS_EXECUTE}" -a -z "${__PWSH_LOGIN_CHECKED}" ]; then
 	nvs $*
 fi
