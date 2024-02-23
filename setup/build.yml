@@ -1,5 +1,9 @@
 trigger: none
 
+variables:
+ - name: TeamName # Required by signing plugin
+   value: Node.js
+
 # The `resources` specify the location and version of the 1ES pipeline template.
 resources:
   repositories:
@@ -21,7 +25,7 @@ extends:
         templateContext:
           outputs:
           - output: pipelineArtifact
-            targetPath: $(System.DefaultWorkingDirectory)\$(BuildConfiguration)\*.msi
+            targetPath: $(System.DefaultWorkingDirectory)\setup\Release
         steps:
         - checkout: self
           clean: true
@@ -40,5 +44,5 @@ extends:
           inputs:
             solution: setup\*.sln
             vsVersion: 16.0
-            platform: $(BuildPlatform)
-            configuration: $(BuildConfiguration)
+            platform: x86
+            configuration: Release
