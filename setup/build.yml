@@ -14,7 +14,7 @@ resources:
 
 extends:
   # The pipeline extends the 1ES template which will inject different SDL and compliance tasks.
-  template: v1/1ES.Unofficial.PipelineTemplate.yml@1esPipelines
+  template: v1/1ES.Official.PipelineTemplate.yml@1esPipelines
   parameters:
     pool:
       name: VSEngSS-MicroBuild2019-1ES
