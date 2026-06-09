@@ -15,7 +15,7 @@ Drop-in replacement for Node's `http` and `https` modules that automatically fol
 ```javascript
 const { http, https } = require('follow-redirects');
 
-http.get('http://bit.ly/900913', response => {
+http.get('http://en.wikipedia.org/', response => {
   response.on('data', chunk => {
     console.log(chunk);
   });
@@ -29,8 +29,8 @@ If no redirection happened, `responseUrl` is the original request URL.
 
 ```javascript
 const request = https.request({
-  host: 'bitly.com',
-  path: '/UHfDGO',
+  host: 'en.wikipedia.org',
+  path: '/',
 }, response => {
   console.log(response.responseUrl);
   // 'http://duckduckgo.com/robots.txt'
@@ -61,7 +61,7 @@ Per-request options are set by passing an `options` object:
 const url = require('url');
 const { http, https } = require('follow-redirects');
 
-const options = url.parse('http://bit.ly/900913');
+const options = url.parse('http://en.wikipedia.org/');
 options.maxRedirects = 10;
 options.beforeRedirect = (options, response, request) => {
   // Use this to adjust the request options upon redirecting,
@@ -74,7 +74,7 @@ options.beforeRedirect = (options, response, request) => {
   // request.url = the requested URL that resulted in a redirect
   // request.headers = the headers in the request that resulted in a redirect
   // request.method = the method of the request that resulted in a redirect
-  if (options.hostname === "example.com") {
+  if (options.hostname === "example.org") {
     options.auth = "user:password";
   }
 };
@@ -94,6 +94,8 @@ the following per-request options are supported:
 - `agents` (default: `undefined`) – sets the `agent` option per protocol, since HTTP and HTTPS use different agents. Example value: `{ http: new http.Agent(), https: new https.Agent() }`
 
 - `trackRedirects` (default: `false`) – whether to store the redirected response details into the `redirects` array on the response object.
+
+- `sensitiveHeaders` (default: `[]`) – names of headers to omit when making redirected requests (such as `X-API-Key`, `X-Auth-Token`…)
 
 
 ### Advanced usage
