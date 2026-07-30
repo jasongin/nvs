@@ -101,7 +101,7 @@ elseif ($args -eq "prompt") {
 	# Output needs to be redirected to Write-Host, because stdout is ignored by prompt.
 	# Process a byte at a time so that output like progress bars is real-time.
 	$startInfo = New-Object System.Diagnostics.ProcessStartInfo $bootstrapNodePath
-	$startInfo.Arguments = ($mainScript, "auto", "at", $pwd.Path)
+	$startInfo.Arguments = "`"$mainScript`" auto at `"$($pwd.Path)`""
 	$startInfo.UseShellExecute = $false
 	$startInfo.RedirectStandardOutput = $true
 	$proc = [System.Diagnostics.Process]::Start($startInfo)
