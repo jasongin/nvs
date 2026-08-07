@@ -53,6 +53,8 @@ test('Command Prompt CLI', t => {
 				'NVS_HOME': testDir,
 				'NVS_LINK_TO_SYSTEM': '0',
 				'NVS_DEBUG': '1',
+				'PROCESSOR_ARCHITECTURE': process.env['PROCESSOR_ARCHITECTURE'],
+				'PROCESSOR_ARCHITEW6432': process.env['PROCESSOR_ARCHITEW6432'],
 				'ProgramFiles': process.env['ProgramFiles'],
 			},
 			cwd: nvsRootDir,
