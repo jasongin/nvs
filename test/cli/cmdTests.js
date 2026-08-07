@@ -8,8 +8,8 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'cmd');
 
-const testNodeVersion = '8.5.0';
-const testNpmVersion = '6.4.1';
+const testNodeVersion = '24.19.0';
+const testNpmVersion = '11.17.0';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);

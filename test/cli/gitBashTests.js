@@ -9,8 +9,8 @@ const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'git-bash');
 const shellProfileFile = path.join(testParentDir, '.shell_profile');
 
-const testNodeVersion = '10.24.1';
-const testNpmVersion = '6.4.1';
+const testNodeVersion = '24.19.0';
+const testNpmVersion = '11.17.0';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);

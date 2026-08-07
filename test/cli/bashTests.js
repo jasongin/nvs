@@ -8,7 +8,7 @@ const nvsRootDir = path.resolve(__dirname, '..', '..');
 const testParentDir = path.resolve(__dirname, '..', 'temp');
 const testDir = path.join(testParentDir, 'bash');
 
-const testNodeVersion = '8.5.0';
+const testNodeVersion = '24.19.0';
 
 test.before(t => {
 	require('../fsUtil').createDirectoryIfNotFound(testParentDir);
