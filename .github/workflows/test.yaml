@@ -25,13 +25,13 @@ jobs:
       run: sudo apt install zsh
       if: ${{ runner.os == 'Linux' }}
 
-    - name: Use Node.js 18.x
+    - name: Use Node.js 24.x
       uses: actions/setup-node@v3
       with:
-        node-version: 18.x
+        node-version: 24.x
 
     - name: Install packages
-      run: npm install --no-optional
+      run: npm ci
 
     - name: Run tests
       run: npm run test -- --tap

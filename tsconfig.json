@@ -2,7 +2,9 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"allowJs": true,
-		"moduleResolution": "node",
+		"module": "node16",
+		"moduleResolution": "node16",
+		"strict": false,
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
 		"types": ["node"],
