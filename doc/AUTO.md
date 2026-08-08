@@ -1,10 +1,12 @@
 # AUTO Command - Node Version Switcher
 
-    nvs auto
-    nvs auto on
-    nvs auto off
+```
+nvs auto
+nvs auto on
+nvs auto off
+```
 
-When invoked with no parameters, `nvs auto` searches for the nearest `.node-version` file in the current directory or parent directories. If found, the version specified in the file is then downloaded (if necessary) and used. If no `.node-version` file is found, then the default (linked) version, if any, is used.
+When invoked with no parameters, `nvs auto` searches for the nearest `package.json` file, if found, it will use the Node version supplied by [devEngines](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#devengines) or the [volta](https://github.com/volta-cli/volta) object if either are available. If not, it will use the nearest `.node-version` or `.nvmrc` file in the current directory or parent directories. If a Node version is found in any of these locations, it will be downloaded (if necessary) and used. If no Node version is found, then the default (linked) version, if any, is used.
 
 The `nvs auto on` command enables automatic switching as needed whenever the current shell's working directory changes; `nvs auto off` disables automatic switching in the current shell. (This feature is not supported in Windows Command Prompt.)
 

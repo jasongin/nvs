@@ -150,7 +150,7 @@ $ nvs which myalias/32
 [An alias may also refer to a local directory](doc/ALIAS.md#aliasing-directories), enabling NVS to switch to a local private build of node.
 
 ## Automatic switching per directory
-In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenever you `cd` or `pushd` under a directory containing a `.node-version` or an [`.nvmrc`](https://github.com/nvm-sh/nvm#nvmrc) file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `.node-version` or `.nvmrc` file anywhere above it, then the default (linked) version is restored, if any.
+In either Bash or PowerShell, NVS can automatically switch the node version in the current shell as you change directories. This function is disabled by default; to enable it run `nvs auto on`. Afterward, whenever you `cd` or `pushd` under a directory containing a `package.json`, `.node-version`, or an [`.nvmrc`](https://github.com/nvm-sh/nvm#nvmrc) file then NVS will automatically switch the node version accordingly, downloading a new version if necessary. When you `cd` out to a directory with no `package.json`, `.node-version`, or `.nvmrc` file anywhere above it, then the default (linked) version is restored, if any. If a `package.json` is found we'll prefer the [officially recommended](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#devengines) `devEngines.runtime.version` over all other options.
 ```
 ~$ nvs link 6.9.1
 ~/.nvs/default -> ~/.nvs/node/6.9.1/x64

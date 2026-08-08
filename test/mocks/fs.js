@@ -108,6 +108,10 @@ const mockFs = {
 		try { cb(null, this.accessSync(path, mode)); }		catch (e) { cb(e); }
 	},
 
+	existsSync(path) {
+		return true;
+	},
+
 	statSync(path) {
 		path = this.fixSep(path);
 		if (this.trace) console.log('statSync(' + path + ')');
