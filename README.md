@@ -214,4 +214,4 @@ If `$NVS_HOME` is under a system path such as `/usr/local` or `%ProgramFiles%`, 
 This system linking functionality is skipped when `$NVS_HOME` points to a non-system directory, because it would be wrong to create symlinks in system directories to user files.
 
 ## Dependencies
-NVS has no external dependencies beyond the private copy of node that it automatically downloads. Runtime JS package dependencies are minimal and are checked in to the repo to avoid the need for an `npm install` at bootstrapping time.
+NVS has no external dependencies beyond the private copy of node that it automatically downloads. Runtime JS package dependencies are minimal and are checked into the repo to avoid the need for an `npm install` at bootstrapping time.

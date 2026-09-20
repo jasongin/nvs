@@ -46,7 +46,7 @@ if ((-not (Test-Path $bootstrapNodePath)) -and ($onWindows)) {
 	$bootstrapNodeUri = "$($bootstrapNodeBaseUri)v$bootstrapNodeVersion/$bootstrapNodeArchive"
 	$bootstrapNodeArchivePath = Join-Path $env:NVS_HOME (Join-Path "cache" $bootstrapNodeArchive)
 
-	Write-Output "Downloading boostrap node from $bootstrapNodeUri"
+	Write-Output "Downloading bootstrap node from $bootstrapNodeUri"
 
 	# Download the archive using PowerShell Invoke-WebRequest.
 	powershell.exe -Command " `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '$bootstrapNodeUri' -OutFile '$bootstrapNodeArchivePath' "

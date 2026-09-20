@@ -82,7 +82,7 @@ nvs() {
 		fi
 
 		if [ ! -f "${NODE_ARCHIVE}" ] && [ "${NODE_ARCHIVE_EXT}" = ".tar.xz" ]; then
-			# The .xz download was not found -- fallback to .gz
+			# The .xz download was not found -- fall back to .gz
 			NODE_ARCHIVE_EXT=".tar.gz"
 			TAR_FLAGS="-zxvf"
 			NODE_ARCHIVE="${NVS_HOME}/cache/${NODE_FULLNAME}${NODE_ARCHIVE_EXT}"

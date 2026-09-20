@@ -25,4 +25,4 @@ The NVS version string value in `"runtimeArgs"` consists of a complete or partia
 
 Or, the version string in `"runtimeArgs"` may be omitted (equivalent to "auto"), in which case NVS searches for the nearest `.node-version` file in the project directory or parent directories. If found, the version specified in the file is then downloaded (if necessary) and launched. If no `.node-version` file is found, then the default (linked) version, if any, is launched.
 
-When NOT using the automatic mode with a `.node-version` file, the node version specified in launch.json must have been already downloaded using the `nvs add` command. Otherwise the launch will fail and NVS prints the error message "specified version not found".
+When NOT using the automatic mode with a `.node-version` file, the node version specified in launch.json must have been already downloaded using the `nvs add` command. Otherwise, the launch will fail and NVS prints the error message "specified version not found".

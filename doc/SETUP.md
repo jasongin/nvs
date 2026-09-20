@@ -62,7 +62,7 @@ NVS can work in Git Bash on Windows (the bash tools installed by [Git](https://g
 if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 ```
 
-`.bashrc` file is created by NVS if it does not exists.
+`.bashrc` file is created by NVS if it does not exist.
 
 ### Ubuntu Bash on Windows 10
 
